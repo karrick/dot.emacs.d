@@ -31,6 +31,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(add-to-list 'load-path "~/.emacs.d")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;;; Add ido-mode, for buffer-switching only
 (require 'ido)
 (ido-mode 'buffer)
@@ -44,7 +48,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SVN mode
-(add-to-list 'load-path "~/.emacs.d")
 (require 'psvn)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -131,3 +134,5 @@ The output appears in the buffer `*Async Shell Command*'."
 
 ;; Zenburn
 (load-theme 'zenburn t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -47,6 +47,15 @@
 (add-to-list 'load-path "~/.emacs.d")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; compilation mode interprets ansi characters
+
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region (point-min) (point-max))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
 ;;;; Add ido-mode, for buffer-switching only
 (require 'ido)
@@ -74,6 +83,7 @@
 (setq dired-show-ls-switches t)
 (setq ediff-diff-options "-w")
 (setq make-backup-files nil) ; stop making backup files
+(setq compilation-scroll-output 'first-error) ; Compilation mode scrolls to first error
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; shell-command / async-shell-command
@@ -81,6 +91,7 @@
 ;;;; Make meta ! always do an async shell command
 ;;;; async-shell-command copied from new simple.el in emacs repository
 ;;;; guard with fboundp
+
 (unless (fboundp 'async-shell-command)
   (defun async-shell-command (command &optional output-buffer error-buffer)
     "Execute string COMMAND asynchronously in background.

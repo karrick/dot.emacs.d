@@ -1,7 +1,6 @@
 ;;;; -*- mode: emacs-lisp -*-
 
 (setq Man-notify-method 'aggressive) ; Man-mode makes manpage active buffer
-(setq compilation-scroll-output 'first-error) ; Compilation mode scrolls to first error
 (setq use-file-dialog nil) ; Shut off a really annoying new dialog box
 
 ;;;; auto-complete-mode

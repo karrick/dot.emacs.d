@@ -77,12 +77,16 @@ is nil for all items in list."
 
 (if (boundp 'desktop-save-mode) (desktop-save-mode 1)) ; don't save desktop sessions
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(fset 'yes-or-no-p 'y-or-n-p)
 
-(autoload 'markdown-mode "markdown-mode"
-  "Major mode for editing Markdown files" t)
-(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(global-set-key [(control meta !)] 'shell-command)
+(global-set-key (kbd "C-x C-f") 'find-file-in-repository)
+(global-set-key (kbd "C-x f") 'find-file-in-repository)
+
+(add-hook 'window-setup-hook 'maximize-frame t) ; not good for daemon mode
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'stash)

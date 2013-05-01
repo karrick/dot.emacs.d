@@ -30,6 +30,7 @@
 		      maxframe
 		      multiple-cursors
 		      nxml-mode
+		      puppet-mode
 		      shell-command
 		      smart-tab
 		      wgrep
@@ -47,17 +48,26 @@
 (add-to-list 'load-path "~/.emacs.d")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; compilation mode interprets ansi characters
+;; ansi-color
 
 (require 'ansi-color)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+(add-hook 'compilation-mode-hook 'ansi-color-for-comint-mode-on)
 (defun colorize-compilation-buffer ()
   (toggle-read-only)
   (ansi-color-apply-on-region compilation-filter-start (point-max))
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-;;;; Add ido-mode, for buffer-switching only
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; markdown mode
+
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Add ido-mode, for buffer-switching only
 (require 'ido)
 (ido-mode 'buffer)
 (setq ido-enable-flex-matching t) ;; enable fuzzy matching
@@ -74,9 +84,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(fset 'yes-or-no-p 'y-or-n-p)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 (setq diff-switches "-u")		; default to unified diffs
 (setq dired-listing-switches "-Bhl")
@@ -84,31 +91,6 @@
 (setq ediff-diff-options "-w")
 (setq make-backup-files nil) ; stop making backup files
 (setq compilation-scroll-output 'first-error) ; Compilation mode scrolls to first error
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; shell-command / async-shell-command
-
-;;;; Make meta ! always do an async shell command
-;;;; async-shell-command copied from new simple.el in emacs repository
-;;;; guard with fboundp
-
-(unless (fboundp 'async-shell-command)
-  (defun async-shell-command (command &optional output-buffer error-buffer)
-    "Execute string COMMAND asynchronously in background.
-
-Like `shell-command' but if COMMAND doesn't end in ampersand, adds `&'
-surrounded by whitespace and executes the command asynchronously.
-The output appears in the buffer `*Async Shell Command*'."
-    (interactive
-     (list
-      (read-shell-command "Async shell command: " nil nil
-			  (and buffer-file-name
-			       (file-relative-name buffer-file-name)))
-      current-prefix-arg
-      shell-command-default-error-buffer))
-    (unless (string-match "&[ \t]*\\'" command)
-      (setq command (concat command " &")))
-    (shell-command command output-buffer error-buffer)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; look and feel
@@ -151,17 +133,11 @@ The output appears in the buffer `*Async Shell Command*'."
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-r") 'rgrep)
-(global-set-key (kbd "C-x f") 'find-file-in-repository)
+(global-set-key [(meta !)] 'async-shell-command)
 (global-set-key [(meta g)] 'goto-line)
 (global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
 
-;; Remap shortcuts to use async-shell-command by default
-(global-set-key [(meta !)] 'async-shell-command)
-(global-set-key [(control meta !)] 'shell-command)
-
 ;; Zenburn
 (load-theme 'zenburn t)
-
-;; (add-hook 'window-setup-hook 'maximize-frame t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

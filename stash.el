@@ -64,7 +64,6 @@ is nil for all items in list."
 (global-set-key (kbd "C-x ^") 'join-line)
 (global-set-key (kbd "M-`") 'file-cache-minibuffer-complete)
 (global-set-key [(control tab)] 'other-window) ; make control tab switch buffer windows
-(global-set-key [(meta g)] 'goto-line) ; Make meta g to goto-line
 
 ;;;; emacs progess meter for mini-buffer example
 (defun collect-mana-for-emacs ()
@@ -80,5 +79,11 @@ is nil for all items in list."
 (if (boundp 'desktop-save-mode) (desktop-save-mode 1)) ; don't save desktop sessions
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(autoload 'markdown-mode "markdown-mode"
+  "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 (provide 'stash)

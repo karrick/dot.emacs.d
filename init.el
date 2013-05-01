@@ -4,8 +4,8 @@
 ;; use package manager
 
 (require 'package)
-(add-to-list 'package-archives 
-             '("tromey" . "http://tromey.com/elpa/"))
+(add-to-list 'package-archives
+	     '("tromey" . "http://tromey.com/elpa/"))
 (add-to-list 'package-archives
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
@@ -17,10 +17,23 @@
 
 (defvar my-packages '(
 		      auto-complete
+		      bash-completion
 		      edit-server
+		      fic-mode
+		      find-file-in-repository
+		      go-autocomplete
+		      go-mode
 		      js2-mode
+		      json-mode
+		      magit
+		      markdown-mode
+		      maxframe
+		      multiple-cursors
+		      nxml-mode
 		      shell-command
 		      smart-tab
+		      wgrep
+		      wgrep-ack
 		      yaml-mode
 		      zenburn-theme
 		      ))
@@ -126,13 +139,18 @@ The output appears in the buffer `*Async Shell Command*'."
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "C-x C-r") 'rgrep)
+(global-set-key (kbd "C-x f") 'find-file-in-repository)
+(global-set-key [(meta g)] 'goto-line)
+(global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
+
 ;; Remap shortcuts to use async-shell-command by default
 (global-set-key [(meta !)] 'async-shell-command)
 (global-set-key [(control meta !)] 'shell-command)
 
 ;; Zenburn
 (load-theme 'zenburn t)
+
+;; (add-hook 'window-setup-hook 'maximize-frame t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

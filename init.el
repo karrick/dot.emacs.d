@@ -67,6 +67,11 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; puppet mode
+
+(add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Add ido-mode, for buffer-switching only
 (require 'ido)
 (ido-mode 'buffer)

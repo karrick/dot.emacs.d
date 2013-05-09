@@ -60,6 +60,48 @@
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Advise the shell commands to name the buffer after the command itself
+(defadvice async-shell-command (before buffer-named-with-command
+				       (command &optional output-buffer error-buffer))
+  (when (null output-buffer)
+    (setq output-buffer (switch-to-buffer (concat "*Async: " command "*")))))
+(ad-activate 'async-shell-command)
+
+(defadvice shell-command (before buffer-named-with-command
+				 (command &optional output-buffer error-buffer))
+  (when (null output-buffer)
+    (setq output-buffer (switch-to-buffer (concat "*Shell: " command "*")))))
+(ad-activate 'shell-command)
+
+
+;;;; auto-complete-mode
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories
+	     (expand-file-name "~/.ac-dict"))
+
+;;;; ac-common-setup is called by ac-config-default
+(defun ac-common-setup ()
+  (add-to-list 'ac-sources 'ac-source-yasnippet))
+(add-to-list 'ac-modes 'html-mode)
+(add-to-list 'ac-modes 'nxml-mode)
+(ac-config-default)
+(defun enable-auto-complete-mode ()
+  (auto-complete-mode 1))
+(defun disable-auto-complete-mode ()
+  (auto-complete-mode 0))
+
+;;;; edit-server for chromium browsers
+(when (and (daemonp) (locate-library "edit-server"))
+  (require 'edit-server)
+  (setq edit-server-new-frame nil)
+  (edit-server-start))
+
+;;;; js2 indent 2 spaces
+(set-default 'js2-basic-offset 2)
+(set-default 'js2-mirror-mode  nil)
+(set-default 'js2-mode-escape-quotes  nil)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; markdown mode
 
 (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
@@ -72,10 +114,11 @@
 (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Add ido-mode, for buffer-switching only
+;; ido-mode
 (require 'ido)
-(ido-mode 'buffer)
-(setq ido-enable-flex-matching t) ;; enable fuzzy matching
+;; (ido-mode 'buffer)			; for buffer-switching only
+(ido-mode t)
+(setq ido-enable-flex-matching t)	; enable fuzzy matching
 
 ;;;; different way of uniquifying names
 (require 'uniquify)
@@ -141,6 +184,10 @@
 (global-set-key [(meta !)] 'async-shell-command)
 (global-set-key [(meta g)] 'goto-line)
 (global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
+
+;;;; set f8 to be recompile, shift-f8 to compile
+(global-set-key [f8]   'recompile)
+(global-set-key [S-f8] 'compile)
 
 ;; Zenburn
 (load-theme 'zenburn t)

@@ -4,9 +4,22 @@
 (setq use-file-dialog nil) ; Shut off a really annoying new dialog box
 
 ;;;; auto-complete-mode
-(add-to-list 'ac-dictionary-directories 
+(add-to-list 'ac-dictionary-directories
 	     (expand-file-name "~/.emacs.d/ac-dict"))
 (ac-config-default)
+
+;;;; multiple-cursor mode
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+
+;;;; writable grep buffers via toggling off read-only (similar to
+;;;; wdired mode for dired buffers)
+(require 'wgrep)
+(define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
+(setq wgrep-auto-save-buffer t)
 
 ;;;; Buffer menu mode sort function
 (defun buffer-list-sort (column)
@@ -69,7 +82,7 @@ is nil for all items in list."
   (interactive)
   (let ((progress-reporter
 	 (make-progress-reporter "Collecting mana for Emacs..."
-				 0 500)))  
+				 0 500)))
     (dotimes (k 500)
       (sit-for 0.01)
       (progress-reporter-update progress-reporter k))

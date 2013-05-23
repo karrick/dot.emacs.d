@@ -30,6 +30,7 @@
 		      maxframe
 		      multiple-cursors
 		      nxml-mode
+		      psgml
 		      puppet-mode
 		      shell-command
 		      smart-tab
@@ -109,9 +110,22 @@
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ruby mode
+
+(add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\Rakefile\\'" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\Gemfile\\'" . ruby-mode))
+(add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; puppet mode
 
 (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; xslt mode
+
+(add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ido-mode
@@ -158,7 +172,7 @@
 
 ;;;; Set to a usable font
 (add-to-list 'default-frame-alist '(font-backend . "xft"))
-(add-to-list 'default-frame-alist '(font . "Liberation Mono-12"))
+;; (add-to-list 'default-frame-alist '(font . "Liberation Mono-12"))
 (setq font-use-system-font t)
 
 ;;;; Don't spawn a new frame for the ediff commands, keep it all in one frame

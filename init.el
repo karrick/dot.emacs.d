@@ -15,38 +15,41 @@
 
 (package-initialize)
 
-(defvar my-packages '(
-		      auto-complete
-		      bash-completion
-		      edit-server
-		      fic-mode
-		      find-file-in-repository
-		      go-autocomplete
-		      go-mode
-		      js2-mode
-		      json-mode
-		      magit
-		      markdown-mode
-		      maxframe
-		      multiple-cursors
-		      nxml-mode
-		      psgml
-		      puppet-mode
-		      shell-command
-		      smart-tab
-		      wgrep
-		      wgrep-ack
-		      yaml-mode
-		      zenburn-theme
-		      ))
-
-(dolist (p my-packages)
-  (when (not (package-installed-p p))
-    (package-install p)))
+(let ((packages '(
+		  auto-complete
+		  bash-completion
+		  edit-server
+		  fic-mode
+		  find-file-in-repository
+		  go-autocomplete
+		  go-mode
+		  js2-mode
+		  json-mode
+		  magit
+		  markdown-mode
+		  maxframe
+		  multiple-cursors
+		  nxml-mode
+		  psgml
+		  puppet-mode
+		  shell-command
+		  smart-tab
+		  wgrep
+		  wgrep-ack
+		  yaml-mode
+		  zenburn-theme
+		  )))
+  (dolist (p packages)
+    (when (not (package-installed-p p))
+      (package-install p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-to-list 'load-path "~/.emacs.d")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; git configuration
+(setenv "GIT_PAGER" "")			; elide git paging capability
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ansi-color
@@ -73,7 +76,6 @@
   (when (null output-buffer)
     (setq output-buffer (switch-to-buffer (concat "*Shell: " command "*")))))
 (ad-activate 'shell-command)
-
 
 ;;;; auto-complete-mode
 (require 'auto-complete-config)
@@ -130,11 +132,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ido-mode
 (require 'ido)
-;; (ido-mode 'buffer)			; for buffer-switching only
 (ido-mode t)
 (setq ido-enable-flex-matching t)	; enable fuzzy matching
 
-;;;; different way of uniquifying names
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; different way of uniquifying names
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-after-kill-buffer-p nil)
@@ -151,8 +154,8 @@
 (setq dired-listing-switches "-Bhl")
 (setq dired-show-ls-switches t)
 (setq ediff-diff-options "-w")
-(setq make-backup-files nil) ; stop making backup files
-(setq compilation-scroll-output 'first-error) ; Compilation mode scrolls to first error
+(setq make-backup-files nil)		; stop making backup files
+(setq compilation-scroll-output 'first-error) ; compilation mode scrolls to first error
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; look and feel

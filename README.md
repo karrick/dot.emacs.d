@@ -1,8 +1,11 @@
 ## dot.emacs.d
 
-emacs configuration
+* Minimalistic.
 
-### Grab a copy
+* Uses built-in emacs package manager to specify which optional
+packages to install.
+
+### Grab and install a copy
 
 ```bash
 mv -f ~/.emacs.d ~/.emacs.d.disabled
@@ -14,13 +17,13 @@ mv -f ~/dot.emacs.d ~/.emacs.d
 
 ### Create Desktop Launcher
 
-##### for a single user
+##### For a single user
 
 ```bash
 install -D -m 644 emacsclient.desktop ~/.local/share/applications
 ```
 
-##### for all users
+##### For all users
 
 ```bash
 sudo install -m 644 emacsclient.desktop /usr/share/applications

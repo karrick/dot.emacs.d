@@ -3,3 +3,5 @@ elpa
 auto-save-list
 url
 ac-comphist.dat
+eshell
+tramp

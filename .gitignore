@@ -1,7 +1,7 @@
 *.elc
-elpa
-auto-save-list
-url
 ac-comphist.dat
+auto-save-list
+elpa
 eshell
 tramp
+url

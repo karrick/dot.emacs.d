@@ -1,19 +1,27 @@
-dot.emacs.d
-===========
+## dot.emacs.d
 
 emacs configuration
 
-## To use:
+### Grab a copy
 
-    mv -f ~/.emacs.d ~/.emacs.d.disabled
-    mv -f ~/.emacs ~/.emacs.disabled
-    git clone https://github.com/karrick/dot.emacs.d.git
-    mv -f dot.emacs.d ~/.emacs.d
+```bash
+mv -f ~/.emacs.d ~/.emacs.d.disabled
+mv -f ~/.emacs ~/.emacs.disabled
+cd ~
+git clone https://github.com/karrick/dot.emacs.d
+mv -f ~/dot.emacs.d ~/.emacs.d
+```
 
-## Create Desktop Launcher for a single user:
+### Create Desktop Launcher
 
-	install -D -m 644 emacsclient.desktop ~/.local/share/applications
+##### for a single user
 
-## Create Desktop Launcher for all users:
+```bash
+install -D -m 644 emacsclient.desktop ~/.local/share/applications
+```
 
-	sudo install -m 644 emacsclient.desktop /usr/share/applications
+##### for all users
+
+```bash
+sudo install -m 644 emacsclient.desktop /usr/share/applications
+```

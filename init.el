@@ -48,6 +48,10 @@
 (add-to-list 'load-path "~/.emacs.d")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setenv "EDITOR" "emacsclient")
+(setenv "VISUAL" "emacsclient")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; git configuration
 (setenv "GIT_PAGER" "")			; elide git paging capability
 

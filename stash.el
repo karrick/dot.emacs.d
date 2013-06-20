@@ -61,7 +61,6 @@ is nil for all items in list."
 	  browse-url-browser-function 'browse-url-generic)))
 
 ;;;; Js2-mode for javascript
-(setq js2-basic-offset 2)
 (setq js2-bounce-indent-p t)
 
 ;;;; Add tab completion to shell-command mode
@@ -90,8 +89,6 @@ is nil for all items in list."
 
 (if (boundp 'desktop-save-mode) (desktop-save-mode 1)) ; don't save desktop sessions
 
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (global-set-key [(control meta !)] 'shell-command)

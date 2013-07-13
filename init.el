@@ -196,6 +196,12 @@
 (setq inhibit-startup-message t)
 (ansi-color-for-comint-mode-on) ; Allow terminal colorization
 
+;; other-window-backwards
+(defun other-window-backwards (&optional n)
+  "Select Nth previous window"
+  (interactive "p")
+  (other-window (- (prefix-numeric-value n))))
+
 ;;;; key bindings
 
 (global-set-key (kbd "C-+") 'text-scale-increase)
@@ -205,6 +211,8 @@
 (global-set-key [(meta !)] 'async-shell-command)
 (global-set-key [(meta g)] 'goto-line)
 (global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
+(global-set-key "\C-x\C-n" 'other-window)
+(global-set-key "\C-x\C-p" 'other-window-backwards)
 
 ;;;; set f8 to be recompile, shift-f8 to compile
 (global-set-key [f8]   'recompile)

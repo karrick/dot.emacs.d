@@ -90,20 +90,20 @@
 ;;;; Advise the shell commands to name the buffer after the command itself
 
 (defadvice async-shell-command (before buffer-named-with-command
-				       (command &optional output-buffer error-buffer))
+				       (command &optional output-buffer error-buffer)
+				       activate compile)
   (setq output-buffer (or output-buffer (concat "*Async: " command "*")))
   (let ((dir default-directory))
     (switch-to-buffer output-buffer)
     (setq default-directory dir)))
-(ad-activate 'async-shell-command)
 
 (defadvice shell-command (before buffer-named-with-command
-				 (command &optional output-buffer error-buffer))
+				 (command &optional output-buffer error-buffer)
+				 activate compile)
   (setq output-buffer (or output-buffer (concat "*Shell: " command "*")))
   (let ((dir default-directory))
     (switch-to-buffer output-buffer)
     (setq default-directory dir)))
-(ad-activate 'shell-command)
 
 ;;;; auto-complete-mode
 (require 'auto-complete-config)

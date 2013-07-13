@@ -219,6 +219,7 @@
 (setq visible-bell 1)
 (setq inhibit-startup-message t)
 (ansi-color-for-comint-mode-on) ; Allow terminal colorization
+(put 'narrow-to-region 'disabled nil)
 
 ;; other-window-backwards
 (defun other-window-backwards (&optional n)
@@ -246,5 +247,3 @@
 
 ;; Zenburn
 (load-theme 'zenburn t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

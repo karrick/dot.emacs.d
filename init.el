@@ -67,18 +67,42 @@
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+;; ________________________________________
+;; save new scripts as executable
+
+(add-hook 'after-save-hook
+	  #'(lambda ()
+	      (when
+		  (and
+		   (save-excursion
+		     (save-restriction
+		       (widen)
+		       (goto-char (point-min))
+		       (save-match-data
+			 (looking-at "^#!"))))
+		   (not (file-executable-p buffer-file-name)))
+		(set-file-modes buffer-file-name
+				(logior (file-modes buffer-file-name) #o100))
+		(message
+		 "Wrote and made executable: %s" buffer-file-name))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Advise the shell commands to name the buffer after the command itself
+
 (defadvice async-shell-command (before buffer-named-with-command
 				       (command &optional output-buffer error-buffer))
-  (when (null output-buffer)
-    (setq output-buffer (switch-to-buffer (concat "*Async: " command "*")))))
+  (setq output-buffer (or output-buffer (concat "*Async: " command "*")))
+  (let ((dir default-directory))
+    (switch-to-buffer output-buffer)
+    (setq default-directory dir)))
 (ad-activate 'async-shell-command)
 
 (defadvice shell-command (before buffer-named-with-command
 				 (command &optional output-buffer error-buffer))
-  (when (null output-buffer)
-    (setq output-buffer (switch-to-buffer (concat "*Shell: " command "*")))))
+  (setq output-buffer (or output-buffer (concat "*Shell: " command "*")))
+  (let ((dir default-directory))
+    (switch-to-buffer output-buffer)
+    (setq default-directory dir)))
 (ad-activate 'shell-command)
 
 ;;;; auto-complete-mode

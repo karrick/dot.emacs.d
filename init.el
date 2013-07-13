@@ -237,6 +237,8 @@
 (global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key "\C-x\C-n" 'other-window)
 (global-set-key "\C-x\C-p" 'other-window-backwards)
+(global-set-key "\C-xn" 'other-window)
+(global-set-key "\C-xp" 'other-window-backwards)
 
 ;;;; set f8 to be recompile, shift-f8 to compile
 (global-set-key [f8]   'recompile)

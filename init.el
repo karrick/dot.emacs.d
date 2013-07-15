@@ -196,6 +196,9 @@
 (if (fboundp 'menu-bar-mode)
     (menu-bar-mode -1))
 
+(if (boundp 'desktop-save-mode)
+    (desktop-save-mode 0))		; don't save desktop sessions
+
 ;;;; Highlight entire expression within parens
 (show-paren-mode t)
 (setq show-paren-style 'expression)

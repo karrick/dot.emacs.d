@@ -50,6 +50,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setenv "EDITOR" "emacsclient")
 (setenv "VISUAL" "emacsclient")
+(setenv "PAGER" "cat")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; git configuration

@@ -70,6 +70,7 @@
     (use-current-default-directory buffer)
     (delete-region (point-min) (point-max))
     (start-process "git-push" buffer
-		   "git" "push" "origin" "master")))
+		   "git" "push" "origin" "master")
+    (message "Pushing: origin master")))
 
 (provide 'git)

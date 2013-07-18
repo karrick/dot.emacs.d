@@ -20,6 +20,15 @@
     (start-process "git-status" buffer
 		   "git" "status")))
 
+(defun git-log ()
+  "Show the result of running `git log' in a buffer"
+  (interactive)
+  (let ((buffer "*git log*"))
+    (use-current-default-directory buffer)
+    (delete-region (point-min) (point-max))
+    (start-process "git-log" buffer
+		   "git" "log")))
+
 (defun git-diff ()
   "Run `git diff -w'"
   (interactive)

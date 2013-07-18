@@ -47,4 +47,13 @@
     (start-process "git-push" buffer
 		   "git" "push" "origin" "master")))
 
+(defun git-diff ()
+  "Run `git diff -w'"
+  (interactive)
+  (let ((buffer "*git diff*"))
+    (use-current-default-directory buffer)
+    (delete-region (point-min) (point-max))
+    (start-process "git-diff" buffer
+		   "git" "diff" "-w")))
+
 (provide 'git)

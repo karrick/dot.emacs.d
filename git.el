@@ -28,3 +28,11 @@
     (delete-region (point-min) (point-max))
     (start-process "git-add" buffer
 		   "git" "add" (expand-file-name pathname))))
+
+(defun git-push ()
+  (interactive)
+  (let ((buffer "*git push*"))
+    (use-current-default-directory buffer)
+    (delete-region (point-min) (point-max))
+    (start-process "git-push" buffer
+		   "git" "push" "origin" "master")))

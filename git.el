@@ -70,7 +70,7 @@
     (delete-region (point-min) (point-max))
     (start-process "git-pull" buffer
 		   "git" "pull")
-    (message "Pulling")))g
+    (message "Pulling")))
 
 (defun git-push ()
   "Run `git push'"

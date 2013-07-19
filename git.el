@@ -38,17 +38,7 @@
     (start-process "git-diff" buffer
 		   "git" "diff" "-w")))
 
-(defun git-add (pathname)
-  "Run `git add' after prompting for a filename to add"
-  (interactive "fAdd which file: ")
-  (let ((buffer "*git add*"))
-    (use-current-default-directory buffer)
-    (delete-region (point-min) (point-max))
-    (start-process "git-add" buffer
-		   "git" "add" (expand-file-name pathname))
-    (message "Adding: %s" pathname)))
-
-(defun git-add-auto ()
+(defun git-add ()
   "Run `git add', prompting for a filename to add if not editing a file"
   (interactive)
   (let ((pathname (buffer-file-name)))
@@ -72,6 +62,16 @@
 		   "git" "commit" "-m" commit-message)
     (message "Committing: %s" commit-message)))
 
+(defun git-pull ()
+  "Run `git pull'"
+  (interactive)
+  (let ((buffer "*git pull*"))
+    (use-current-default-directory buffer)
+    (delete-region (point-min) (point-max))
+    (start-process "git-pull" buffer
+		   "git" "pull")
+    (message "Pulling")))g
+
 (defun git-push ()
   "Run `git push'"
   (interactive)
@@ -79,7 +79,7 @@
     (use-current-default-directory buffer)
     (delete-region (point-min) (point-max))
     (start-process "git-push" buffer
-		   "git" "push" "origin" "master")
-    (message "Pushing: origin master")))
+		   "git" "push")
+    (message "Pushing")))
 
 (provide 'git)

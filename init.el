@@ -68,6 +68,13 @@
   (toggle-read-only))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun unshift-path (elem)
+  (interactive "DAdd what directory to PATH: ")
+  (setenv "PATH" (concat elem ":" (getenv "PATH")))
+  (message "adding %s to PATH" elem))
+
 ;; ________________________________________
 ;; save new scripts as executable
 

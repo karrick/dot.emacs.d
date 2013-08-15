@@ -72,8 +72,11 @@
 
 (defun unshift-path (elem)
   (interactive "DAdd what directory to PATH: ")
-  (setenv "PATH" (concat elem ":" (getenv "PATH")))
-  (message "adding %s to PATH" elem))
+  (let ((path (expand-file-name elem)))
+    (when (string-match "/$" path)
+      (setq path (concat (replace-match "" nil nil path))))
+    (setenv "PATH" (concat path ":" (getenv "PATH")))
+    (message "adding %s to PATH" path)))
 
 ;; ________________________________________
 ;; save new scripts as executable

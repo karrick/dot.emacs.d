@@ -78,6 +78,10 @@
     (setenv "PATH" (concat path ":" (getenv "PATH")))
     (message "adding %s to PATH" path)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setenv "GOPATH" (expand-file-name "~/src/go"))
+
 ;; ________________________________________
 ;; save new scripts as executable
 

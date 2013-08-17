@@ -263,6 +263,10 @@
 (global-set-key [f8]   'recompile)
 (global-set-key [S-f8] 'compile)
 
+;; don't let the cursor go into minibuffer prompt (thank's, xah!)
+(setq minibuffer-prompt-properties 
+      (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
+
 ;; Zenburn
 (load-theme 'zenburn t)
 

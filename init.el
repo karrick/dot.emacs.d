@@ -80,7 +80,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setenv "GOPATH" (expand-file-name "~/src/go"))
+(setenv "GOPATH" (expand-file-name "~/go"))
+(unshift-path (expand-file-name "~/go/bin"))
+(unshift-path "/usr/local/go/bin")
 
 ;; ________________________________________
 ;; save new scripts as executable

@@ -70,7 +70,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun unshift-path (elem)
+(defun prepend-path (elem)
   (interactive "DAdd what directory to PATH: ")
   (let ((path (expand-file-name elem)))
     (when (string-match "/$" path)
@@ -81,8 +81,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setenv "GOPATH" (expand-file-name "~/go"))
-(unshift-path (expand-file-name "~/go/bin"))
-(unshift-path "/usr/local/go/bin")
+(prepend-path (expand-file-name "~/go/bin"))
+(prepend-path "/usr/local/go/bin")
 
 ;; ________________________________________
 ;; save new scripts as executable

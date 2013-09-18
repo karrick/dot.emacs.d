@@ -201,6 +201,7 @@
 (setq ediff-diff-options "-w")
 (setq make-backup-files nil)		; stop making backup files
 (setq compilation-scroll-output 'first-error) ; compilation mode scrolls to first error
+(setq-default indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; look and feel

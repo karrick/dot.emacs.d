@@ -144,6 +144,11 @@
   (setq edit-server-new-frame nil)
   (edit-server-start))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; tabs and indenting
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
 ;;;; js2 indent 2 spaces
 (set-default 'js2-basic-offset 2)
 (set-default 'js2-mirror-mode  nil)
@@ -201,7 +206,6 @@
 (setq ediff-diff-options "-w")
 (setq make-backup-files nil)		; stop making backup files
 (setq compilation-scroll-output 'first-error) ; compilation mode scrolls to first error
-(setq-default indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; look and feel

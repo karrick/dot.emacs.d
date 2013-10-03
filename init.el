@@ -147,7 +147,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; tabs and indenting
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
+(setq-default tab-width 8)
 
 ;;;; js2 indent 2 spaces
 (set-default 'js2-basic-offset 2)

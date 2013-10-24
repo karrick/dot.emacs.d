@@ -5,40 +5,41 @@
 
 (require 'package)
 (add-to-list 'package-archives
-	     '("tromey" . "http://tromey.com/elpa/"))
+             '("tromey" . "http://tromey.com/elpa/"))
 (add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/"))
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.milkbox.net/packages/"))
+             '("melpa" . "http://melpa.milkbox.net/packages/"))
 (when (not package-archive-contents)
   (package-refresh-contents))
 
 (package-initialize)
 
 (let ((packages '(
-		  auto-complete
-		  bash-completion
-		  edit-server
-		  fic-mode
-		  find-file-in-repository
-		  go-autocomplete
-		  go-mode
-		  js2-mode
-		  json-mode
-		  magit
-		  markdown-mode
-		  maxframe
-		  multiple-cursors
-		  nxml-mode
-		  psgml
-		  puppet-mode
-		  shell-command
-		  smart-tab
-		  wgrep
-		  wgrep-ack
-		  yaml-mode
-		  zenburn-theme
-		  )))
+                  auto-complete
+                  bash-completion
+                  edit-server
+                  expand-region
+                  fic-mode
+                  find-file-in-repository
+                  go-autocomplete
+                  go-mode
+                  js2-mode
+                  json-mode
+                  magit
+                  markdown-mode
+                  maxframe
+                  multiple-cursors
+                  nxml-mode
+                  psgml
+                  puppet-mode
+                  shell-command
+                  smart-tab
+                  wgrep
+                  wgrep-ack
+                  yaml-mode
+                  zenburn-theme
+                  )))
   (dolist (p packages)
     (when (not (package-installed-p p))
       (package-install p))))
@@ -88,35 +89,35 @@
 ;; save new scripts as executable
 
 (add-hook 'after-save-hook
-	  #'(lambda ()
-	      (when
-		  (and
-		   (save-excursion
-		     (save-restriction
-		       (widen)
-		       (goto-char (point-min))
-		       (save-match-data
-			 (looking-at "^#!"))))
-		   (not (file-executable-p buffer-file-name)))
-		(set-file-modes buffer-file-name
-				(logior (file-modes buffer-file-name) #o100))
-		(message
-		 "Wrote and made executable: %s" buffer-file-name))))
+          #'(lambda ()
+              (when
+                  (and
+                   (save-excursion
+                     (save-restriction
+                       (widen)
+                       (goto-char (point-min))
+                       (save-match-data
+                         (looking-at "^#!"))))
+                   (not (file-executable-p buffer-file-name)))
+                (set-file-modes buffer-file-name
+                                (logior (file-modes buffer-file-name) #o100))
+                (message
+                 "Wrote and made executable: %s" buffer-file-name))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Advise the shell commands to name the buffer after the command itself
 
 (defadvice async-shell-command (before buffer-named-with-command
-				       (command &optional output-buffer error-buffer)
-				       activate compile)
+                                       (command &optional output-buffer error-buffer)
+                                       activate compile)
   (setq output-buffer (or output-buffer (concat "*Async: " command "*")))
   (let ((dir default-directory))
     (switch-to-buffer output-buffer)
     (setq default-directory dir)))
 
 (defadvice shell-command (before buffer-named-with-command
-				 (command &optional output-buffer error-buffer)
-				 activate compile)
+                                 (command &optional output-buffer error-buffer)
+                                 activate compile)
   (setq output-buffer (or output-buffer (concat "*Shell: " command "*")))
   (let ((dir default-directory))
     (switch-to-buffer output-buffer)
@@ -125,7 +126,7 @@
 ;;;; auto-complete-mode
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories
-	     (expand-file-name "~/.ac-dict"))
+             (expand-file-name "~/.ac-dict"))
 
 ;;;; ac-common-setup is called by ac-config-default
 (defun ac-common-setup ()
@@ -265,13 +266,14 @@
 (global-set-key "\C-x\C-p" 'other-window-backwards)
 (global-set-key "\C-xn" 'other-window)
 (global-set-key "\C-xp" 'other-window-backwards)
+(global-set-key (kbd "C-=") 'er/expand-region)
 
 ;;;; set f8 to be recompile, shift-f8 to compile
 (global-set-key [f8]   'recompile)
 (global-set-key [S-f8] 'compile)
 
 ;; don't let the cursor go into minibuffer prompt (thank's, xah!)
-(setq minibuffer-prompt-properties 
+(setq minibuffer-prompt-properties
       (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
 ;; Zenburn

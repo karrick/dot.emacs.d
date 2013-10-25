@@ -266,11 +266,28 @@
 (global-set-key "\C-x\C-p" 'other-window-backwards)
 (global-set-key "\C-xn" 'other-window)
 (global-set-key "\C-xp" 'other-window-backwards)
-(global-set-key (kbd "C-=") 'er/expand-region)
+
+;;;; expand-region
+(global-set-key (kbd "s-=") 'er/expand-region)
+(global-set-key (kbd "s--") 'er/contract-region)
+
+;;;; multiple-cursor mode
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-c C->") 'mc/mark-more-like-this-extended)
 
 ;;;; set f8 to be recompile, shift-f8 to compile
 (global-set-key [f8]   'recompile)
 (global-set-key [S-f8] 'compile)
+
+;;;; writable grep buffers via toggling off read-only (similar to
+;;;; wdired mode for dired buffers)
+(require 'wgrep)
+(define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
+(setq wgrep-auto-save-buffer t)
 
 ;; don't let the cursor go into minibuffer prompt (thank's, xah!)
 (setq minibuffer-prompt-properties
@@ -278,6 +295,15 @@
 
 ;; Zenburn
 (load-theme 'zenburn t)
+
+;;;; Darwin fixes
+(when (eq system-type 'darwin)
+  (setq ns-function-modifier 'hyper)
+  ;; (menu-bar-mode 1)
+  ;; (setenv "LANG" "en_US.UTF-8")
+  (setq dired-use-ls-dired nil)
+  ;; (setenv "PATH" "/Users/mjcurry/bin:/opt/local/libexec/gnubin:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/local/bin:/opt/local/libexec/gnubin:/usr/X11/bin")
+)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

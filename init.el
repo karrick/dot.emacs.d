@@ -268,8 +268,8 @@
 (global-set-key "\C-xp" 'other-window-backwards)
 
 ;;;; expand-region
-(global-set-key (kbd "s-=") 'er/expand-region)
-(global-set-key (kbd "s--") 'er/contract-region)
+(global-set-key (kbd "H-=") 'er/expand-region)
+(global-set-key (kbd "H--") 'er/contract-region)
 
 ;;;; multiple-cursor mode
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)

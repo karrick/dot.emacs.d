@@ -85,6 +85,16 @@
 (prepend-path (expand-file-name "~/go/bin"))
 (prepend-path "/usr/local/go/bin")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(let ((directories (list
+                    (expand-file-name (concat (getenv "HOME") "/bin"))
+                    "/usr/local/linkedin/bin"
+                    )))
+  (dolist (dir directories)
+    (when (file-exists-p dir)
+      (prepend-path dir))))
+
 ;; ________________________________________
 ;; save new scripts as executable
 

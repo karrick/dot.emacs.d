@@ -96,7 +96,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (let ((directories (list
-                    (expand-file-name (concat (getenv "HOME") "/bin"))
+                    "~/bin"
                     "/usr/local/linkedin/bin"
                     )))
   (dolist (dir directories)

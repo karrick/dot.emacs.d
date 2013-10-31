@@ -83,8 +83,9 @@
   (let ((path (expand-file-name elem)))
     (when (string-match "/$" path)
       (setq path (concat (replace-match "" nil nil path))))
-    (setenv "PATH" (concat path ":" (getenv "PATH")))
-    (message "adding %s to PATH" path)))
+    (when (file-accessible-directory-p path)
+      (setenv "PATH" (concat path ":" (getenv "PATH")))
+      (message "adding %s to PATH" path))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -99,8 +100,7 @@
                     "/usr/local/linkedin/bin"
                     )))
   (dolist (dir directories)
-    (when (file-exists-p dir)
-      (prepend-path dir))))
+    (prepend-path dir)))
 
 ;; ________________________________________
 ;; save new scripts as executable

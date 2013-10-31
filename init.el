@@ -46,7 +46,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path "~/.emacs.d")
+(add-to-list 'load-path user-emacs-directory)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Language specific setup files
+;; (eval-after-load 'js2-mode '(require 'setup-js2-mode))
+(eval-after-load 'ruby-mode '(require 'setup-ruby-mode))
+;; (eval-after-load 'clojure-mode '(require 'setup-clojure-mode))
+;; (eval-after-load 'markdown-mode '(require 'setup-markdown-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; git configuration

@@ -48,6 +48,8 @@
 
 (add-to-list 'load-path user-emacs-directory)
 
+(cd (expand-file-name "~"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Language specific setup files
 ;; (eval-after-load 'js2-mode '(require 'setup-js2-mode))
@@ -202,7 +204,6 @@
 (require 'ido)
 (ido-mode t)
 (setq ido-enable-flex-matching t)	; enable fuzzy matching
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; different way of uniquifying names

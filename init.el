@@ -315,6 +315,8 @@
 (load-theme 'zenburn t)
 
 ;;;; Darwin fixes
+;; TODO: want to run some of these localized to where frame is created, and upon creation of new frame
+
 (when (eq system-type 'darwin)
   (setq ns-function-modifier 'hyper)
   ;; (menu-bar-mode 1)

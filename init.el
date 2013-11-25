@@ -62,11 +62,6 @@
 (setenv "GIT_PAGER" "")			; elide git paging capability
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setenv "EDITOR" "emacsclient")
-(setenv "VISUAL" "emacsclient")
-(setenv "PAGER" "cat")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ansi-color
 
 (require 'ansi-color)
@@ -103,6 +98,28 @@
                     )))
   (dolist (dir directories)
     (prepend-path dir)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun find-first (predicate list)
+  "Return result of first item in list which
+satisfies predicate.  Returns nil if predicate
+is nil for all items in list."
+  (catch 'found-it
+    (dolist (item list)
+      (let ((result (funcall predicate item)))
+	(if result
+	    (throw 'found-it result))))))
+
+;;;;;;;;;;;;;;;;
+(let ((client (find-first #'(lambda (item)
+                              (executable-find item))
+                          '(
+                            "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+                            "/usr/local/bin/emacsclient"
+                            "/usr/bin/emacsclient"))))
+  (setenv "EDITOR" client)
+  (setenv "VISUAL" client))
+(setenv "PAGER" "cat")
 
 ;; ________________________________________
 ;; save new scripts as executable

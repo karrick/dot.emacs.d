@@ -1,52 +1,68 @@
 ;;;; -*- mode: emacs-lisp -*-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; use package manager
+;; attempt to use package manager, but gracefully fail to an error
+;; message
 
-(require 'package)
-(add-to-list 'package-archives
-             '("tromey" . "http://tromey.com/elpa/"))
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/"))
-(when (not package-archive-contents)
-  (package-refresh-contents))
+(condition-case err
+    (progn
+      (require 'package)
+      (add-to-list 'package-archives
+		   '("tromey" . "http://tromey.com/elpa/"))
+      (add-to-list 'package-archives
+		   '("marmalade" . "http://marmalade-repo.org/packages/"))
+      (add-to-list 'package-archives
+		   '("melpa" . "http://melpa.milkbox.net/packages/"))
+      (when (not package-archive-contents)
+	(package-refresh-contents))
+      (package-initialize)
+      (defmacro configure-package (packages &rest body)
+	"Install specified package and run configuration body"
+	`(progn
+           (dolist (pkg ,packages)
+             (if (not (package-installed-p pkg))
+                 (package-install pkg)))
+	   (progn ,@body))))
+  (file-error
+   (progn
+     (message "elpa not supported: %s" err)
+     (defmacro configure-package (packages &rest body)
+       "Skip installation and configuration of package because elpa is not installed"
+       `(dolist (pkg ,packages)
+          (message "skipping configure-package: %s" pkg))))))
 
-(package-initialize)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; I don't have any package specific configuration for these packages
 
-(let ((packages '(
-                  auto-complete
-                  bash-completion
-                  edit-server
-                  expand-region
-                  fic-mode
-                  find-file-in-repository
-                  go-autocomplete
-                  go-mode
-                  js2-mode
-                  json-mode
-                  magit
-                  markdown-mode
-                  maxframe
-                  multiple-cursors
-                  nxml-mode
-                  psgml
-                  puppet-mode
-                  shell-command
-                  smart-tab
-                  wgrep
-                  wgrep-ack
-                  yaml-mode
-                  zenburn-theme
-                  )))
-  (dolist (p packages)
-    (when (not (package-installed-p p))
-      (package-install p))))
+(configure-package '(
+		  bash-completion
+		  edit-server
+		  expand-region
+		  fic-mode
+		  find-file-in-repository
+		  go-autocomplete
+		  go-mode
+		  js2-mode
+		  json-mode
+		  magit
+		  markdown-mode
+		  maxframe
+		  multiple-cursors
+		  nxml-mode
+		  psgml
+		  puppet-mode
+		  shell-command
+		  smart-tab
+		  yaml-mode
+		  zenburn-theme
+		  flubber
+		  ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path user-emacs-directory)
+(if (boundp 'user-emacs-directory)
+    (add-to-list 'load-path user-emacs-directory)
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d")))
 
 (cd (expand-file-name "~"))
 
@@ -160,23 +176,24 @@ is nil for all items in list."
     (setq default-directory dir)))
 
 ;;;; auto-complete-mode
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories
-             (expand-file-name "~/.ac-dict"))
+(configure-package '(auto-complete)
+		   (require 'auto-complete-config)
+		   (add-to-list 'ac-dictionary-directories
+				(expand-file-name "~/.ac-dict"))
 
-;;;; ac-common-setup is called by ac-config-default
-(defun ac-common-setup ()
-  (add-to-list 'ac-sources 'ac-source-yasnippet))
-(add-to-list 'ac-modes 'html-mode)
-(add-to-list 'ac-modes 'nxml-mode)
-(ac-config-default)
-(defun enable-auto-complete-mode ()
-  (auto-complete-mode 1))
-(defun disable-auto-complete-mode ()
-  (auto-complete-mode 0))
+		   ;; ac-common-setup is called by ac-config-default
+		   (defun ac-common-setup ()
+		     (add-to-list 'ac-sources 'ac-source-yasnippet))
+		   (add-to-list 'ac-modes 'html-mode)
+		   (add-to-list 'ac-modes 'nxml-mode)
+		   (ac-config-default)
+		   (defun enable-auto-complete-mode ()
+		     (auto-complete-mode 1))
+		   (defun disable-auto-complete-mode ()
+		     (auto-complete-mode 0)))
 
 ;;;; edit-server for chromium browsers
-(when (and (daemonp) (locate-library "edit-server"))
+(when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
   (require 'edit-server)
   (setq edit-server-new-frame nil)
   (edit-server-start))
@@ -320,16 +337,18 @@ is nil for all items in list."
 
 ;;;; writable grep buffers via toggling off read-only (similar to
 ;;;; wdired mode for dired buffers)
-(require 'wgrep)
-(define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
-(setq wgrep-auto-save-buffer t)
+(configure-package '(wgrep wgrep-ack)
+                   (require 'wgrep)
+                   (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
+                   (setq wgrep-auto-save-buffer t))
 
 ;; don't let the cursor go into minibuffer prompt (thank's, xah!)
 (setq minibuffer-prompt-properties
       (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
 ;; Zenburn
-(load-theme 'zenburn t)
+(configure-package '(zenburn-theme)
+                   (load-theme 'zenburn t))
 
 ;;;; Darwin fixes
 ;; TODO: want to run some of these localized to where frame is created, and upon creation of new frame

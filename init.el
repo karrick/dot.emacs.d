@@ -129,14 +129,6 @@ is nil for all items in list."
 ;;;; advise the shell commands to name the buffer after the command
 ;;;; itself
 
-(defadvice async-shell-command (before buffer-named-with-command
-                                       (command &optional output-buffer error-buffer)
-                                       activate compile)
-  (setq output-buffer (or output-buffer (concat "*Async: " command "*")))
-  (let ((dir default-directory))
-    (switch-to-buffer output-buffer)
-    (setq default-directory dir)))
-
 (defadvice shell-command (before buffer-named-with-command
                                  (command &optional output-buffer error-buffer)
                                  activate compile)
@@ -146,6 +138,13 @@ is nil for all items in list."
     (setq default-directory dir)))
 
 (when (fboundp 'async-shell-command)
+  (defadvice async-shell-command (before buffer-named-with-command
+                                         (command &optional output-buffer error-buffer)
+                                         activate compile)
+    (setq output-buffer (or output-buffer (concat "*Async: " command "*")))
+    (let ((dir default-directory))
+      (switch-to-buffer output-buffer)
+      (setq default-directory dir)))
   (global-set-key [(meta !)] 'async-shell-command))
 
 ;;;; auto-complete-mode

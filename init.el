@@ -38,19 +38,13 @@
 		  bash-completion
 		  fic-mode
 		  find-file-in-repository
-		  go-autocomplete
-		  go-mode
 		  json-mode
-		  magit
 		  markdown-mode
 		  maxframe
 		  nxml-mode
 		  psgml
-		  puppet-mode
-		  shell-command
 		  smart-tab
 		  yaml-mode
-		  zenburn-theme
 		  ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -129,13 +123,14 @@ is nil for all items in list."
 ;;;; advise the shell commands to name the buffer after the command
 ;;;; itself
 
-(defadvice shell-command (before buffer-named-with-command
-                                 (command &optional output-buffer error-buffer)
-                                 activate compile)
-  (setq output-buffer (or output-buffer (concat "*Shell: " command "*")))
-  (let ((dir default-directory))
-    (switch-to-buffer output-buffer)
-    (setq default-directory dir)))
+(configure-package '(shell-command)
+                   (defadvice shell-command (before buffer-named-with-command
+                                                    (command &optional output-buffer error-buffer)
+                                                    activate compile)
+                     (setq output-buffer (or output-buffer (concat "*Shell: " command "*")))
+                     (let ((dir default-directory))
+                       (switch-to-buffer output-buffer)
+                       (setq default-directory dir))))
 
 (when (fboundp 'async-shell-command)
   (defadvice async-shell-command (before buffer-named-with-command
@@ -323,6 +318,9 @@ is nil for all items in list."
 ;;;; (eval-after-load 'clojure-mode '(require 'setup-clojure-mode))
 ;;;; (eval-after-load 'markdown-mode '(require 'setup-markdown-mode))
 
+(configure-package '(go-autocomplete go-mode)
+                   (add-hook 'before-save-hook #'gofmt-before-save))
+
 ;;;; js2-mode offers nice javascript support
 (configure-package '(js2-mode)
                    (eval-after-load 'js2-mode '(require 'setup-js2-mode))
@@ -349,7 +347,8 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; puppet mode
 
-(add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+(configure-package '(puppet-mode)
+                   (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; xslt mode

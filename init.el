@@ -318,9 +318,6 @@ is nil for all items in list."
 ;;;; (eval-after-load 'clojure-mode '(require 'setup-clojure-mode))
 ;;;; (eval-after-load 'markdown-mode '(require 'setup-markdown-mode))
 
-(configure-package '(go-autocomplete go-mode)
-                   (add-hook 'before-save-hook #'gofmt-before-save))
-
 ;;;; js2-mode offers nice javascript support
 (configure-package '(js2-mode)
                    (eval-after-load 'js2-mode '(require 'setup-js2-mode))
@@ -358,9 +355,13 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
-(setenv "GOPATH" (expand-file-name "~/go"))
-(prepend-path (expand-file-name "~/go/bin"))
-(prepend-path "/usr/local/go/bin")
+(configure-package '(go-autocomplete go-mode)
+                   (let ((gobin "/usr/local/go/bin"))
+                     (setenv "GOPATH" (expand-file-name "~/go"))
+                     (prepend-path (expand-file-name "~/go/bin"))
+                     (prepend-path gobin)
+                     (setq gofmt-command (format "%s/%s" gobin "gofmt"))
+                     (add-hook 'before-save-hook #'gofmt-before-save)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables

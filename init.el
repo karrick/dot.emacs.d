@@ -360,7 +360,7 @@ is nil for all items in list."
                      (setenv "GOPATH" (expand-file-name "~/go"))
                      (prepend-path (expand-file-name "~/go/bin"))
                      (prepend-path gobin)
-                     (setq gofmt-command (format "%s/%s" gobin "gofmt"))
+                     (setq gofmt-command (concat gobin "/gofmt"))
                      (add-hook 'before-save-hook #'gofmt-before-save)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

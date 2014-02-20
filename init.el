@@ -55,6 +55,7 @@
     (when (string-match "/$" path)
       (setq path (concat (replace-match "" nil nil path))))
     (when (file-accessible-directory-p path)
+      (add-to-list 'exec-path path)
       (setenv "PATH" (concat path ":" (getenv "PATH")))
       (message "adding %s to PATH" path))))
 
@@ -355,13 +356,17 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
-(configure-package '(go-autocomplete go-mode)
-                   (let ((gobin "/usr/local/go/bin"))
-                     (setenv "GOPATH" (expand-file-name "~/go"))
-                     (prepend-path (expand-file-name "~/go/bin"))
-                     (prepend-path gobin)
-                     (setq gofmt-command (concat gobin "/gofmt"))
-                     (add-hook 'before-save-hook #'gofmt-before-save)))
+(prepend-path "/usr/local/go/bin")
+(prepend-path (expand-file-name "~/go/bin"))
+(setenv "GOPATH" (expand-file-name "~/go"))
+
+(configure-package '(go-mode go-autocomplete)
+                     ;; (setq gofmt-command (concat gobin "/gofmt"))
+                     (add-hook 'before-save-hook #'gofmt-before-save)
+                     (add-hook 'go-mode-hook #'(lambda ()
+                                                 (local-set-key (kbd "M-.") 'godef-jump))))
+
+;; install godef: `go get code.google.com/p/rog-go/exp/cmd/godef`
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables

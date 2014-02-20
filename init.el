@@ -264,7 +264,7 @@ is nil for all items in list."
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key [(meta g)] 'goto-line)
-(global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
+(global-set-key [f5] #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key [f8]   'recompile)
 (global-set-key [S-f8] 'compile)
 

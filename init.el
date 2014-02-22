@@ -41,7 +41,6 @@
 		  json-mode
 		  markdown-mode
 		  maxframe
-		  nxml-mode
 		  psgml
 		  smart-tab
 		  yaml-mode
@@ -158,23 +157,6 @@ is nil for all items in list."
 		     (auto-complete-mode 1))
 		   (defun disable-auto-complete-mode ()
 		     (auto-complete-mode 0)))
-
-;;;; edit-server for browsers
-;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
-
-(configure-package '(edit-server)
-                   (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
-                     (require 'edit-server)
-                     (setq edit-server-new-frame nil)
-                     (edit-server-start)
-                     (let ((client (find-first #'(lambda (item)
-                                                   (executable-find item))
-                                               '(
-                                                 "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
-                                                 "/usr/local/bin/emacsclient"
-                                                 "/usr/bin/emacsclient"))))
-                       (setenv "EDITOR" client)
-                       (setenv "VISUAL" client))))
 
 ;;;; tabs and indenting
 
@@ -304,7 +286,9 @@ is nil for all items in list."
                    (load-theme 'zenburn t))
 
 ;;;; Darwin fixes
-;;;; TODO: want to run some of these localized to where frame is created, and upon creation of new frame
+
+;;;; TODO: want to run some of these localized to where frame is
+;;;; created, and upon creation of new frame
 
 (when (eq system-type 'darwin)
   (when (eq nil window-system)
@@ -313,6 +297,23 @@ is nil for all items in list."
   ;; (setenv "LANG" "en_US.UTF-8")
   (setq ns-function-modifier 'hyper)
   (setq dired-use-ls-dired nil))
+
+;;;; edit-server for browsers
+;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
+
+(configure-package '(edit-server)
+                   (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
+                     (require 'edit-server)
+                     (setq edit-server-new-frame nil)
+                     (edit-server-start)
+                     (let ((client (find-first #'(lambda (item)
+                                                   (executable-find item))
+                                               '(
+                                                 "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
+                                                 "/usr/local/bin/emacsclient"
+                                                 "/usr/bin/emacsclient"))))
+                       (setenv "EDITOR" client)
+                       (setenv "VISUAL" client))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Language specific setup files
@@ -351,7 +352,8 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; xslt mode
 
-(add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
+(configure-package '(nxml-mode)
+                   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
@@ -361,7 +363,6 @@ is nil for all items in list."
 (setenv "GOPATH" (expand-file-name "~/go"))
 
 (configure-package '(go-mode go-autocomplete)
-                     ;; (setq gofmt-command (concat gobin "/gofmt"))
                      (add-hook 'before-save-hook #'gofmt-before-save)
                      (add-hook 'go-mode-hook #'(lambda ()
                                                  (local-set-key (kbd "M-.") 'godef-jump))))

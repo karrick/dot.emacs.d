@@ -366,7 +366,15 @@ is nil for all items in list."
                      (add-hook 'go-mode-hook #'(lambda ()
                                                  (local-set-key (kbd "M-.") 'godef-jump))))
 
-;; install godef: `go get code.google.com/p/rog-go/exp/cmd/godef`
+;; install godef: `go get -u code.google.com/p/rog-go/exp/cmd/godef`
+
+;; install goflymake: `go get -u github.com/dougm/goflymake`
+(configure-package '(flymake flycheck)
+                   (let ((path (expand-file-name (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))))
+                     (when (file-accessible-directory-p path)
+                       (add-to-list 'load-path path)
+                       (require 'go-flymake)
+                       (require 'go-flycheck))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
@@ -375,9 +383,3 @@ is nil for all items in list."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ispell-program-name "ispell"))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

@@ -384,8 +384,12 @@ is nil for all items in list."
                    (let ((path (expand-file-name (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))))
                      (when (file-accessible-directory-p path)
                        (add-to-list 'load-path path)
-                       (require 'go-flymake)
-                       (require 'go-flycheck))))
+                       (progn           ; go-flymake should always require
+                         (require 'flymake)
+                         (require 'go-flymake))
+                       (progn           ; go-flycheck should always require
+                         (require 'flycheck)
+                         (require 'go-flycheck)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables

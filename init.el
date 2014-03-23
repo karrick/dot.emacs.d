@@ -49,14 +49,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun prepend-path (elem)
-  (interactive "DAdd what directory to PATH: ")
+  (interactive "DPrepend what directory to PATH: ")
   (let ((path (expand-file-name elem)))
     (when (string-match "/$" path)
       (setq path (concat (replace-match "" nil nil path))))
     (when (file-accessible-directory-p path)
       (add-to-list 'exec-path path)
       (setenv "PATH" (concat path ":" (getenv "PATH")))
-      (message "adding %s to PATH" path))))
+      (message "prepending %s to PATH" path))))
+
+(defun append-path (elem)
+  (interactive "DAppend what directory to PATH: ")
+  (let ((path (expand-file-name elem)))
+    (when (string-match "/$" path)
+      (setq path (concat (replace-match "" nil nil path))))
+    (when (file-accessible-directory-p path)
+      (add-to-list 'exec-path path)
+      (setenv "PATH" (concat (getenv "PATH") ":" path))
+      (message "appending %s to PATH" path))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -90,7 +100,7 @@ is nil for all items in list."
                     "/usr/local/linkedin/bin"
                     )))
   (dolist (dir directories)
-    (prepend-path dir)))
+    (append-path dir)))
 
 (if (boundp 'user-emacs-directory)
     (add-to-list 'load-path user-emacs-directory)
@@ -358,8 +368,8 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
-(prepend-path "/usr/local/go/bin")
-(prepend-path (expand-file-name "~/go/bin"))
+(append-path "/usr/local/go/bin")
+(append-path (expand-file-name "~/go/bin"))
 (setenv "GOPATH" (expand-file-name "~/go"))
 
 (configure-package '(go-mode go-autocomplete)

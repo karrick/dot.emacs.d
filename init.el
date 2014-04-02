@@ -97,6 +97,7 @@ is nil for all items in list."
 
 (let ((directories (list
                     "~/bin"
+                    "/usr/local/bin"
                     "/usr/local/linkedin/bin"
                     )))
   (dolist (dir directories)

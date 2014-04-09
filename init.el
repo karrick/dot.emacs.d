@@ -381,7 +381,7 @@ is nil for all items in list."
 ;; install godef: `go get -u code.google.com/p/rog-go/exp/cmd/godef`
 
 ;; install goflymake: `go get -u github.com/dougm/goflymake`
-(configure-package '(flymake flycheck)
+(configure-package '(flymake flymake-cursor flycheck)
                    (let ((path (expand-file-name (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))))
                      (when (file-accessible-directory-p path)
                        (add-to-list 'load-path path)

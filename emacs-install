@@ -41,6 +41,8 @@ function determine_os_type_from_file () {
 case $(determine_os_type) in
     rhel)
         sudo yum install gtk2 gtk2-devel libXpm-devel giflib-devel libtiff-devel libjpeg libjpeg-devel ncurses ncurses-devel
+        # NOTE: needed for lucid
+        # sudo yum install libXaw libXaw-devel
         ;;
     debian)
         sudo apt-get install build-essential
@@ -97,6 +99,7 @@ tar -Jx -C $src_dir -f $bundle_local
 
 cd $build_dir
 ./configure
+# ./configure --with-x-toolkit=lucid
 make
 
 sudo make install

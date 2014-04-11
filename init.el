@@ -104,8 +104,8 @@ is nil for all items in list."
     (append-path dir)))
 
 (if (boundp 'user-emacs-directory)
-    (add-to-list 'load-path user-emacs-directory)
-  (add-to-list 'load-path (expand-file-name "~/.emacs.d")))
+    (add-to-list 'load-path (concat user-emacs-directory "lisp"))
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp")))
 
 (cd (expand-file-name "~"))
 (setenv "GIT_PAGER" "")			; elide git paging capability
@@ -306,6 +306,7 @@ is nil for all items in list."
     (server-start))
   ;; (menu-bar-mode 1)
   ;; (setenv "LANG" "en_US.UTF-8")
+  ;; (setq ns-use-srgb-colorspace t)
   (setq ns-function-modifier 'hyper)
   (setq dired-use-ls-dired nil))
 

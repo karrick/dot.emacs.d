@@ -130,6 +130,18 @@ is nil for all items in list."
                 (message
                  "Wrote and made executable: %s" buffer-file-name))))
 
+(defun indent-cleanup-whitespace ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (indent-region (point-min) (point-max))
+      (whitespace-cleanup))))
+
+(add-hook 'sh-mode-hook
+          #'(lambda ()
+              (add-hook 'before-save-hook #'indent-cleanup-whitespace nil t)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; advise the shell commands to name the buffer after the command
 ;;;; itself
@@ -375,9 +387,10 @@ is nil for all items in list."
 (setenv "GOPATH" (expand-file-name "~/go"))
 
 (configure-package '(go-mode go-autocomplete)
-                     (add-hook 'before-save-hook #'gofmt-before-save)
-                     (add-hook 'go-mode-hook #'(lambda ()
-                                                 (local-set-key (kbd "M-.") 'godef-jump))))
+                   (add-hook 'go-mode-hook
+                             #'(lambda ()
+                                 (add-hook 'before-save-hook #'gofmt-before-save nil t)
+                                 (local-set-key (kbd "M-.") 'godef-jump))))
 
 ;; install godef: `go get -u code.google.com/p/rog-go/exp/cmd/godef`
 

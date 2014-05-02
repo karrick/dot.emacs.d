@@ -185,6 +185,32 @@ is nil for all items in list."
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
+(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
+(defvaralias 'js-indent-level 'tab-width)
+(defvaralias 'perl-indent-level 'tab-width)
+
+(add-hook 'python-mode-hook
+          #'(lambda ()
+              (setq indent-tabs-mode nil)
+              (setq tab-width 4)))
+
+(add-hook 'javascript-mode-hook
+          #'(lambda ()
+              (setq indent-tabs-mode t)
+              (setq js-indent-level 8)))
+
+;; example '.dir-locals.el' file:
+;; 
+;; ((nil . ((indent-tabs-mode . nil)
+;;          (tab-width . 8)
+;;          (fill-column . 80)))
+;;  (js-mode . ((indent-tabs-mode . t)
+;;              (js-indent-level . 8)
+;;              (fill-column . 80)))
+;;  (python-mode . ((indent-tabs-mode . nil)
+;;                  (tab-width . 4)
+;;                  (fill-column . 80))))
 
 ;;;; ido-mode
 

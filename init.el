@@ -208,9 +208,15 @@ is nil for all items in list."
 ;;  (js-mode . ((indent-tabs-mode . t)
 ;;              (js-indent-level . 8)
 ;;              (fill-column . 80)))
+;;  (css-mode . ((indent-tabs-mode . t)
+;;               (css-indent-offset . 8)
+;;               (fill-column . 80)))
 ;;  (python-mode . ((indent-tabs-mode . nil)
 ;;                  (tab-width . 4)
-;;                  (fill-column . 80))))
+;;                  (fill-column . 80)))
+;;  (makefile-mode . ((indent-tabs-mode . t)
+;;                    (tab-width . 8)
+;;                    (fill-column . 80))))
 
 ;;;; ido-mode
 

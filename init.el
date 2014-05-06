@@ -130,7 +130,7 @@ is nil for all items in list."
                 (message
                  "Wrote and made executable: %s" buffer-file-name))))
 
-(defun indent-cleanup-whitespace ()
+(defun clean-and-indent ()
   (interactive)
   (save-excursion
     (save-restriction
@@ -140,7 +140,7 @@ is nil for all items in list."
 
 (add-hook 'sh-mode-hook
           #'(lambda ()
-              (add-hook 'before-save-hook #'indent-cleanup-whitespace nil t)))
+              (add-hook 'before-save-hook #'clean-and-indent nil t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; advise the shell commands to name the buffer after the command

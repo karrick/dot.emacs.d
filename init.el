@@ -96,12 +96,12 @@ is nil for all items in list."
 ;;;; process environment
 
 (let ((directories (list
-                    "~/bin"
-                    "/usr/local/bin"
                     "/usr/local/linkedin/bin"
+                    "/usr/local/bin"
+                    "~/bin"
                     )))
   (dolist (dir directories)
-    (append-path dir)))
+    (prepend-path dir)))
 
 (if (boundp 'user-emacs-directory)
     (add-to-list 'load-path (concat user-emacs-directory "lisp"))

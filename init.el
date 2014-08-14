@@ -412,6 +412,10 @@ is nil for all items in list."
                    (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; codesearch
+(require 'codesearch)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
 (append-path "/usr/local/go/bin")

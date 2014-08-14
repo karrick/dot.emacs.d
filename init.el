@@ -138,9 +138,9 @@ is nil for all items in list."
       (indent-region (point-min) (point-max))
       (whitespace-cleanup))))
 
-(add-hook 'sh-mode-hook
-          #'(lambda ()
-              (add-hook 'before-save-hook #'clean-and-indent nil t)))
+(dolist (item '(sh-mode-hook org-mode-hook))
+  (add-hook item #'(lambda ()
+                     (add-hook 'before-save-hook #'clean-and-indent nil t))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; advise the shell commands to name the buffer after the command

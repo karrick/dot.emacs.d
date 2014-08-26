@@ -138,7 +138,7 @@ is nil for all items in list."
       (indent-region (point-min) (point-max))
       (whitespace-cleanup))))
 
-(dolist (item '(sh-mode-hook org-mode-hook))
+(dolist (item '(sh-mode-hook))
   (add-hook item #'(lambda ()
                      (add-hook 'before-save-hook #'clean-and-indent nil t))))
 

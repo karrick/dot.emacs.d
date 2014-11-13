@@ -130,6 +130,17 @@ is nil for all items in list."
                 (message
                  "Wrote and made executable: %s" buffer-file-name))))
 
+(defun copy-and-comment ()
+  (interactive)
+  (if mark-active
+      (save-excursion
+        (let ((beg (mark))
+              (end (point)))
+          (copy-region-as-kill beg end)
+          (yank)
+          (comment-region beg end)))
+    (message "cannot copy-and-comment without region selected")))
+
 (defun clean-and-indent ()
   (interactive)
   (save-excursion

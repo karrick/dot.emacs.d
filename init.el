@@ -138,7 +138,7 @@ is nil for all items in list."
       (indent-region (point-min) (point-max))
       (whitespace-cleanup))))
 
-(dolist (item '(sh-mode-hook))
+(dolist (item '(sh-mode-hook css-mode-hook))
   (add-hook item #'(lambda ()
                      (add-hook 'before-save-hook #'clean-and-indent nil t))))
 
@@ -303,6 +303,7 @@ is nil for all items in list."
 (global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key [(meta g)] 'goto-line)
 (global-set-key [f5] #'(lambda () (interactive) (revert-buffer nil t nil)))
+(global-set-key [f6] #'(lambda () (interactive) (clean-and-indent)))
 (global-set-key [f8]   'recompile)
 (global-set-key [S-f8] 'compile)
 

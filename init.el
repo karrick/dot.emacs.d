@@ -315,6 +315,7 @@ is nil for all items in list."
 (global-set-key [(meta g)] 'goto-line)
 (global-set-key [f5] #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key [f6] #'(lambda () (interactive) (clean-and-indent)))
+(global-set-key [f7] #'(lambda () (interactive) (copy-and-comment)))
 (global-set-key [f8]   'recompile)
 (global-set-key [S-f8] 'compile)
 

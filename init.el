@@ -142,15 +142,13 @@ is nil for all items in list."
         (indent-region (point-min) (point-max))
         (whitespace-cleanup)))))
 
-(defun copy-and-comment ()
-  (interactive)
+(defun copy-and-comment (beg end)
+  (interactive "*r")
   (if mark-active
       (save-excursion
-        (let ((beg (mark))
-              (end (point)))
-          (copy-region-as-kill beg end)
-          (yank)
-          (comment-region beg end)))
+        (copy-region-as-kill beg end)
+        (yank)
+        (comment-region beg end))
     (message "cannot copy-and-comment without region selected")))
 
 (dolist (item '(sh-mode-hook css-mode-hook))

@@ -8,21 +8,21 @@
     (progn
       (require 'package)
       (add-to-list 'package-archives
-		   '("tromey" . "http://tromey.com/elpa/"))
+                   '("tromey" . "http://tromey.com/elpa/"))
       (add-to-list 'package-archives
-		   '("marmalade" . "http://marmalade-repo.org/packages/"))
+                   '("marmalade" . "http://marmalade-repo.org/packages/"))
       (add-to-list 'package-archives
-		   '("melpa" . "http://melpa.milkbox.net/packages/"))
+                   '("melpa" . "http://melpa.milkbox.net/packages/"))
       (when (not package-archive-contents)
-	(package-refresh-contents))
+        (package-refresh-contents))
       (package-initialize)
       (defmacro configure-package (packages &rest body)
-	"Install specified package and run configuration body"
-	`(progn
+        "Install specified package and run configuration body"
+        `(progn
            (dolist (pkg ,packages)
              (if (not (package-installed-p pkg))
                  (package-install pkg)))
-	   (progn ,@body))))
+           (progn ,@body))))
   (file-error
    (progn
      (message "elpa not supported: %s" err)
@@ -35,16 +35,16 @@
 ;;;; I don't have any package specific configuration for these packages
 
 (configure-package '(
-		  bash-completion
-		  fic-mode
-		  find-file-in-repository
-		  json-mode
-		  markdown-mode
-		  maxframe
-		  psgml
-		  smart-tab
-		  yaml-mode
-		  ))
+                     bash-completion
+                     fic-mode
+                     find-file-in-repository
+                     json-mode
+                     markdown-mode
+                     maxframe
+                     psgml
+                     smart-tab
+                     yaml-mode
+                     ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -77,8 +77,8 @@ is nil for all items in list."
   (catch 'found-it
     (dolist (item list)
       (let ((result (funcall predicate item)))
-	(if result
-	    (throw 'found-it result))))))
+        (if result
+            (throw 'found-it result))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -180,19 +180,19 @@ is nil for all items in list."
 
 ;;;; auto-complete-mode
 (configure-package '(auto-complete)
-		   (require 'auto-complete-config)
-		   (add-to-list 'ac-dictionary-directories
-				(expand-file-name "~/.ac-dict"))
-		   ;; ac-common-setup is called by ac-config-default
-		   (defun ac-common-setup ()
-		     (add-to-list 'ac-sources 'ac-source-yasnippet))
-		   (add-to-list 'ac-modes 'html-mode)
-		   (add-to-list 'ac-modes 'nxml-mode)
-		   (ac-config-default)
-		   (defun enable-auto-complete-mode ()
-		     (auto-complete-mode 1))
-		   (defun disable-auto-complete-mode ()
-		     (auto-complete-mode 0)))
+                   (require 'auto-complete-config)
+                   (add-to-list 'ac-dictionary-directories
+                                (expand-file-name "~/.ac-dict"))
+                   ;; ac-common-setup is called by ac-config-default
+                   (defun ac-common-setup ()
+                     (add-to-list 'ac-sources 'ac-source-yasnippet))
+                   (add-to-list 'ac-modes 'html-mode)
+                   (add-to-list 'ac-modes 'nxml-mode)
+                   (ac-config-default)
+                   (defun enable-auto-complete-mode ()
+                     (auto-complete-mode 1))
+                   (defun disable-auto-complete-mode ()
+                     (auto-complete-mode 0)))
 
 ;;;; tabs and indenting
 
@@ -214,7 +214,7 @@ is nil for all items in list."
               (setq js-indent-level 8)))
 
 ;; example '.dir-locals.el' file:
-;; 
+;;
 ;; ((nil . ((indent-tabs-mode . nil)
 ;;          (tab-width . 8)
 ;;          (fill-column . 80)))

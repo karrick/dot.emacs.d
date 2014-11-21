@@ -130,6 +130,18 @@ is nil for all items in list."
                 (message
                  "Wrote and made executable: %s" buffer-file-name))))
 
+(defun clean-and-indent (beg end)
+  (interactive "*r")
+  (save-excursion
+    (if mark-active
+        (progn
+          (indent-region beg end)
+          (whitespace-cleanup))
+      (save-restriction
+        (widen)
+        (indent-region (point-min) (point-max))
+        (whitespace-cleanup)))))
+
 (defun copy-and-comment ()
   (interactive)
   (if mark-active
@@ -140,14 +152,6 @@ is nil for all items in list."
           (yank)
           (comment-region beg end)))
     (message "cannot copy-and-comment without region selected")))
-
-(defun clean-and-indent ()
-  (interactive)
-  (save-excursion
-    (save-restriction
-      (widen)
-      (indent-region (point-min) (point-max))
-      (whitespace-cleanup))))
 
 (dolist (item '(sh-mode-hook css-mode-hook))
   (add-hook item #'(lambda ()

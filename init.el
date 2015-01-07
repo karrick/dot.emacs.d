@@ -393,10 +393,11 @@ is nil for all items in list."
 
 ;;;; js2-mode offers nice javascript support
 (configure-package '(js2-mode)
-                   (eval-after-load 'js2-mode '(require 'setup-js2-mode))
-                   (set-default 'js2-basic-offset 2)
-                   (set-default 'js2-mirror-mode  nil)
-                   (set-default 'js2-mode-escape-quotes  nil))
+                   (autoload 'js2-mode "js2-mode" nil t)
+                   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+                   (set-default 'js2-basic-offset 4)
+                   (set-default 'js2-mirror-mode nil)
+                   (set-default 'js2-mode-escape-quotes nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; markdown mode

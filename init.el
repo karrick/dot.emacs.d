@@ -211,7 +211,7 @@ is nil for all items in list."
 (add-hook 'javascript-mode-hook
           #'(lambda ()
               (setq indent-tabs-mode t)
-              (setq js-indent-level 8)))
+              (setq js-indent-level 4)))
 
 ;; example '.dir-locals.el' file:
 ;;

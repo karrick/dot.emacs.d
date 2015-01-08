@@ -97,10 +97,15 @@ tar -Jx -C $src_dir -f $bundle_local
 
 ################
 
+# sudo yum install dbus-devel
+# sudo yum install librsvg2 librsvg2-devel
+# sudo yum install ImageMagick ImageMagick-devel
+# sudo yum install GConf2 GConf2-devel GConf2-gtk
+# sudo yum install gnutls gnutls-utils
+
 cd $build_dir
-./configure
 # ./configure --with-x-toolkit=lucid
+./configure --enable-link-time-optimization
 make
 
-sudo make install
-sudo alternatives --install /usr/bin/emacs emacs /usr/local/bin/emacs 20000
+sudo make install && sudo alternatives --install /usr/bin/emacs emacs /usr/local/bin/emacs 20000

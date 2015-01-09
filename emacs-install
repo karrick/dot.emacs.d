@@ -109,3 +109,4 @@ cd $build_dir
 make
 
 sudo make install && sudo alternatives --install /usr/bin/emacs emacs /usr/local/bin/emacs 20000
+sudo alternatives --install /usr/bin/emacsclient emacsclient /usr/local/bin/emacsclient 20000

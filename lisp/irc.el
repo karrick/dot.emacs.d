@@ -13,6 +13,25 @@
                                   (erc :server ,server :port ,port :nick ,nick :password ,pass))))))
                    (setq erc-server-auto-reconnect nil)
 
+                   (defcustom irc-networks nil
+                     "List of irc networks and their associated credentials used when identifying to NickServ.")
+
+                   (defun irc-credentials (network networks)
+                     (car (cdr (assoc
+                                (find-first #'(lambda (pattern)
+                                                (when (string-match pattern network) pattern))
+                                            (mapcar #'car networks))
+                                networks))))
+
+                   (defun irc-nick (network)
+                     (car (irc-credentials network irc-networks)))
+
+                   (defun irc-pass (network)
+                     (cdr (irc-credentials network irc-networks)))
+
+                   (defun irc-add-network (network-pattern nick password)
+                     (add-to-list 'irc-networks `(,network-pattern (,nick . ,password))))
+
                    ;; (add-to-list 'erc-modules 'notifications)
 
                    ;; nickserv support
@@ -22,12 +41,23 @@
                      (require 'erc-services)
                      (erc-services-mode 1)
                      (setq erc-prompt-for-nickserv-password nil)
+                     ;; (add-hook 'erc-after-connect
+                     ;;           '(lambda (server nick)
+                     ;;              (cond
+                     ;;               ((string-match "\.corp\.linkedin\.com" server)
+                     ;;                (message "sending nickserv identity")
+                     ;;                (erc-message "NICK" "karrick")
+                     ;;                (erc-message "PRIVMSG" (concat "NickServ identify " linkedin-karrick))))))
                      (add-hook 'erc-after-connect
                                '(lambda (server nick)
-                                  (cond
-                                   ((string-match "\.corp\.linkedin\.com" server)
-                                    (message "sending nickserv identity")
-                                    (erc-message "PRIVMSG" (concat "NickServ identify " linkedin-kmcdermo))))))
+                                  (let* ((nick (irc-nick server))
+                                         (pass (irc-pass server)))
+                                    (if nick
+                                        (progn
+                                          (message (concat "nickserv authentication: " nick "@" server))
+                                          (erc-message "NICK" nick)
+                                          (erc-message "PRIVMSG" (concat "NickServ identify " pass)))
+                                      (message (concat "no known credentials for " server))))))
                      )
 
                    (require 'erc-join)

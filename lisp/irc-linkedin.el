@@ -35,7 +35,4 @@
                                             ;; "#trafficshift"
                                             )))
 
-(dolist (pal '("fsillima" "gleffler" "nberry"))
-  (add-to-list 'erc-pals pal))             
-
 (provide 'irc-linkedin)

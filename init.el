@@ -257,6 +257,11 @@ is nil for all items in list."
 
 (require 'psvn)
 
+;;;; fossil vc mode
+
+(autoload 'vc-fossil-registered "vc-fossil")
+(add-to-list 'vc-handled-backends 'Fossil)
+
 ;;;; ansi-color
 (require 'ansi-color)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)

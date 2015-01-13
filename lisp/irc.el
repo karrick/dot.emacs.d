@@ -36,11 +36,10 @@
 
                    ;; nickserv support
                    (when t
-                     (setq erc-autojoin-timing 'ident)
-                     (load "~/.ercpass.el")
                      (require 'erc-services)
-                     (erc-services-mode 1)
                      (setq erc-prompt-for-nickserv-password nil)
+                     (load "~/.ercpass.el")
+                     (erc-services-mode 1)
                      ;; (add-hook 'erc-after-connect
                      ;;           '(lambda (server nick)
                      ;;              (cond
@@ -48,17 +47,18 @@
                      ;;                (message "sending nickserv identity")
                      ;;                (erc-message "NICK" "karrick")
                      ;;                (erc-message "PRIVMSG" (concat "NickServ identify " linkedin-karrick))))))
-                     (add-hook 'erc-after-connect
-                               '(lambda (server nick)
-                                  (let* ((nick (irc-nick server))
-                                         (pass (irc-pass server)))
-                                    (if nick
-                                        (progn
-                                          (message (concat "nickserv authentication: " nick "@" server))
-                                          (erc-message "NICK" nick)
-                                          (erc-message "PRIVMSG" (concat "NickServ identify " pass)))
-                                      (message (concat "no known credentials for " server))))))
-                     )
+                     ;; (add-hook 'erc-after-connect
+                     ;;           '(lambda (server nick)
+                     ;;              (let* ((nick (irc-nick server))
+                     ;;                     (pass (irc-pass server)))
+                     ;;                (if nick
+                     ;;                    (progn
+                     ;;                      (message (concat "PRIVMSG NickServ :" nick " " pass)))
+                     ;;                      (erc-message "PRIVMSG" (concat "NickServ :" nick " " pass))
+                     ;;                      ;; (erc-message "PRIVMSG" (concat "NickServ identify " pass))
+                     ;;                      )
+                     ;;                  (message (concat "no known credentials for " server))))))
+                     (setq erc-autojoin-timing 'ident))
 
                    (require 'erc-join)
                    (erc-autojoin-enable)

@@ -37,7 +37,7 @@
                      (require 'erc-autoaway)
                      (setq erc-auto-discard-away t
                            erc-auto-set-away t
-                           erc-autoaway-idle-seconds 120)
+                           erc-autoaway-idle-seconds 300)
                      (erc-autoaway-enable)))
 
 (provide 'irc)

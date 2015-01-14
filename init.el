@@ -178,6 +178,12 @@ is nil for all items in list."
       (setq default-directory dir)))
   (global-set-key [(meta !)] 'async-shell-command))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; xslt mode
+
+(configure-package '(nxml-mode)
+                   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode)))
+
 ;;;; auto-complete-mode
 (configure-package '(auto-complete)
                    (require 'auto-complete-config)
@@ -425,12 +431,6 @@ is nil for all items in list."
 
 (configure-package '(puppet-mode)
                    (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; xslt mode
-
-(configure-package '(nxml-mode)
-                   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; codesearch

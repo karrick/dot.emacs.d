@@ -1,8 +1,5 @@
 (require 'irc)
 
-(erc-bouncer-connect erc-linkedin "irc.corp.linkedin.com" 6667 "kmcdermo" nil nil)
-(erc-bouncer-connect erc-linkedin-znc "lva1-sreircpxy01.corp.linkedin.com" 1337 "kmcdermo" t "what's my password?")
-
 (add-to-list 'erc-autojoin-channels-alist
              '(".*\.corp\.linkedin\.com" . (
                                             "#metrics"

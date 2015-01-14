@@ -15,7 +15,12 @@
 
                    ;; (add-to-list 'erc-modules 'notifications)
 
-                   ;; nickserv support
+                   (when t
+                     (require 'erc-autoaway)
+                     (setq erc-auto-discard-away t)
+                     (setq erc-autoaway-idle-seconds 180)
+                     (setq erc-auto-set-away t))
+
                    (when t
                      (require 'erc-services)
                      (load "~/.ercpass.el")
@@ -23,18 +28,20 @@
                      (erc-services-mode 1)
                      (setq erc-autojoin-timing 'ident))
 
-                   (require 'erc-join)
-                   (erc-autojoin-enable)
+                   (when t
+                     (require 'erc-join)
+                     (erc-autojoin-enable))
 
-                   (erc-match-enable)
-                   (setq erc-track-exclude-server-buffer t)
-                   (setq erc-current-nick-highlight-type 'nick)
-                   (setq erc-keywords '("\\berc[-a-z]*\\b" "\\bemms[-a-z]*\\b"))
-                   (setq erc-track-use-faces t)
-                   (setq erc-track-faces-normal-list '(erc-current-nick-face erc-keyword-face))
-                   (setq erc-track-priority-faces-only 'all)
-                   (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
-                                                   "324" "329" "332" "333" "353" "477"))
+                   (when t
+                     (erc-match-enable)
+                     (setq erc-track-exclude-server-buffer t)
+                     (setq erc-current-nick-highlight-type 'nick)
+                     (setq erc-keywords '("\\berc[-a-z]*\\b" "\\bemms[-a-z]*\\b"))
+                     (setq erc-track-use-faces t)
+                     (setq erc-track-faces-normal-list '(erc-current-nick-face erc-keyword-face))
+                     (setq erc-track-priority-faces-only 'all)
+                     (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
+                                                     "324" "329" "332" "333" "353" "477")))
 
                    (defadvice erc-track-find-face (around erc-track-find-face-promote-query activate)
                      (if (erc-query-buffer-p)

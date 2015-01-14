@@ -32,6 +32,12 @@
                            erc-log-write-after-send t
                            erc-log-write-after-insert t
                            erc-enable-logging 'erc-log-all-but-server-buffers)
-                     (erc-log-enable)))
+                     (erc-log-enable))
+                   (when t
+                     (require 'erc-autoaway)
+                     (setq erc-auto-discard-away t
+                           erc-auto-set-away t
+                           erc-autoaway-idle-seconds 120)
+                     (erc-autoaway-enable)))
 
 (provide 'irc)

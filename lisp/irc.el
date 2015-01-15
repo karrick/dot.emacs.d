@@ -22,6 +22,7 @@ Useful for when ChanServ restarts :P"
                    ;;       erc-kill-queries-on-quit t
                    ;;       erc-kill-server-buffer-on-quit t
                    ;;       erc-server-auto-reconnect nil)
+                   (setq erc-hide-list (append erc-hide-list '("JOIN" "PART" "QUIT")))
                    (when t
                      (require 'erc-join)
                      (erc-autojoin-enable))

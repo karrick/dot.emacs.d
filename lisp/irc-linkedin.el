@@ -1,5 +1,6 @@
 (require 'irc)
 
+(setq erc-anonymous-login nil)
 (add-to-list 'erc-keywords "\\bkmcdermo\\b")
 (add-to-list 'erc-autojoin-channels-alist
              '(".*\.corp\.linkedin\.com" . (

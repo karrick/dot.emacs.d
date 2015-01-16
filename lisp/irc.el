@@ -22,7 +22,6 @@ Useful for when ChanServ restarts :P"
                    ;;       erc-kill-queries-on-quit t
                    ;;       erc-kill-server-buffer-on-quit t
                    ;;       erc-server-auto-reconnect nil)
-                   (setq erc-hide-list (append erc-hide-list '("JOIN" "PART" "QUIT")))
                    (when t
                      (require 'erc-join)
                      (erc-autojoin-enable))
@@ -48,6 +47,7 @@ Useful for when ChanServ restarts :P"
                            erc-autoaway-idle-seconds 300)
                      (erc-autoaway-enable))
                    (when t
+                     (require 'erc-match)
                      (setq erc-current-nick-highlight-type 'nick)
                      ;; (defface erc-keyword-erc-face '((t (:foreground "Orchid")))
                      ;;   "ERC face to highlight occurances of the word erc"
@@ -55,6 +55,7 @@ Useful for when ChanServ restarts :P"
                      (add-to-list 'erc-log-matches-types-alist
                                   '(current-nick . "ERC Keywords"))
                      (erc-match-enable))
+                   (setq erc-hide-list (append erc-hide-list '("JOIN" "PART" "QUIT")))
                    (when t
                      (setq erc-track-exclude-server-buffer t
                            erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
@@ -66,12 +67,12 @@ Useful for when ChanServ restarts :P"
                        (if (erc-query-buffer-p)
                            (setq ad-return-value (intern "erc-current-nick-face"))
                          ad-do-it))
-
                      (defadvice erc-track-modified-channels (around erc-track-modified-channels-promote-query activate)
                        (if (erc-query-buffer-p) (setq erc-track-priority-faces-only 'nil))
                        ad-do-it
                        (if (erc-query-buffer-p) (setq erc-track-priority-faces-only 'all)))
                      (when t            ; minimal distraction mode
+                       (require 'erc-track)
                        (setq erc-format-query-as-channel-p t
                              erc-track-priority-faces-only 'all
                              erc-track-faces-priority-list '(erc-error-face

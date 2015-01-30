@@ -372,8 +372,8 @@ is nil for all items in list."
 ;;;; created, and upon creation of new frame
 
 (when (eq system-type 'darwin)
-  (when (eq nil window-system)
-    (server-start))
+  ;; (when (eq nil window-system)
+  ;;   (server-start))
   ;; (menu-bar-mode 1)
   ;; (setenv "LANG" "en_US.UTF-8")
   ;; (setq ns-use-srgb-colorspace t)

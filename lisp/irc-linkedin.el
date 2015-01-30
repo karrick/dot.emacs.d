@@ -8,6 +8,7 @@
                                             "#coresre"
                                             "#go"
                                             "#infra"
+                                            "#inmon"
                                             "#metrics"
                                             "#noc"
                                             "#nyc"

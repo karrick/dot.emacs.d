@@ -7,7 +7,6 @@
                                             "#ansible"
                                             "#coresre"
                                             "#go"
-                                            "#infra"
                                             "#inmon"
                                             "#metrics"
                                             "#noc"

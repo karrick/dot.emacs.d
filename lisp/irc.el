@@ -40,7 +40,7 @@ Useful for when ChanServ restarts :P"
                            erc-save-buffer-on-part nil
                            erc-save-queries-on-quit nil)
                      (erc-log-enable))
-                   (when t
+                   (when nil
                      (require 'erc-autoaway)
                      (setq erc-auto-discard-away t
                            erc-auto-set-away t

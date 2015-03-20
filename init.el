@@ -321,11 +321,11 @@ is nil for all items in list."
 
 ;;;; key bindings
 
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(global-set-key (kbd "C-x C-r") 'rgrep)
-(global-set-key [(meta g)] 'goto-line)
+(global-set-key (kbd "C-+") #'text-scale-increase)
+(global-set-key (kbd "C--") #'text-scale-decrease)
+(global-set-key (kbd "C-x C-b") #'ibuffer)
+(global-set-key (kbd "C-x C-r") #'rgrep)
+(global-set-key [(meta g)] #'goto-line)
 (global-set-key [f5] #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key [f6] #'clean-and-indent)
 (global-set-key [f7] #'copy-and-comment)

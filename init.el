@@ -327,10 +327,10 @@ is nil for all items in list."
 (global-set-key (kbd "C-x C-r") 'rgrep)
 (global-set-key [(meta g)] 'goto-line)
 (global-set-key [f5] #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key [f6] #'(lambda () (interactive) (clean-and-indent)))
-(global-set-key [f7] #'(lambda () (interactive) (copy-and-comment)))
-(global-set-key [f8]   'recompile)
-(global-set-key [S-f8] 'compile)
+(global-set-key [f6] #'clean-and-indent)
+(global-set-key [f7] #'copy-and-comment)
+(global-set-key [f8] #'recompile)
+(global-set-key [S-f8] #'compile)
 
 ;;;; expand-region
 
@@ -439,7 +439,7 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
-(append-path "/usr/local/go/bin")
+;; (append-path "/usr/local/go/bin")
 (append-path (expand-file-name "~/go/bin"))
 (setenv "GOPATH" (expand-file-name "~/go"))
 

@@ -129,17 +129,12 @@ is nil for all items in list."
                 (message
                  "Wrote and made executable: %s" buffer-file-name))))
 
-(defun clean-and-indent (beg end)
-  (interactive "*r")
-  (save-excursion
-    (if mark-active
-        (progn
-          (indent-region beg end)
-          (whitespace-cleanup))
-      (save-restriction
-        (widen)
-        (indent-region (point-min) (point-max))
-        (whitespace-cleanup)))))
+(defun clean-and-indent ()
+  (interactive "*")
+  (apply #'indent-region (if (use-region-p)
+                             (list (min (point) (mark)) (max (point) (mark)))
+                           (list (point-min) (point-max))))
+  (whitespace-cleanup))
 
 (defun copy-and-comment (beg end)
   (interactive "*r")

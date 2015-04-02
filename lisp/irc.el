@@ -27,7 +27,9 @@ Useful for when ChanServ restarts :P"
                      (erc-autojoin-enable))
                    (when t
                      (require 'erc-services)
-                     (load "~/.ercpass.el")
+                     (let ((path (expand-file-name "~/.ercpass.el")))
+                       (when (file-readable-p path)
+                         (load path)))
                      (setq erc-prompt-for-nickserv-password nil)
                      (setq erc-autojoin-timing 'ident)
                      (erc-services-mode 1))
@@ -77,6 +79,9 @@ Useful for when ChanServ restarts :P"
                                                              erc-dangerous-host-face
                                                              erc-notice-face
                                                              erc-prompt-face)))
-                     (erc-track-enable)))
+                     (erc-track-enable))
+                   (let ((path (expand-file-name "~/.ercconfig.el")))
+                     (when (file-readable-p path)
+                       (load path))))
 
 (provide 'irc)

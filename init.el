@@ -96,7 +96,6 @@ is nil for all items in list."
 ;;;; process environment
 
 (let ((directories (list
-                    "/usr/local/linkedin/bin"
                     "/usr/local/bin"
                     "~/bin"
                     )))
@@ -439,8 +438,7 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
-;; (append-path "/usr/local/go/bin")
-(append-path (expand-file-name "~/go/bin"))
+(prepend-path (expand-file-name "~/go/bin"))
 (setenv "GOPATH" (expand-file-name "~/go"))
 
 (configure-package '(go-mode go-autocomplete)

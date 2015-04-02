@@ -445,7 +445,10 @@ is nil for all items in list."
                    (add-hook 'go-mode-hook
                              #'(lambda ()
                                  (add-hook 'before-save-hook #'gofmt-before-save nil t)
-                                 (local-set-key (kbd "M-.") 'godef-jump))))
+                                 (local-set-key (kbd "M-.") 'godef-jump)
+                                 (if (not (string-match "^go" compile-command))
+                                     (set (make-local-variable 'compile-command)
+                                          "go test && go vet && go build")))))
 
 ;; install godef: `go get -u code.google.com/p/rog-go/exp/cmd/godef`
 

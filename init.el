@@ -377,19 +377,19 @@ is nil for all items in list."
 ;;;; edit-server for browsers
 ;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
 
-(configure-package '(edit-server)
-                   (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
-                     (require 'edit-server)
-                     (setq edit-server-new-frame nil)
-                     (edit-server-start)
-                     (let ((client (find-first #'(lambda (item)
-                                                   (executable-find item))
-                                               '(
-                                                 "/Applications/Emacs.app/Contents/MacOS/bin/emacsclient"
-                                                 "/usr/local/bin/emacsclient"
-                                                 "/usr/bin/emacsclient"))))
-                       (setenv "EDITOR" client)
-                       (setenv "VISUAL" client))))
+(let* ((client (find-first #'(lambda (item)
+                               (executable-find item))
+                           '(
+                             "/usr/local/bin/emacsclient"
+                             "/usr/bin/emacsclient")))
+       (cmd (concat client " -a ''")))
+  (setenv "EDITOR" cmd)
+  (setenv "VISUAL" cmd)
+  (configure-package '(edit-server)
+                     (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
+                       (require 'edit-server)
+                       (setq edit-server-new-frame nil)
+                       (edit-server-start))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Language specific setup files

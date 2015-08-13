@@ -436,7 +436,9 @@ is nil for all items in list."
 (prepend-path (expand-file-name "~/go/bin"))
 (setenv "GOPATH" (expand-file-name "~/go"))
 
-(configure-package '(go-mode go-autocomplete)
+(configure-package '(go-mode go-autocomplete 'golint)
+                   ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))
+                   (require 'go-rename)
                    (add-hook 'go-mode-hook
                              #'(lambda ()
                                  (add-hook 'before-save-hook #'gofmt-before-save nil t)
@@ -444,6 +446,12 @@ is nil for all items in list."
                                  (if (not (string-match "^go" compile-command))
                                      (set (make-local-variable 'compile-command)
                                           "go test && go vet && go build")))))
+
+;;; install gocode: `go get -u github.com/nsf/gocode`
+;; (progn
+;;   (require 'go-autocomplete)
+;;   (require 'auto-complete-config)
+;;   (ac-config-default))
 
 ;; install godef: `go get -u code.google.com/p/rog-go/exp/cmd/godef`
 

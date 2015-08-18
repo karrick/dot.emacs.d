@@ -436,7 +436,7 @@ is nil for all items in list."
 (prepend-path (expand-file-name "~/go/bin"))
 (setenv "GOPATH" (expand-file-name "~/go"))
 
-(configure-package '(go-mode go-autocomplete 'golint)
+(configure-package '(go-mode go-autocomplete golint)
                    ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))
                    (require 'go-rename)
                    (add-hook 'go-mode-hook
@@ -470,6 +470,14 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'irc)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(condition-case err
+    (require 'localhost)
+  (file-error
+   (progn
+     (message "no localhost file found: %s" err))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables

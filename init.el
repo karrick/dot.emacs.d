@@ -435,6 +435,7 @@ is nil for all items in list."
 
 (prepend-path (expand-file-name "~/go/bin"))
 (setenv "GOPATH" (expand-file-name "~/go"))
+(setenv "GO15VENDOREXPERIMENT" "1")
 
 (configure-package '(go-mode go-autocomplete golint)
                    ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))

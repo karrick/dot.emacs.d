@@ -437,16 +437,25 @@ is nil for all items in list."
 (setenv "GOPATH" (expand-file-name "~/go"))
 (setenv "GO15VENDOREXPERIMENT" "1")
 
-(configure-package '(go-mode go-autocomplete golint)
+(configure-package '(go-mode go-autocomplete)
+                   (let* ((gofmter (find-first #'(lambda (item)
+                                                   (executable-find item))
+                                               '("goimports" ; go install golang.org/x/tools/cmd/goimports
+                                                 "gofmt"))))
+                     (setq gofmt-command gofmter))
                    ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))
                    (require 'go-rename)
                    (add-hook 'go-mode-hook
                              #'(lambda ()
                                  (add-hook 'before-save-hook #'gofmt-before-save nil t)
+                                 (flyspell-prog-mode)
+                                 (setq fill-column 100)
                                  (local-set-key (kbd "M-.") 'godef-jump)
                                  (if (not (string-match "^go" compile-command))
                                      (set (make-local-variable 'compile-command)
                                           "go test && go vet && go build")))))
+
+(configure-package '(golint))
 
 ;;; install gocode: `go get -u github.com/nsf/gocode`
 ;; (progn

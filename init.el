@@ -74,11 +74,11 @@
   "Return result of first item in list which
 satisfies predicate.  Returns nil if predicate
 is nil for all items in list."
-  (catch 'found-it
+  (catch 'break
     (dolist (item list)
       (let ((result (funcall predicate item)))
         (if result
-            (throw 'found-it result))))))
+            (throw 'break result))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -290,14 +290,7 @@ is nil for all items in list."
 (set-face-background 'show-paren-match-face "#1f3f3f")
 
 ;;;; set to a usable font
-(add-to-list 'default-frame-alist '(font-backend . "xft"))
-(setq font-use-system-font t)
-(condition-case err
-    (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-12"))
-    ;; (add-to-list 'default-frame-alist '(font . "Inconsolata-12"))
-    ;; (add-to-list 'default-frame-alist '(font . "Liberation Mono-12"))
-    ;; (add-to-list 'default-frame-alist '(font . "Monofur-12"))
-  (error nil))
+(require 'nice-font)
 
 ;;;; ediff
 
@@ -489,8 +482,7 @@ is nil for all items in list."
 (condition-case err
     (require 'localhost)
   (file-error
-   (progn
-     (message "no localhost file found: %s" err))))
+     (message "no localhost file found: %s" err)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables

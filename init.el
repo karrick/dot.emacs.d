@@ -293,7 +293,10 @@ is nil for all items in list."
 (add-to-list 'default-frame-alist '(font-backend . "xft"))
 (setq font-use-system-font t)
 (condition-case err
-    (add-to-list 'default-frame-alist '(font . "Liberation Mono-12"))
+    (add-to-list 'default-frame-alist '(font . "DejaVu Sans Mono-12"))
+    ;; (add-to-list 'default-frame-alist '(font . "Inconsolata-12"))
+    ;; (add-to-list 'default-frame-alist '(font . "Liberation Mono-12"))
+    ;; (add-to-list 'default-frame-alist '(font . "Monofur-12"))
   (error nil))
 
 ;;;; ediff

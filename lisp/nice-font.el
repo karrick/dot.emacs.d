@@ -39,7 +39,7 @@
                "monofur"
                ))
     (when (member f (font-family-list-sorted))
-      (add-to-list 'default-frame-alist `(font . ,(concat f "-12")))
+      (add-to-list 'default-frame-alist `(font . ,(concat f "-10")))
       (throw 'break nil))))
 
 (provide 'nice-font)

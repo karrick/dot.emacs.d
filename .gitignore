@@ -8,3 +8,4 @@ localhost.el
 session.*
 tramp
 url
+.mc-lists.el

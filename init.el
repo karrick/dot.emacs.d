@@ -436,7 +436,7 @@ is nil for all items in list."
 (configure-package '(go-mode go-autocomplete)
                    (let* ((gofmter (find-first #'(lambda (item)
                                                    (executable-find item))
-                                               '("goimports" ; go install golang.org/x/tools/cmd/goimports
+                                               '("goimports" ; go get golang.org/x/tools/cmd/goimports && go install golang.org/x/tools/cmd/goimports
                                                  "gofmt"))))
                      (setq gofmt-command gofmter))
                    ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))

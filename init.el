@@ -433,7 +433,7 @@ is nil for all items in list."
 (setenv "GOPATH" (expand-file-name "~/go"))
 (setenv "GO15VENDOREXPERIMENT" "1")
 
-(configure-package '(go-mode go-autocomplete)
+(configure-package '(go-mode go-autocomplete go-rename)
                    (let* ((gofmter (find-first #'(lambda (item)
                                                    (executable-find item))
                                                '("goimports" ; go get golang.org/x/tools/cmd/goimports && go install golang.org/x/tools/cmd/goimports

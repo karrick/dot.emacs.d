@@ -4,6 +4,7 @@
 ;;;; attempt to use package manager, but employ graceful degredation
 ;;;; where elpa is unavailable
 
+;;; Code:
 (condition-case err
     (progn
       (require 'package)
@@ -427,20 +428,41 @@ is nil for all items in list."
 (require 'codesearch)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; flycheck is the successor to flymake
+
+(configure-package '(flycheck)
+                   (add-hook 'after-init-hook #'global-flycheck-mode)
+                   (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
 (prepend-path (expand-file-name "~/go/bin"))
 (setenv "GOPATH" (expand-file-name "~/go"))
 (setenv "GO15VENDOREXPERIMENT" "1")
 
-(configure-package '(go-mode go-autocomplete go-rename)
-                   (let* ((gofmter (find-first #'(lambda (item)
-                                                   (executable-find item))
-                                               '("goimports" ; go get golang.org/x/tools/cmd/goimports && go install golang.org/x/tools/cmd/goimports
-                                                 "gofmt"))))
-                     (setq gofmt-command gofmter))
+(configure-package '(golint)) ;; go get -u github.com/golang/lint/golint
+(configure-package '(go-rename)) ;; go get -u golang.org/x/tools/cmd/gorename
+
+(configure-package '(go-mode)
+
                    ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))
-                   (require 'go-rename)
+
+                   (progn ;; go get -u golang.org/x/tools/cmd/goimports
+                     (let ((gofmter (find-first #'(lambda (item)
+                                                    (executable-find item))
+                                                '("goimports"
+                                                  "gofmt"))))
+                       (setq gofmt-command gofmter)))
+
+                   ;; (progn
+                   ;;   (flycheck-declare-checker go-gofmt
+                   ;;                             "A Go syntax and style checker using the gofmt utility."
+                   ;;                             :command '("gofmt" source-inplace)
+                   ;;                             :error-patterns '(("^\\(?1:.*\\):\\(?2:[0-9]+\\):\\(?3:[0-9]+\\): \\(?4:.*\\)$" error))
+                   ;;                             :modes 'go-mode)
+                   ;;   (add-to-list 'flycheck-checkers 'go-gofmt))
+
                    (add-hook 'go-mode-hook
                              #'(lambda ()
                                  (add-hook 'before-save-hook #'gofmt-before-save nil t)
@@ -451,27 +473,14 @@ is nil for all items in list."
                                      (set (make-local-variable 'compile-command)
                                           "go test && go vet && go build")))))
 
-(configure-package '(golint))
 
-;;; install gocode: `go get -u github.com/nsf/gocode`
-;; (progn
-;;   (require 'go-autocomplete)
-;;   (require 'auto-complete-config)
-;;   (ac-config-default))
+;; (configure-package '(go-autocomplete)
+;;                    ;; go get -u github.com/nsf/gocode
+;;                    (require 'go-autocomplete)
+;;                    (require 'auto-complete-config)
+;;                    (ac-config-default))
 
 ;; install godef: `go get -u code.google.com/p/rog-go/exp/cmd/godef`
-
-;; install goflymake: `go get -u github.com/dougm/goflymake`
-(configure-package '(flymake flymake-cursor flycheck)
-                   (let ((path (expand-file-name (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))))
-                     (when (file-accessible-directory-p path)
-                       (add-to-list 'load-path path)
-                       (progn           ; go-flymake should always require
-                         (require 'flymake)
-                         (require 'go-flymake))
-                       (progn           ; go-flycheck should always require
-                         (require 'flycheck)
-                         (require 'go-flycheck)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -471,7 +471,7 @@ is nil for all items in list."
                                  (local-set-key (kbd "M-.") 'godef-jump)
                                  (if (not (string-match "^go" compile-command))
                                      (set (make-local-variable 'compile-command)
-                                          "go test && go vet && go build")))))
+                                          "go test && go build")))))
 
 
 ;; (configure-package '(go-autocomplete)

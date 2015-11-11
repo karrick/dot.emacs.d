@@ -437,15 +437,19 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
-(prepend-path (expand-file-name "~/go/bin"))
-(setenv "GOPATH" (expand-file-name "~/go"))
+(let ((gopath (expand-file-name "~/go")))
+  (prepend-path (concat gopath "/bin"))
+  (setenv "GOPATH" gopath)
+  ;; go get -u golang.org/x/tools/cmd/oracle
+  (load-file (concat gopath "/src/golang.org/x/tools/cmd/oracle/oracle.el"))
+  (add-hook 'go-mode-hook 'go-oracle-mode)
+  )
 (setenv "GO15VENDOREXPERIMENT" "1")
 
 (configure-package '(golint)) ;; go get -u github.com/golang/lint/golint
 (configure-package '(go-rename)) ;; go get -u golang.org/x/tools/cmd/gorename
 
 (configure-package '(go-mode)
-
                    ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))
 
                    (progn ;; go get -u golang.org/x/tools/cmd/goimports
@@ -455,32 +459,21 @@ is nil for all items in list."
                                                   "gofmt"))))
                        (setq gofmt-command gofmter)))
 
-                   ;; (progn
-                   ;;   (flycheck-declare-checker go-gofmt
-                   ;;                             "A Go syntax and style checker using the gofmt utility."
-                   ;;                             :command '("gofmt" source-inplace)
-                   ;;                             :error-patterns '(("^\\(?1:.*\\):\\(?2:[0-9]+\\):\\(?3:[0-9]+\\): \\(?4:.*\\)$" error))
-                   ;;                             :modes 'go-mode)
-                   ;;   (add-to-list 'flycheck-checkers 'go-gofmt))
-
                    (add-hook 'go-mode-hook
                              #'(lambda ()
                                  (add-hook 'before-save-hook #'gofmt-before-save nil t)
                                  (flyspell-prog-mode)
                                  (setq fill-column 100)
-                                 (local-set-key (kbd "M-.") 'godef-jump)
+                                 (local-set-key (kbd "C-c C-j") 'godef-jump-other-window) ;; go get -u github.com/rogpeppe/godef
                                  (if (not (string-match "^go" compile-command))
                                      (set (make-local-variable 'compile-command)
                                           "go test && go build")))))
 
-
-;; (configure-package '(go-autocomplete)
-;;                    ;; go get -u github.com/nsf/gocode
-;;                    (require 'go-autocomplete)
-;;                    (require 'auto-complete-config)
-;;                    (ac-config-default))
-
-;; install godef: `go get -u code.google.com/p/rog-go/exp/cmd/godef`
+(configure-package '(go-autocomplete)
+                   ;; go get -u github.com/nsf/gocode
+                   (require 'go-autocomplete)
+                   (require 'auto-complete-config)
+                   (ac-config-default))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -491,7 +484,7 @@ is nil for all items in list."
 (condition-case err
     (require 'localhost)
   (file-error
-     (message "no localhost file found: %s" err)))
+   (message "no localhost file found: %s" err)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables

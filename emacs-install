@@ -68,6 +68,7 @@ sig_uri=http://ftp.gnu.org/gnu/emacs/$sig
 
 ################
 
+if [ -n "SKIP_GPG" ] ; then
 while ! gpg --verify $sig_local $bundle_local ; do
     if [ -f $sig_local -a -f $bundle_local ] ; then
         echo "ERROR: file doesn't match signature?" >&2
@@ -86,6 +87,7 @@ while ! gpg --verify $sig_local $bundle_local ; do
     [ -f $bundle_local ] || curl -L --create-dirs --output $bundle_local $bundle_uri
     # gpg --keyserver pgpkeys.mit.edu --recv-key A0B0F199
 done
+fi
 
 ################
 

@@ -56,22 +56,28 @@ esac
 
 ################
 
+keyring=gnu-keyring.gpg
+keyring_local=~/Downloads/$keyring
+if [ ! -f $keyring_local ] ; then
+    curl -L --create-dirs --output $keyring_local http://ftp.gnu.org/gnu/$keyring
+    gpg --import $keyring_local
+fi
+
 bundle=emacs-${release}.tar.xz
-sig=${bundle}.sig
-
 bundle_local=~/Downloads/$bundle
+if [ ! -f $bundle_local ] ; then
+    curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+fi
+
+sig=${bundle}.sig
 sig_local=~/Downloads/$sig
+if [ ! -f $sig_local ] ; then
+    curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+fi
 
-bundle_uri=http://ftp.gnu.org/gnu/emacs/$bundle
-# always download signature from gnu.org
-sig_uri=http://ftp.gnu.org/gnu/emacs/$sig
-
-################
-
-if [ -n "SKIP_GPG" ] ; then
 while ! gpg --verify $sig_local $bundle_local ; do
     if [ -f $sig_local -a -f $bundle_local ] ; then
-        echo "ERROR: file doesn't match signature?" >&2
+        echo "ERROR: bundle file doesn't match its signature." >&2
         read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
         case $yn in
             Y|y)
@@ -83,11 +89,10 @@ while ! gpg --verify $sig_local $bundle_local ; do
                 ;;
         esac
     fi
-    [ -f $sig_local ] || curl -L --create-dirs --output $sig_local $sig_uri
-    [ -f $bundle_local ] || curl -L --create-dirs --output $bundle_local $bundle_uri
+    curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+    curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
     # gpg --keyserver pgpkeys.mit.edu --recv-key A0B0F199
 done
-fi
 
 ################
 

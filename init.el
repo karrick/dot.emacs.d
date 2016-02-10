@@ -323,6 +323,13 @@ is nil for all items in list."
 (global-set-key [f8] #'recompile)
 (global-set-key [S-f8] #'compile)
 
+;;; move to different window
+
+(global-set-key [(meta up)] 'windmove-up)
+(global-set-key [(meta down)] 'windmove-down)
+(global-set-key [(meta left)] 'windmove-left)
+(global-set-key [(meta right)] 'windmove-right)
+
 ;;;; expand-region
 
 (configure-package '(expand-region)

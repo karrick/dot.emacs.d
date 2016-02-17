@@ -43,6 +43,7 @@
                      markdown-mode
                      maxframe
                      psgml
+                     puppet-mode
                      smart-tab
                      yaml-mode
                      ))
@@ -80,18 +81,6 @@ is nil for all items in list."
       (let ((result (funcall predicate item)))
         (if result
             (throw 'break result))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun other-window-backwards (&optional n)
-  "Select Nth previous window"
-  (interactive "p")
-  (other-window (- (prefix-numeric-value n))))
-
-(global-set-key "\C-x\C-n" 'other-window)
-(global-set-key "\C-x\C-p" 'other-window-backwards)
-(global-set-key "\C-xn" 'other-window)
-(global-set-key "\C-xp" 'other-window-backwards)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; process environment
@@ -172,12 +161,6 @@ is nil for all items in list."
       (switch-to-buffer output-buffer)
       (setq default-directory dir)))
   (global-set-key [(meta !)] 'async-shell-command))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; xslt mode
-
-(configure-package '(nxml-mode)
-                   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode)))
 
 ;;;; auto-complete-mode
 (configure-package '(auto-complete)
@@ -310,25 +293,38 @@ is nil for all items in list."
 (setq inhibit-startup-message t)
 (put 'narrow-to-region 'disabled nil)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun other-window-backwards (&optional n)
+  "Select Nth previous window"
+  (interactive "p")
+  (other-window (- (prefix-numeric-value n))))
+
 ;;;; key bindings
+
+(global-set-key (kbd "C-x C-n") 'other-window)
+(global-set-key (kbd "C-x C-p") 'other-window-backwards)
+(global-set-key (kbd "C-x n") 'other-window)
+(global-set-key (kbd "C-x p") 'other-window-backwards)
 
 (global-set-key (kbd "C-+") #'text-scale-increase)
 (global-set-key (kbd "C--") #'text-scale-decrease)
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)
-(global-set-key [(meta g)] #'goto-line)
-(global-set-key [f1] #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key [f2] #'clean-and-indent)
-(global-set-key [f3] #'copy-and-comment)
-(global-set-key [f8] #'recompile)
-(global-set-key [S-f8] #'compile)
+(global-set-key (kbd "M-g") #'goto-line)
+
+(global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
+(global-set-key (kbd "<f2>") #'clean-and-indent)
+(global-set-key (kbd "<f3>") #'copy-and-comment)
+(global-set-key (kbd "<f8>") #'recompile)
+(global-set-key (kbd "<S-f8>") #'compile)
 
 ;;; move to different window
 
-(global-set-key (kbd "M-<down>") 'windmove-down)
-(global-set-key (kbd "M-<left>") 'windmove-left)
-(global-set-key (kbd "M-<right>") 'windmove-right)
-(global-set-key (kbd "M-<up>") 'windmove-up)
+(global-set-key (kbd "<M-down>") 'windmove-down)
+(global-set-key (kbd "<M-left>") 'windmove-left)
+(global-set-key (kbd "<M-right>") 'windmove-right)
+(global-set-key (kbd "<M-up>") 'windmove-up)
 
 ;;;; expand-region
 
@@ -409,26 +405,15 @@ is nil for all items in list."
                    (set-default 'js2-mode-escape-quotes nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; markdown mode
-
-(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; ruby mode
 
 (eval-after-load 'ruby-mode '(require 'setup-ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\Rakefile\\'" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\Gemfile\\'" . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.gemspec\\'" . ruby-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; puppet mode
+;;;; xslt mode
 
-(configure-package '(puppet-mode)
-                   (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode)))
+(configure-package '(nxml-mode)
+                   (add-to-list 'auto-mode-alist '("\\.xslt$" . nxml-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; codesearch

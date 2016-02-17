@@ -9,7 +9,7 @@
   (prepend-path (concat gopath "/bin"))
   (setenv "GOPATH" gopath)
   (setenv "GO15VENDOREXPERIMENT" "1")
-  (eval-after-load 'go-mode
+  (eval-after-load "go-mode"
     #'(lambda ()
         (let ((gofmter (find-first #'(lambda (item)
                                        (executable-find item))

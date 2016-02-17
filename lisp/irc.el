@@ -1,4 +1,4 @@
-(eval-after-load 'erc
+(eval-after-load "erc"
   (progn
     (defmacro erc-bouncer-connect (command server port nick ssl pass)
       "Create interactive command `command', for connecting to an IRC server. The

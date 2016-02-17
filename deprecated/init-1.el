@@ -231,7 +231,7 @@
 	  ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n  %a" "~/Documents/gtd/gtd.txt")))
   (setq remember-annotation-functions '(org-remember-annotation))
   (setq remember-handler-functions '(org-remember-handler))
-  (eval-after-load 'remember
+  (eval-after-load "remember"
     '(add-hook 'remember-mode-hook 'org-remember-apply-template))
   (global-set-key (kbd "C-c r") 'remember)
   ;; (require 'org-install)

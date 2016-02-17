@@ -19,7 +19,7 @@
     (when (file-accessible-directory-p path)
       (add-to-list 'exec-path path)
       (setenv "PATH" (concat path ":" (getenv "PATH")))
-      (message "prepending %s to PATH" path))))
+      (message "Prepending %s to PATH" path))))
 
 (defun append-path (elem)
   (interactive "DAppend what directory to PATH: ")
@@ -29,7 +29,7 @@
     (when (file-accessible-directory-p path)
       (add-to-list 'exec-path path)
       (setenv "PATH" (concat (getenv "PATH") ":" path))
-      (message "appending %s to PATH" path))))
+      (message "Appending %s to PATH" path))))
 
 (defun find-first (predicate list)
   "Return result of first item in list which
@@ -105,7 +105,7 @@ is nil for all items in list."
                      (add-hook 'before-save-hook #'clean-and-indent nil t))))
 
 ;;;; advise the shell commands to name the buffer after the command itself
-(eval-after-load 'shell-command
+(eval-after-load "shell-command"
   (defadvice shell-command (before buffer-named-with-command
                                    (command &optional output-buffer error-buffer)
                                    activate compile)
@@ -278,7 +278,7 @@ If there is no .svn directory, examine if there is CVS and run
        (cmd (concat client " -a ''")))
   (setenv "EDITOR" cmd)
   (setenv "VISUAL" cmd)
-  (eval-after-load 'edit-server
+  (eval-after-load "edit-server"
     (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
       (require 'edit-server)
       (setq edit-server-new-frame nil)
@@ -301,10 +301,10 @@ If there is no .svn directory, examine if there is CVS and run
 ;; js2-mode offers nice javascript support
 (autoload 'js2-mode "js2-mode" "Major mode for editing JavaScript code." t)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(eval-after-load 'js2-mode '(require 'setup-js2-mode))
+(eval-after-load "js2-mode" '(require 'setup-js2-mode))
 
 ;; ruby
-(eval-after-load 'ruby-mode '(require 'setup-ruby-mode))
+(eval-after-load "ruby-mode" '(require 'setup-ruby-mode))
 
 ;; xslt mode
 (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))

@@ -429,20 +429,20 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; golang
 
-(let ((gopath (expand-file-name "~/go")))
-  (prepend-path (concat gopath "/bin"))
-  (setenv "GOPATH" gopath)
-  ;; go get -u golang.org/x/tools/cmd/oracle
-  (load-file (concat gopath "/src/golang.org/x/tools/cmd/oracle/oracle.el"))
-  (add-hook 'go-mode-hook 'go-oracle-mode)
-  )
-(setenv "GO15VENDOREXPERIMENT" "1")
-
-(configure-package '(golint)) ;; go get -u github.com/golang/lint/golint
-(configure-package '(go-rename)) ;; go get -u golang.org/x/tools/cmd/gorename
-
 (configure-package '(go-mode)
                    ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))
+
+                   (let ((gopath (expand-file-name "~/go")))
+                     (prepend-path (concat gopath "/bin"))
+                     (setenv "GOPATH" gopath)
+                     ;; go get -u golang.org/x/tools/cmd/oracle
+                     (load-file (concat gopath "/src/golang.org/x/tools/cmd/oracle/oracle.el"))
+                     (add-hook 'go-mode-hook 'go-oracle-mode)
+                     )
+                   (setenv "GO15VENDOREXPERIMENT" "1")
+
+                   (configure-package '(golint)) ;; go get -u github.com/golang/lint/golint
+                   (configure-package '(go-rename)) ;; go get -u golang.org/x/tools/cmd/gorename
 
                    (progn ;; go get -u golang.org/x/tools/cmd/goimports
                      (let ((gofmter (find-first #'(lambda (item)

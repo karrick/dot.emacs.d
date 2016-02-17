@@ -3,15 +3,19 @@ MARKDOWN = pandoc --from markdown --to html5 --standalone --highlight-style=zenb
 SOURCE = $(shell find . -name \*.md)
 TARGET = $(patsubst %.md,%.html,$(SOURCE))
 
-all: $(TARGET)
+packages:
+	emacs --script install-packages.el
+
+markdown: $(TARGET)
 
 $(TARGET): Makefile
 
 clean:
 	rm -f $(TARGET)
 	rm -f *.bak *~
+	rm -rf elpa
 
 %.html: %.md
 	$(MARKDOWN) --output $@ $<
 
-.PHONY: all clean
+.PHONY: clean markdown packages

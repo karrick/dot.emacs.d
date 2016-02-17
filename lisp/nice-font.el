@@ -1,5 +1,12 @@
+;;; nice-font --- provides a few handy font manipulation functions
+
+;;; Commentary:
+
+;;; Code:
+
 (add-to-list 'default-frame-alist '(font-backend . "xft"))
-(setq font-use-system-font t)
+(when (boundp 'font-use-system-font)
+  (setq font-use-system-font t))
 
 (defun font-family-list-sorted ()
   (cl-remove-duplicates (sort (font-family-list)
@@ -42,4 +49,9 @@
       (add-to-list 'default-frame-alist `(font . ,(concat f "-10")))
       (throw 'break nil))))
 
+(global-set-key (kbd "C-+") #'text-scale-increase)
+(global-set-key (kbd "C--") #'text-scale-decrease)
+
 (provide 'nice-font)
+
+;;; nice-font.el ends here

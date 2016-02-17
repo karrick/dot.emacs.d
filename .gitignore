@@ -1,5 +1,7 @@
 *.elc
 *.html
+*~
+.mc-lists.el
 ac-comphist.dat
 auto-save-list
 elpa
@@ -8,4 +10,3 @@ localhost.el
 session.*
 tramp
 url
-.mc-lists.el

@@ -3,8 +3,14 @@ MARKDOWN = pandoc --from markdown --to html5 --standalone --highlight-style=zenb
 SOURCE = $(shell find . -name \*.md)
 TARGET = $(patsubst %.md,%.html,$(SOURCE))
 
+EL = $(shell find . -name \*.el)
+ELC = $(patsubst %.el,%.elc,$(EL))
+
 packages:
 	emacs --script install-packages.el
+
+compile:
+	cd lisp && emacs --batch --eval "(progn (add-to-list 'load-path \".\") (byte-recompile-directory \".\" 0))"
 
 markdown: $(TARGET)
 

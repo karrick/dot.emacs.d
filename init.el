@@ -1,45 +1,19 @@
 ;;;; -*- mode: emacs-lisp -*-
 
+;;; Commentary:
+
 ;;; Code:
 
 (let ((default-directory (concat user-emacs-directory (convert-standard-filename "lisp/"))))
   (normal-top-level-add-to-load-path '("."))
-  (normal-top-level-add-subdirs-to-load-path))
-
-(require 'benchmark-init-loaddefs)
-(benchmark-init/activate)
+  (normal-top-level-add-subdirs-to-load-path)
+  (when (file-exists-p (concat default-directory "benchmark-init-el"))
+    (require 'benchmark-init-loaddefs)
+    (benchmark-init/activate)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun prepend-path (elem)
-  (interactive "DPrepend what directory to PATH: ")
-  (let ((path (expand-file-name elem)))
-    (when (string-match "/\\'" path)
-      (setq path (concat (replace-match "" nil nil path))))
-    (when (file-accessible-directory-p path)
-      (add-to-list 'exec-path path)
-      (setenv "PATH" (concat path ":" (getenv "PATH")))
-      (message "Prepending %s to PATH" path))))
-
-(defun append-path (elem)
-  (interactive "DAppend what directory to PATH: ")
-  (let ((path (expand-file-name elem)))
-    (when (string-match "/\\'" path)
-      (setq path (concat (replace-match "" nil nil path))))
-    (when (file-accessible-directory-p path)
-      (add-to-list 'exec-path path)
-      (setenv "PATH" (concat (getenv "PATH") ":" path))
-      (message "Appending %s to PATH" path))))
-
-(defun find-first (predicate list)
-  "Return result of first item in list which
-satisfies predicate.  Returns nil if predicate
-is nil for all items in list."
-  (catch 'break
-    (dolist (item list)
-      (let ((result (funcall predicate item)))
-        (if result
-            (throw 'break result))))))
+(require 'path)
 
 ;;;; process environment
 
@@ -216,6 +190,7 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;; flycheck is the successor to flymake
 (add-hook 'after-init-hook #'global-flycheck-mode)
+(setq-default flycheck-emacs-lisp-load-path 'inherit)
 
 ;;;; key bindings
 
@@ -270,6 +245,16 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;; edit-server for browsers
 ;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
 
+(defun find-first (predicate list)
+  "Return result of first item in list which
+satisfies predicate.  Returns nil if predicate
+is nil for all items in list."
+  (catch 'break
+    (dolist (item list)
+      (let ((result (funcall predicate item)))
+        (if result
+            (throw 'break result))))))
+
 (let* ((client (find-first #'(lambda (item)
                                (executable-find item))
                            '(
@@ -277,12 +262,13 @@ If there is no .svn directory, examine if there is CVS and run
                              "/usr/bin/emacsclient")))
        (cmd (concat client " -a ''")))
   (setenv "EDITOR" cmd)
-  (setenv "VISUAL" cmd)
-  (eval-after-load "edit-server"
-    (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
-      (require 'edit-server)
-      (setq edit-server-new-frame nil)
-      (edit-server-start))))
+  (setenv "VISUAL" cmd))
+
+(eval-after-load "edit-server"
+  (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
+    (require 'edit-server)
+    (setq edit-server-new-frame nil)
+    (edit-server-start)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Language specific setup files
@@ -318,8 +304,7 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;; Darwin fixes
 (when (eq system-type 'darwin)
-  (setq dired-use-ls-dired nil
-        ns-function-modifier 'hyper
+  (setq ns-function-modifier 'hyper
         ns-use-srgb-colorspace t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -347,7 +332,7 @@ If there is no .svn directory, examine if there is CVS and run
                                (load-theme 'zenburn t)))
 
 ;;;; graphical
-(when (not (eq nil window-system))
+(unless (eq nil window-system)
   (require 'nice-font)) ;; set to a usable font
 
 ;;; init.el ends here

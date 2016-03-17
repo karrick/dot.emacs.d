@@ -29,7 +29,6 @@
 
 ;; (add-to-list 'yas-snippet-dirs (concat user-emacs-directory "lisp/yasnippet-go"))
 
-
 (provide 'setup-go-mode)
 
 ;;; setup-go-mode.el ends here

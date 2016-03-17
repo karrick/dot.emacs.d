@@ -104,18 +104,7 @@
               tab-width 8)
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
-(defvaralias 'js-indent-level 'tab-width)
 (defvaralias 'perl-indent-level 'tab-width)
-
-(add-hook 'python-mode-hook
-          #'(lambda ()
-              (setq indent-tabs-mode nil)
-              (setq tab-width 4)))
-
-(add-hook 'javascript-mode-hook
-          #'(lambda ()
-              (setq indent-tabs-mode t)
-              (setq js-indent-level 4)))
 
 ;;;; ido-mode
 
@@ -143,6 +132,11 @@ there.
 If there is no .svn directory, examine if there is CVS and run
 `cvs-examine'. Otherwise ask if to run `dired'."
   t)
+
+;;;; vcs
+
+(eval-after-load "vc-hooks"
+  '(define-key vc-prefix-map "=" 'vc-ediff))
 
 ;;;; fossil vc mode
 
@@ -283,6 +277,9 @@ is nil for all items in list."
 
 ;; golang
 (add-hook 'after-init-hook #'(lambda () (require 'setup-go-mode)))
+
+;; python
+(add-hook 'after-init-hook #'(lambda () (require 'setup-python-mode)))
 
 ;; js2-mode offers nice javascript support
 (autoload 'js2-mode "js2-mode" "Major mode for editing JavaScript code." t)

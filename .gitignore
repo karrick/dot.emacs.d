@@ -10,3 +10,4 @@ localhost.el
 session.*
 tramp
 url
+ido.last

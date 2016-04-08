@@ -327,8 +327,7 @@ is nil for all items in list."
     (menu-bar-mode -1))
 
 (add-hook 'after-init-hook #'(lambda ()
-                               (ignore-errors
-                                 (load-theme 'zenburn t))))
+                               (load-theme 'zenburn t)))
 
 ;;;; graphical
 (unless (eq nil window-system)

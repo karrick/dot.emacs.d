@@ -1,5 +1,3 @@
-#!emacs --script
-
 (require 'package)
 (add-to-list 'package-archives
 	     '("gnu" . "https://elpa.gnu.org/packages/"))

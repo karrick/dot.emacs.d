@@ -1,7 +1,5 @@
 ;;;; -*- mode: emacs-lisp -*-
 
-
-
 ;;; Commentary:
 
 ;;; Code:

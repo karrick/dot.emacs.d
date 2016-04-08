@@ -7,9 +7,10 @@
 (let ((default-directory (concat user-emacs-directory (convert-standard-filename "lisp/"))))
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path)
-  (when (file-exists-p (concat default-directory "benchmark-init-el"))
-    (require 'benchmark-init-loaddefs)
-    (benchmark-init/activate)))
+  (ignore-errors
+    (when (file-exists-p (concat default-directory "benchmark-init-el"))
+      (require 'benchmark-init-loaddefs)
+      (benchmark-init/activate))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -326,7 +327,8 @@ is nil for all items in list."
     (menu-bar-mode -1))
 
 (add-hook 'after-init-hook #'(lambda ()
-                               (load-theme 'zenburn t)))
+                               (ignore-errors
+                                 (load-theme 'zenburn t))))
 
 ;;;; graphical
 (unless (eq nil window-system)

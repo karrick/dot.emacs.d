@@ -149,9 +149,8 @@ If there is no .svn directory, examine if there is CVS and run
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-hook 'compilation-mode-hook 'ansi-color-for-comint-mode-on)
 (defun colorize-compilation-buffer ()
-  (toggle-read-only)
-  (ansi-color-apply-on-region compilation-filter-start (point-max))
-  (toggle-read-only))
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region compilation-filter-start (point-max))))
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 (ansi-color-for-comint-mode-on) ; allow terminal colorization
 
@@ -253,8 +252,10 @@ is nil for all items in list."
 (let* ((client (find-first #'(lambda (item)
                                (executable-find item))
                            '(
-                             "/usr/local/bin/emacsclient"
-                             "/usr/bin/emacsclient")))
+                             ;; "/usr/local/bin/emacsclient"
+                             ;; "/usr/bin/emacsclient"
+                             "emacsclient"
+                             )))
        (cmd (concat client " -a ''")))
   (setenv "EDITOR" cmd)
   (setenv "VISUAL" cmd))

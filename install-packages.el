@@ -37,6 +37,7 @@
                nxml-mode
                ;; psgml
                puppet-mode
+               rust-mode
                shell-command
                smart-tab
                wgrep

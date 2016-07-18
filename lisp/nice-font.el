@@ -40,16 +40,16 @@
           (t (message "Search Matches %d fonts: %s" count (mapconcat #'identity matches ", "))))))
 
 ;; set default font to one of my preferred fonts
-(catch 'break
-  (dolist (f '(
-               "DejaVu Sans Mono"
-               "Liberation Mono"
-               "Inconsolata"
-               "monofur"
-               ))
-    (when (member f (font-family-list-sorted))
-      (add-to-list 'default-frame-alist `(font . ,(concat f "-10")))
-      (throw 'break nil))))
+(require 'find-first)
+(find-first '(
+              "DejaVu Sans Mono"
+              "Liberation Mono"
+              "Inconsolata"
+              "monofur"
+              )
+            #'(lambda (f)
+                (when (member f (font-family-list-sorted))
+                  (add-to-list 'default-frame-alist `(font . ,(concat f "-10"))))))
 
 (global-set-key (kbd "C-+") #'text-scale-increase)
 (global-set-key (kbd "C--") #'text-scale-decrease)

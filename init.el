@@ -8,7 +8,7 @@
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path)
   (ignore-errors
-    (when (file-exists-p (concat default-directory "benchmark-init-el"))
+    (when (file-directory-p (concat default-directory "benchmark-init-el"))
       (require 'benchmark-init-loaddefs)
       (benchmark-init/activate))))
 
@@ -25,7 +25,7 @@
   (dolist (dir directories)
     (prepend-path dir)))
 
-(cd (expand-file-name "~"))
+(when (and (fboundp 'daemonp) (daemonp) (cd (expand-file-name "~"))))
 (setenv "GIT_PAGER" "")			; elide git paging capability
 (setenv "PAGER" "cat")
 
@@ -34,7 +34,6 @@
       diff-switches "-u"
       dired-listing-switches "-Bhl"
       dired-show-ls-switches t
-      ispell-program-name "ispell"
       make-backup-files nil)
 
 ;;;; ediff
@@ -59,12 +58,10 @@
                 (message
                  "Wrote and made executable: %s" buffer-file-name))))
 
-(defun clean-and-indent ()
-  (interactive "*")
-  (apply #'indent-region (if (use-region-p)
-                             (list (min (point) (mark)) (max (point) (mark)))
-                           (list (point-min) (point-max))))
-  (whitespace-cleanup))
+(require 'clean-and-indent)
+
+(dolist (item '(sh-mode-hook css-mode-hook))
+  (add-hook item #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
 
 (defun copy-and-comment (beg end)
   (interactive "*r")
@@ -75,12 +72,8 @@
         (comment-region beg end))
     (message "cannot copy-and-comment without region selected")))
 
-(dolist (item '(sh-mode-hook css-mode-hook))
-  (add-hook item #'(lambda ()
-                     (add-hook 'before-save-hook #'clean-and-indent nil t))))
-
 ;;;; advise the shell commands to name the buffer after the command itself
-(eval-after-load "shell-command"
+(eval-after-load 'shell-command
   (defadvice shell-command (before buffer-named-with-command
                                    (command &optional output-buffer error-buffer)
                                    activate compile)
@@ -145,6 +138,7 @@ If there is no .svn directory, examine if there is CVS and run
 (add-to-list 'vc-handled-backends 'Fossil)
 
 ;;;; ansi-color
+
 (require 'ansi-color)
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (add-hook 'compilation-mode-hook 'ansi-color-for-comint-mode-on)
@@ -159,25 +153,26 @@ If there is no .svn directory, examine if there is CVS and run
 (setq show-paren-style 'expression)
 (set-face-background 'show-paren-match-face "#1f3f3f")
 
-(if (boundp 'desktop-save-mode)
-    (desktop-save-mode 0))		; don't save desktop sessions
+(when (fboundp 'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
 
 ;;;; auto-complete-mode
-(add-hook 'after-init-hook #'(lambda ()
-                               (require 'auto-complete-config)
-                               (add-to-list 'ac-dictionary-directories
-                                            (concat user-emacs-directory (convert-standard-filename ".ac-dict")))
-                               ;; ac-common-setup is called by ac-config-default
-                               (add-to-list 'ac-modes 'nxml-mode)
-                               (ac-config-default)
-                               (defun ac-common-setup ()
-                                 (add-to-list 'ac-sources 'ac-source-yasnippet))
-                               (add-to-list 'ac-modes 'html-mode)
-                               (ac-config-default)
-                               (defun enable-auto-complete-mode ()
-                                 (auto-complete-mode 1))
-                               (defun disable-auto-complete-mode ()
-                                 (auto-complete-mode 0))))
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (require 'auto-complete-config)
+              (add-to-list 'ac-dictionary-directories
+                           (concat user-emacs-directory (convert-standard-filename ".ac-dict")))
+              ;; ac-common-setup is called by ac-config-default
+              (add-to-list 'ac-modes 'nxml-mode)
+              (ac-config-default)
+              (defun ac-common-setup ()
+                (add-to-list 'ac-sources 'ac-source-yasnippet))
+              (add-to-list 'ac-modes 'html-mode)
+              (ac-config-default)
+              (defun enable-auto-complete-mode ()
+                (auto-complete-mode 1))
+              (defun disable-auto-complete-mode ()
+                (auto-complete-mode 0))))
 
 ;; codesearch
 (require 'codesearch)
@@ -236,29 +231,13 @@ If there is no .svn directory, examine if there is CVS and run
               (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
               (setq wgrep-auto-save-buffer t)))
 
-;;;; edit-server for browsers
-;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
-
-(defun find-first (predicate list)
-  "Return result of first item in list which
-satisfies predicate.  Returns nil if predicate
-is nil for all items in list."
-  (catch 'break
-    (dolist (item list)
-      (let ((result (funcall predicate item)))
-        (if result
-            (throw 'break result))))))
-
-(let* ((client (find-first #'(lambda (item)
-                               (executable-find item))
-                           '(
-                             ;; "/usr/local/bin/emacsclient"
-                             ;; "/usr/bin/emacsclient"
-                             "emacsclient"
-                             )))
+(let* ((client (executable-find "emacsclient"))
        (cmd (concat client " -a ''")))
   (setenv "EDITOR" cmd)
   (setenv "VISUAL" cmd))
+
+;;;; edit-server for browsers
+;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
 
 (eval-after-load "edit-server"
   (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
@@ -269,30 +248,13 @@ is nil for all items in list."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Language specific setup files
 
-(defun auto-recompile-el-buffer ()
-  (interactive)
-  (when (and (eq major-mode 'emacs-lisp-mode)
-             (file-exists-p (byte-compile-dest-file buffer-file-name)))
-    (byte-compile-file buffer-file-name)
-    (message "Byte compiled %s" buffer-file-name)))
-(add-hook 'after-save-hook 'auto-recompile-el-buffer)
-
-;; golang
-(add-hook 'after-init-hook #'(lambda () (require 'setup-go-mode)))
-
-;; python
-(add-hook 'after-init-hook #'(lambda () (require 'setup-python-mode)))
-
-;; js2-mode offers nice javascript support
-(autoload 'js2-mode "js2-mode" "Major mode for editing JavaScript code." t)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(eval-after-load "js2-mode" '(require 'setup-js2-mode))
-
-;; ruby
-(eval-after-load "ruby-mode" '(require 'setup-ruby-mode))
-
-;; xslt mode
-(add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
+(add-hook 'after-init-hook #'(lambda ()
+                               (require 'setup-elisp-mode)
+                               (require 'setup-go-mode) ; golang
+                               (require 'setup-javascript-mode)
+                               (require 'setup-python-mode)
+                               (require 'setup-ruby-mode)
+                               (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -327,11 +289,7 @@ is nil for all items in list."
 (if (fboundp 'menu-bar-mode)
     (menu-bar-mode -1))
 
-(add-hook 'after-init-hook #'(lambda ()
-                               (load-theme 'zenburn t)))
-
-;;;; graphical
-(unless (eq nil window-system)
-  (require 'nice-font)) ;; set to a usable font
+(add-hook 'after-init-hook #'(lambda () (load-theme 'zenburn t)))
+(when window-system (require 'nice-font))
 
 ;;; init.el ends here

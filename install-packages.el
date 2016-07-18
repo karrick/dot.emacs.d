@@ -20,6 +20,7 @@
                ;; go-autocomplete
                go-mode
                ;; go get -u github.com/google/codesearch/cmd/...
+               ;; go get -u github.com/kisielk/errcheck
                ;; go get -u github.com/nsf/gocode
                ;; go get -u github.com/rogpeppe/godef
                ;; go get -u golang.org/x/tools/cmd/goimports

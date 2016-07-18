@@ -17,7 +17,7 @@ mv -f ~/.emacs ~/.emacs.disabled
 cd ~
 git clone https://github.com/karrick/dot.emacs.d
 mv -f ~/dot.emacs.d ~/.emacs.d
-make compile packages
+make packages compile
 ```
 
 ## Create Desktop Launcher

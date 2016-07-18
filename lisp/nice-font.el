@@ -14,6 +14,7 @@
                         :test #'string=))
 
 (defun font-change (requested)
+  "Prompt the user and change the font to REQUESTED type face."
   (interactive "sName of Font: ")
   (if (member requested (font-family-list-sorted))
       (set-face-attribute 'default nil :family requested :height 140)
@@ -24,10 +25,11 @@
         (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 (defun font-search (regexp)
-  (interactive "sRegular Expfession: ")
+  "Search for a font using the REGEXP regular expression."
+  (interactive "sRegular Expression: ")
   (let* ((matches (my-filter
-                  #'(lambda (item) (string-match regexp item))
-                  (font-family-list-sorted)))
+                   #'(lambda (item) (string-match regexp item))
+                   (font-family-list-sorted)))
          (count (length matches)))
     (cond ((eq 0 count)
            (message "No Font Matches"))

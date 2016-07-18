@@ -22,7 +22,7 @@ markdown: $(TARGET)
 $(TARGET): Makefile
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(ELC)
 	rm -f *.bak *~
 	rm -rf elpa
 

@@ -20,7 +20,7 @@
         (progn
           (add-to-list 'load-path dir)
           (require 'go-guru)
-          (add-hook 'go-mode-hook #'(lambda () (go-guru-hl-identifier-mode t)))
+          (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode)
           (defun go-set-scope-here ()
             (interactive)
             (setq go-guru-scope (file-name-directory (buffer-file-name)))))

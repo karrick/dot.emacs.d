@@ -165,14 +165,12 @@ If there is no .svn directory, examine if there is CVS and run
               ;; ac-common-setup is called by ac-config-default
               (add-to-list 'ac-modes 'nxml-mode)
               (ac-config-default)
-              (defun ac-common-setup ()
-                (add-to-list 'ac-sources 'ac-source-yasnippet))
+              (defun ac-common-setup () (add-to-list 'ac-sources 'ac-source-yasnippet))
               (add-to-list 'ac-modes 'html-mode)
               (ac-config-default)
-              (defun enable-auto-complete-mode ()
-                (auto-complete-mode 1))
-              (defun disable-auto-complete-mode ()
-                (auto-complete-mode 0))))
+              (defun enable-auto-complete-mode () (auto-complete-mode 1))
+              (defun disable-auto-complete-mode () (auto-complete-mode 0))
+              (ac-flyspell-workaround)))
 
 ;; codesearch
 (require 'codesearch)

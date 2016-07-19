@@ -129,8 +129,7 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;; vcs
 
-(eval-after-load "vc-hooks"
-  '(define-key vc-prefix-map "=" 'vc-ediff))
+(eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" 'vc-ediff))
 
 ;;;; fossil vc mode
 
@@ -202,10 +201,11 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x n") 'other-window)
 (global-set-key (kbd "C-x p") 'other-window-backwards)
 
-;; (global-set-key (kbd "<M-down>") 'windmove-down)
-;; (global-set-key (kbd "<M-left>") 'windmove-left)
-;; (global-set-key (kbd "<M-right>") 'windmove-right)
-;; (global-set-key (kbd "<M-up>") 'windmove-up)
+(when (eq system-type 'darwin)
+  (global-set-key (kbd "s-<down>") 'windmove-down)
+  (global-set-key (kbd "s-<left>") 'windmove-left)
+  (global-set-key (kbd "s-<right>") 'windmove-right)
+  (global-set-key (kbd "s-<up>") 'windmove-up))
 
 ;; expand-region
 (global-set-key (kbd "H-=") 'er/expand-region)
@@ -246,13 +246,14 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Language specific setup files
 
-(add-hook 'after-init-hook #'(lambda ()
-                               (require 'setup-elisp-mode)
-                               (require 'setup-go-mode) ; golang
-                               (require 'setup-javascript-mode)
-                               (require 'setup-python-mode)
-                               (require 'setup-ruby-mode)
-                               (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))))
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (require 'setup-elisp-mode)
+              (require 'setup-go-mode) ; golang
+              (require 'setup-javascript-mode)
+              (require 'setup-python-mode)
+              (require 'setup-ruby-mode)
+              (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -263,11 +264,11 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;; Darwin fixes
 (when (eq system-type 'darwin)
-  (progn
-    (setq ls-lisp-use-insert-directory-program nil)
-    (require 'ls-lisp))
   (setq ns-function-modifier 'hyper
-        ns-use-srgb-colorspace t))
+        ns-use-srgb-colorspace t)
+  ;; darwin ls program
+  (setq ls-lisp-use-insert-directory-program nil)
+  (require 'ls-lisp))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; display

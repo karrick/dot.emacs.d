@@ -5,7 +5,6 @@
 ;;; Code:
 
 (require 'path)
-;; (require 'go-autocomplete)
 
 (setenv "GO15VENDOREXPERIMENT" "1")     ; won't need this much longer
 (let ((gopath (expand-file-name "~/go")))
@@ -24,8 +23,16 @@
           (add-hook 'go-mode-hook #'(lambda () (go-guru-hl-identifier-mode t)))
           (defun go-set-scope-here ()
             (interactive)
-            (setq go-guru-scope (file-name-directory (buffer-file-name))))))
-    (message "Cannot find go-guru: %s" dir))
+            (setq go-guru-scope (file-name-directory (buffer-file-name)))))
+      (message "Cannot find go-guru: %s" dir)))
+  (let ((dir (concat (getenv "GOPATH") "/src/github.com/nsf/gocode/emacs")))
+    (if (file-directory-p dir)
+        (progn
+          (add-to-list 'load-path dir)
+          (require 'go-autocomplete)
+          (require 'auto-complete-config)
+          (ac-config-default))
+      (message "Cannot find gocode: %s" dir)))
   (add-hook 'go-mode-hook #'(lambda ()
                               (add-hook 'before-save-hook #'gofmt-before-save nil t)
                               (flyspell-prog-mode)

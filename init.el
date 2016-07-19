@@ -263,6 +263,9 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;; Darwin fixes
 (when (eq system-type 'darwin)
+  (progn
+    (setq ls-lisp-use-insert-directory-program nil)
+    (require 'ls-lisp))
   (setq ns-function-modifier 'hyper
         ns-use-srgb-colorspace t))
 

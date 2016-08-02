@@ -266,8 +266,8 @@ If there is no .svn directory, examine if there is CVS and run
 (when (eq system-type 'darwin)
   (setq ns-function-modifier 'hyper
         ns-use-srgb-colorspace t)
-  ;; darwin ls program
-  (setq ls-lisp-use-insert-directory-program nil)
+  ;;darwin ls program
+  (setq ls-lisp-use-insert-directory-program)
   (require 'ls-lisp))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

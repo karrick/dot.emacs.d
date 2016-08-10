@@ -192,11 +192,12 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;; key bindings
 
-;; (global-set-key (kbd "C-x C-f") #'(lambda (&optional arg)
-;;                                     (interactive "P")
-;;                                     (if (equal current-prefix-arg nil)
-;;                                         (find-file-in-repository)
-;;                                       (ido-find-file))))
+(global-set-key (kbd "C-x C-f") #'(lambda (&optional arg)
+                                    "C-x C-f invokes #'ido-file-file; with C-u prefix, invokes #'find-file-in-repository."
+                                    (interactive "P")
+                                    (if (equal current-prefix-arg nil)
+                                        (ido-find-file)
+                                      (find-file-in-repository))))
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)

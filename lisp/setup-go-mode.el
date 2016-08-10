@@ -21,6 +21,7 @@
           (add-to-list 'load-path dir)
           (require 'go-guru)
           (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode)
+          (add-hook 'go-mode-hook #'go-eldoc-setup)
           (defun go-set-scope-here ()
             (interactive)
             (setq go-guru-scope (file-name-directory (buffer-file-name)))))

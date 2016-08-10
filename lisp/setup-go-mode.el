@@ -8,7 +8,7 @@
 
 (setenv "GO15VENDOREXPERIMENT" "1")     ; won't need this much longer
 (let ((gopath (expand-file-name "~/go")))
-  (prepend-path (concat gopath "/bin"))
+  (path-prepend (concat gopath "/bin"))
   (setenv "GOPATH" gopath))
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 

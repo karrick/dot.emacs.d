@@ -25,7 +25,7 @@
                     "~/bin"
                     )))
   (dolist (dir directories)
-    (prepend-path dir)))
+    (path-prepend dir)))
 
 (when (and (fboundp 'daemonp) (daemonp) (cd (expand-file-name "~"))))
 (setenv "GIT_PAGER" "")			; elide git paging capability

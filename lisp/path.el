@@ -4,7 +4,7 @@
 
 ;;; Code:
 
-(defun prepend-path (elem)
+(defun path-prepend (elem)
   "Prepend ELEM to the 'exec-path' and PATH environment variable."
   (interactive "DPrepend what directory to PATH: ")
   (let ((path (expand-file-name elem)))
@@ -15,7 +15,7 @@
       (setenv "PATH" (concat path ":" (getenv "PATH")))
       (message "Prepending %s to PATH" path))))
 
-(defun append-path (elem)
+(defun path-append (elem)
   "Append ELEM to the 'exec-path' and PATH environment variable."
   (interactive "DAppend what directory to PATH: ")
   (let ((path (expand-file-name elem)))

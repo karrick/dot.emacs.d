@@ -14,6 +14,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(setq package-check-signature t)
+
 (require 'path)
 
 ;;;; process environment
@@ -188,12 +190,12 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;;;; key bindings
 
-(global-set-key (kbd "C-x C-f") #'(lambda (&optional arg)
-                                    (interactive "P")
-                                    (if (equal current-prefix-arg nil)
-                                        (find-file-in-repository)
-                                        ; alternative: (ido-find-file)
-                                      (find-file "."))))
+;; (global-set-key (kbd "C-x C-f") #'(lambda (&optional arg)
+;;                                     (interactive "P")
+;;                                     (if (equal current-prefix-arg nil)
+;;                                         (find-file-in-repository)
+;;                                         ; alternative: (ido-find-file)
+;;                                       (find-file "."))))
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)

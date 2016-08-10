@@ -7,6 +7,8 @@
   (package-refresh-contents))
 (package-initialize)
 
+(setq package-check-signature 'allow-unsigned)
+
 (dolist (pkg '(
                auto-complete
                ;; auto-complete-config

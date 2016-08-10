@@ -29,6 +29,7 @@
                golint ;; go get -u github.com/golang/lint/golint
                js2-mode
                json-mode
+               ivy
                markdown-mode
                maxframe
                multiple-cursors

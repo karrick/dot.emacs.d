@@ -33,8 +33,10 @@
 (setq compilation-scroll-output 'first-error
       diff-switches "-u"
       dired-listing-switches "-Bhl"
-      dired-show-ls-switches t
       make-backup-files nil)
+
+(setq ls-lisp-use-insert-directory-program nil)
+(require 'ls-lisp)
 
 ;;;; ediff
 (setq ediff-diff-options "-w"
@@ -102,9 +104,9 @@
 
 ;;;; ido-mode
 
-(require 'ido)
-(ido-mode t)
-(setq ido-enable-flex-matching t)	; enable fuzzy matching
+;; (require 'ido)
+;; (ido-mode t)
+;; (setq ido-enable-flex-matching t)	; enable fuzzy matching
 
 ;;;; uniquify buffer names
 
@@ -171,6 +173,12 @@ If there is no .svn directory, examine if there is CVS and run
               (defun disable-auto-complete-mode () (auto-complete-mode 0))
               (ac-flyspell-workaround)))
 
+;; ivy-mode
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (ivy-mode 1)))
+
 ;; codesearch
 (require 'codesearch)
 
@@ -179,6 +187,13 @@ If there is no .svn directory, examine if there is CVS and run
 (setq-default flycheck-emacs-lisp-load-path 'inherit)
 
 ;;;; key bindings
+
+(global-set-key (kbd "C-x C-f") #'(lambda (&optional arg)
+                                    (interactive "P")
+                                    (if (equal current-prefix-arg nil)
+                                        (find-file-in-repository)
+                                        ; alternative: (ido-find-file)
+                                      (find-file "."))))
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)
@@ -196,28 +211,28 @@ If there is no .svn directory, examine if there is CVS and run
   (interactive "p")
   (other-window (- (prefix-numeric-value n))))
 
-(global-set-key (kbd "C-x C-n") 'other-window)
-(global-set-key (kbd "C-x C-p") 'other-window-backwards)
-(global-set-key (kbd "C-x n") 'other-window)
-(global-set-key (kbd "C-x p") 'other-window-backwards)
+(global-set-key (kbd "C-x C-n") #'other-window)
+(global-set-key (kbd "C-x C-p") #'other-window-backwards)
+(global-set-key (kbd "C-x n") #'other-window)
+(global-set-key (kbd "C-x p") #'other-window-backwards)
 
 (when (eq system-type 'darwin)
-  (global-set-key (kbd "s-<down>") 'windmove-down)
-  (global-set-key (kbd "s-<left>") 'windmove-left)
-  (global-set-key (kbd "s-<right>") 'windmove-right)
-  (global-set-key (kbd "s-<up>") 'windmove-up))
+  (global-set-key (kbd "s-<down>") #'windmove-down)
+  (global-set-key (kbd "s-<left>") #'windmove-left)
+  (global-set-key (kbd "s-<right>") #'windmove-right)
+  (global-set-key (kbd "s-<up>") #'windmove-up))
 
 ;; expand-region
-(global-set-key (kbd "H-=") 'er/expand-region)
-(global-set-key (kbd "H--") 'er/contract-region)
+(global-set-key (kbd "H-=") #'er/expand-region)
+(global-set-key (kbd "H--") #'er/contract-region)
 
 ;; multiple-cursors
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c C->") 'mc/mark-more-like-this-extended)
+(global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
+(global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
+(global-set-key (kbd "C->") #'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
+(global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)
 
 ;;;; don't let the cursor go into minibuffer prompt (thank's, xah!)
 (setq minibuffer-prompt-properties '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
@@ -226,7 +241,7 @@ If there is no .svn directory, examine if there is CVS and run
 (add-hook 'after-init-hook
           #'(lambda ()
               (require 'wgrep)
-              (define-key grep-mode-map (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)
+              (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
               (setq wgrep-auto-save-buffer t)))
 
 (let* ((client (executable-find "emacsclient"))

@@ -298,9 +298,13 @@ If there is no .svn directory, examine if there is CVS and run
 (column-number-mode 1)
 (setq scroll-conservatively 5
       scroll-step 1
-      visible-bell 1
       inhibit-startup-message t)
 (put 'narrow-to-region 'disabled nil)
+
+;; quiet, please! No dinging!
+
+(setq visible-bell nil)
+(setq ring-bell-function #'(lambda ()))
 
 ;;;; disable menu, scroll, and tool bars
 (if (fboundp 'tool-bar-mode)

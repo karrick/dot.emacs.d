@@ -281,10 +281,13 @@ If there is no .svn directory, examine if there is CVS and run
   (file-error
    (message "no localhost file found: %s" err)))
 
+(setq visible-bell nil) ;; quiet, please! No dinging!
+
 ;;;; Darwin fixes
 (when (eq system-type 'darwin)
   (setq ns-function-modifier 'hyper
-        ns-use-srgb-colorspace t)
+        ns-use-srgb-colorspace t
+        ring-bell-function #'(lambda ()))
   ;;darwin ls program
   (setq ls-lisp-use-insert-directory-program)
   (require 'ls-lisp))
@@ -300,11 +303,6 @@ If there is no .svn directory, examine if there is CVS and run
       scroll-step 1
       inhibit-startup-message t)
 (put 'narrow-to-region 'disabled nil)
-
-;; quiet, please! No dinging!
-
-(setq visible-bell nil)
-(setq ring-bell-function #'(lambda ()))
 
 ;;;; disable menu, scroll, and tool bars
 (if (fboundp 'tool-bar-mode)

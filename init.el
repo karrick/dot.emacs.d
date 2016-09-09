@@ -175,13 +175,14 @@ If there is no .svn directory, examine if there is CVS and run
               (defun disable-auto-complete-mode () (auto-complete-mode 0))
               (ac-flyspell-workaround)))
 
-;; ivy-mode
+;; ido-mode or ivy-mode
 
 (add-hook 'after-init-hook
           #'(lambda ()
               (require 'ido)
-              ;; (ido-mode 1)
-              (ivy-mode 1)))
+              (if t
+                  (ido-mode 1)
+                (ivy-mode 1))))
 
 ;; codesearch
 (require 'codesearch)
@@ -202,6 +203,7 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)
 (global-set-key (kbd "M-g") #'goto-line)
+;; (global-set-key (kbd "s-r") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f2>") #'clean-and-indent)
 (global-set-key (kbd "<f3>") #'copy-and-comment)

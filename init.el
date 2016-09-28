@@ -4,6 +4,12 @@
 
 ;;; Code:
 
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+;; (package-initialize)
+
 (let ((default-directory (concat user-emacs-directory (convert-standard-filename "lisp/"))))
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path)
@@ -291,7 +297,7 @@ If there is no .svn directory, examine if there is CVS and run
         ns-use-srgb-colorspace t
         ring-bell-function #'(lambda ()))
   ;;darwin ls program
-  (setq ls-lisp-use-insert-directory-program)
+  (setq ls-lisp-use-insert-directory-program nil)
   (require 'ls-lisp))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

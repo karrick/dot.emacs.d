@@ -312,6 +312,9 @@ If there is no .svn directory, examine if there is CVS and run
       inhibit-startup-message t)
 (put 'narrow-to-region 'disabled nil)
 
+(when (not (eq system-type 'darwin))
+  (setq visible-bell 1))
+
 ;;;; disable menu, scroll, and tool bars
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))

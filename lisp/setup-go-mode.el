@@ -6,7 +6,6 @@
 
 (require 'path)
 
-(setenv "GO15VENDOREXPERIMENT" "1")     ; won't need this much longer
 (let ((gopath (expand-file-name "~/go")))
   (path-prepend (concat gopath "/bin"))
   (setenv "GOPATH" gopath))

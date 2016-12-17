@@ -42,6 +42,8 @@
 ;; set default font to one of my preferred fonts
 (require 'find-first)
 (find-first '(
+              "Fantasque Sans Mono"
+              "Menlo"
               "DejaVu Sans Mono"
               "Liberation Mono"
               "Inconsolata"
@@ -49,7 +51,7 @@
               )
             #'(lambda (f)
                 (when (member f (font-family-list-sorted))
-                  (add-to-list 'default-frame-alist `(font . ,(concat f "-10"))))))
+                  (add-to-list 'default-frame-alist `(font . ,(concat f "-16"))))))
 
 (global-set-key (kbd "C-+") #'text-scale-increase)
 (global-set-key (kbd "C--") #'text-scale-decrease)

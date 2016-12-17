@@ -12,7 +12,6 @@
 
 (let ((default-directory (concat user-emacs-directory (convert-standard-filename "lisp/"))))
   (normal-top-level-add-to-load-path '("."))
-  (normal-top-level-add-subdirs-to-load-path)
   (ignore-errors
     (when (file-directory-p (concat default-directory "benchmark-init-el"))
       (require 'benchmark-init-loaddefs)

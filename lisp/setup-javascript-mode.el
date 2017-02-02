@@ -3,6 +3,7 @@
 ;;; Code:
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 (autoload 'js2-mode "js2-mode" "Major mode for editing JavaScript code." t)
 (eval-after-load "js2-mode"
   #'(lambda ()

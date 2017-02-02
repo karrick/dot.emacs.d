@@ -1,13 +1,14 @@
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
-;; (add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
+;; (add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/")) ; considered to be stable, but unreliable today
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+;; (add-to-list 'package-archives '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
+
 (setq package-enable-at-startup nil)
+(setq package-check-signature 'allow-unsigned)
 (when (not package-archive-contents)
   (package-refresh-contents))
 (package-initialize)
-
-(setq package-check-signature 'allow-unsigned)
 
 (dolist (pkg '(
                auto-complete
@@ -21,8 +22,10 @@
                flycheck
                ;; go-autocomplete
                go-mode
+               go-eldoc
                ;; go get -u github.com/google/codesearch/cmd/...
                ;; go get -u github.com/kisielk/errcheck
+               ;; go get -u github.com/mdempsky/unconvert
                ;; go get -u github.com/nsf/gocode
                ;; go get -u github.com/rogpeppe/godef
                ;; go get -u golang.org/x/tools/cmd/goimports

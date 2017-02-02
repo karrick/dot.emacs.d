@@ -18,6 +18,7 @@
           #'(lambda ()
               (add-hook 'after-save-hook #'auto-recompile-el-buffer)
               (add-hook 'before-save-hook #'clean-and-indent nil t)
+              (eldoc-mode)
               (flyspell-prog-mode)
               (setq fill-column 100)))
 

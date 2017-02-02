@@ -9,6 +9,7 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 ;; (package-initialize)
+(setq package-check-signature t)
 
 (let ((default-directory (concat user-emacs-directory (convert-standard-filename "lisp/"))))
   (normal-top-level-add-to-load-path '("."))
@@ -18,8 +19,6 @@
       (benchmark-init/activate))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(setq package-check-signature t)
 
 (require 'path)
 
@@ -31,6 +30,11 @@
                     )))
   (dolist (dir directories)
     (path-prepend dir)))
+
+(let* ((client (executable-find "emacsclient"))
+       (cmd (concat client " -a ''")))
+  (setenv "EDITOR" cmd)
+  (setenv "VISUAL" cmd))
 
 (when (and (fboundp 'daemonp) (daemonp) (cd (expand-file-name "~"))))
 (setenv "GIT_PAGER" "")			; elide git paging capability
@@ -50,36 +54,8 @@
       ediff-window-setup-function 'ediff-setup-windows-plain ;; don't spawn a new frame for the ediff commands, keep it all in one frame
       ediff-split-window-function 'split-window-horizontally) ;; have ediff buffers show in a side-by-side view
 
-;;;; save new scripts as executable
-(add-hook 'after-save-hook
-          #'(lambda ()
-              (when
-                  (and
-                   (save-excursion
-                     (save-restriction
-                       (widen)
-                       (goto-char (point-min))
-                       (save-match-data
-                         (looking-at "^#!"))))
-                   (not (file-executable-p buffer-file-name)))
-                (set-file-modes buffer-file-name
-                                (logior (file-modes buffer-file-name) #o100))
-                (message
-                 "Wrote and made executable: %s" buffer-file-name))))
-
-(require 'clean-and-indent)
-
 (dolist (item '(sh-mode-hook css-mode-hook))
   (add-hook item #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
-
-(defun copy-and-comment (beg end)
-  (interactive "*r")
-  (if mark-active
-      (save-excursion
-        (copy-region-as-kill beg end)
-        (yank)
-        (comment-region beg end))
-    (message "cannot copy-and-comment without region selected")))
 
 ;;;; advise the shell commands to name the buffer after the command itself
 (eval-after-load 'shell-command
@@ -163,23 +139,6 @@ If there is no .svn directory, examine if there is CVS and run
 
 (when (fboundp 'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
 
-;;;; auto-complete-mode
-
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (require 'auto-complete-config)
-              (add-to-list 'ac-dictionary-directories
-                           (concat user-emacs-directory (convert-standard-filename ".ac-dict")))
-              ;; ac-common-setup is called by ac-config-default
-              (add-to-list 'ac-modes 'nxml-mode)
-              (ac-config-default)
-              (defun ac-common-setup () (add-to-list 'ac-sources 'ac-source-yasnippet))
-              (add-to-list 'ac-modes 'html-mode)
-              (ac-config-default)
-              (defun enable-auto-complete-mode () (auto-complete-mode 1))
-              (defun disable-auto-complete-mode () (auto-complete-mode 0))
-              (ac-flyspell-workaround)))
-
 ;; ido-mode or ivy-mode
 
 (add-hook 'after-init-hook
@@ -255,11 +214,6 @@ If there is no .svn directory, examine if there is CVS and run
               (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
               (setq wgrep-auto-save-buffer t)))
 
-(let* ((client (executable-find "emacsclient"))
-       (cmd (concat client " -a ''")))
-  (setenv "EDITOR" cmd)
-  (setenv "VISUAL" cmd))
-
 ;;;; edit-server for browsers
 ;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
 
@@ -268,6 +222,15 @@ If there is no .svn directory, examine if there is CVS and run
     (require 'edit-server)
     (setq edit-server-new-frame nil)
     (edit-server-start)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (require 'clean-and-indent)
+              (require 'copy-and-comment)
+              (require 'make-shebang-executable)
+              (require 'setup-autocomplete)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Language specific setup files
@@ -288,13 +251,15 @@ If there is no .svn directory, examine if there is CVS and run
   (file-error
    (message "no localhost file found: %s" err)))
 
-(setq visible-bell nil) ;; quiet, please! No dinging!
+(setq visible-bell (cond
+                    ((eq system-type 'darwin) nil) ; darwin: do not use visibile-bell
+                    (t t)))                        ; all others: flash frame instead of bell
 
 ;;;; Darwin fixes
 (when (eq system-type 'darwin)
+  ;; (setq ring-bell-function #'(lambda ()))
   (setq ns-function-modifier 'hyper
-        ns-use-srgb-colorspace t
-        ring-bell-function #'(lambda ()))
+        ns-use-srgb-colorspace t)
   ;;darwin ls program
   (setq ls-lisp-use-insert-directory-program nil)
   (require 'ls-lisp))
@@ -311,9 +276,6 @@ If there is no .svn directory, examine if there is CVS and run
       inhibit-startup-message t)
 (put 'narrow-to-region 'disabled nil)
 
-(when (not (eq system-type 'darwin))
-  (setq visible-bell 1))
-
 ;;;; disable menu, scroll, and tool bars
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
@@ -323,7 +285,10 @@ If there is no .svn directory, examine if there is CVS and run
     (menu-bar-mode -1))
 
 (add-hook 'after-init-hook #'(lambda () (load-theme 'zenburn t)))
-(when window-system (require 'nice-font))
+
+(when window-system
+  (server-start)
+  (require 'nice-font))
 
 ;;; init.el ends here
 (custom-set-variables
@@ -331,10 +296,12 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(package-selected-packages
+   (quote
+    (auto-complete bash-completion edit-server expand-region fic-mode find-file-in-repository flycheck go-eldoc go-mode go-rename golint ivy js2-mode json-mode markdown-mode maxframe multiple-cursors puppet-mode shell-command smart-tab wgrep-ack yaml-mode zenburn-theme ))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(go-guru-hl-identifier-face ((t (:background "chartreuse" :foreground "gray0")))))
+ )

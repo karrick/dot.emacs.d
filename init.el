@@ -31,8 +31,7 @@
   (dolist (dir directories)
     (path-prepend dir)))
 
-(let* ((client (executable-find "emacsclient"))
-       (cmd (concat client " -a ''")))
+(let ((cmd (executable-find "emacsclient")))
   (setenv "EDITOR" cmd)
   (setenv "VISUAL" cmd))
 

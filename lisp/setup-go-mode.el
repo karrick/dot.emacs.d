@@ -2,7 +2,38 @@
 
 ;;; Commentary:
 
+;; Install the following go packages:
+;;
+;; go get -u github.com/golang/lint/golint
+;; go get -u github.com/google/codesearch/cmd/...
+;; go get -u github.com/kisielk/errcheck
+;; go get -u github.com/mdempsky/unconvert
+;; go get -u github.com/nsf/gocode
+;; go get -u github.com/rogpeppe/godef
+;; go get -u golang.org/x/tools/cmd/goimports
+;; go get -u golang.org/x/tools/cmd/gorename
+
 ;;; Code:
+
+;; emacs package requirements
+
+(require 'setup-packages)
+
+;; (setup-packages/install '(
+;;                ;; (go-autocomplete "melpa-stable")
+;;                (go-mode "melpa-stable" t)
+;;                (go-eldoc "melpa-stable" t)
+;;                ;; (go-rename "melpa" t)
+;;                (golint "melpa" t)
+;;                ))
+
+
+;; (add-to-list 'setup-packages/package-list pkg t #'setup-packages/compare-packages))
+
+;; (package-refresh-contents)
+
+;; (setup-packages/with-pinned-packages
+;; (setup-packages/install-missing-packages (mapcar #'car
 
 (require 'path)
 (let ((gopath (expand-file-name "~/go")))

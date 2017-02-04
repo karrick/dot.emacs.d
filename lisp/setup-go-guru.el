@@ -3,7 +3,13 @@
 ;;; Commentary:
 
 ;; Sadly this customization is not working right now because go-guru.el removed from
-;; golang.org/x/tools/cmd/guru, but not yet available in recent go-mode.el.
+;; golang.org/x/tools/cmd/guru, but not yet available in recent `go-mode.el`.
+
+;; Install the following go packages:
+;;
+;; go get -u golang.org/x/tools/cmd/guru
+
+;; (add-to-list 'my-packages '(go-guru "melpa" t))
 
 ;;; Code:
 

@@ -8,22 +8,21 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-;; (package-initialize)
+(package-initialize)
 (setq package-check-signature t)
 
-(let ((default-directory (concat user-emacs-directory (convert-standard-filename "lisp/"))))
+(let ((default-directory (convert-standard-filename (expand-file-name (concat user-emacs-directory "/lisp")))))
   (normal-top-level-add-to-load-path '("."))
-  (ignore-errors
-    (when (file-directory-p (concat default-directory "benchmark-init-el"))
-      (require 'benchmark-init-loaddefs)
-      (benchmark-init/activate))))
+  ;; optionally benchmark init process
+  (when (require 'benchmark-init-loaddefs nil 'no-error)
+    (benchmark-init/activate)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; process environment
+
+(when (and (fboundp 'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
 
 (require 'path)
-
-;;;; process environment
-
 (let ((directories (list
                     "/usr/local/bin"
                     "~/bin"
@@ -32,31 +31,25 @@
     (path-prepend dir)))
 
 (let ((cmd (executable-find "emacsclient")))
-  (setenv "EDITOR" cmd)
-  (setenv "VISUAL" cmd))
+  (when cmd
+    (setenv "EDITOR" cmd)
+    (setenv "VISUAL" cmd)))
 
-(when (and (fboundp 'daemonp) (daemonp) (cd (expand-file-name "~"))))
-(setenv "GIT_PAGER" "")			; elide git paging capability
-(setenv "PAGER" "cat")
+(setenv "GIT_PAGER" "")			; elide git paging capability.
+(setenv "PAGER" "cat")                  ; in lieu of paging files, dump them to a buffer using `cat`.
 
-(prefer-coding-system 'utf-8)
-(setq compilation-scroll-output 'first-error
-      diff-switches "-u"
-      dired-listing-switches "-Bhl"
-      make-backup-files nil)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; language specific configuration
 
-(setq ls-lisp-use-insert-directory-program nil)
-(require 'ls-lisp)
+(require 'setup-elisp-mode)
+(require 'setup-go-mode) ; golang
+(require 'setup-javascript-mode)
+(require 'setup-python-mode)
+(require 'setup-ruby-mode)
+(add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
-;;;; ediff
-(setq ediff-diff-options "-w"
-      ediff-window-setup-function 'ediff-setup-windows-plain ;; don't spawn a new frame for the ediff commands, keep it all in one frame
-      ediff-split-window-function 'split-window-horizontally) ;; have ediff buffers show in a side-by-side view
-
-(dolist (item '(sh-mode-hook css-mode-hook))
-  (add-hook item #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
-
-;;;; advise the shell commands to name the buffer after the command itself
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; advise the shell commands to name the buffer after the command itself
 (eval-after-load 'shell-command
   (defadvice shell-command (before buffer-named-with-command
                                    (command &optional output-buffer error-buffer)
@@ -76,29 +69,38 @@
       (setq default-directory dir)))
   (global-set-key [(meta !)] 'async-shell-command))
 
-;;;; tabs and indenting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; configuration
 
+(prefer-coding-system 'utf-8)
+(setq make-backup-files nil
+      dired-listing-switches "-Bhl"
+      diff-switches "-u"
+      ediff-diff-options "-w"
+      ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands, keep it all in one frame
+      ediff-split-window-function 'split-window-horizontally) ; have ediff buffers show in a side-by-side view
+
+;; tabs and indenting
 (setq-default indent-tabs-mode nil
               tab-width 8)
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
 (defvaralias 'perl-indent-level 'tab-width)
 
-;;;; ido-mode
-
-;; (require 'ido)
-;; (ido-mode t)
-;; (setq ido-enable-flex-matching t)	; enable fuzzy matching
-
-;;;; uniquify buffer names
-
+;; uniquify buffer names
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-after-kill-buffer-p nil
       uniquify-ignore-buffers-re "^\\*")
 
-;;;; svn mode
+;; vcs
+(eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" 'vc-ediff))
 
+;; fossil vc mode
+(autoload 'vc-fossil-registered "vc-fossil")
+(add-to-list 'vc-handled-backends 'Fossil)
+
+;; svn mode
 (autoload 'svn-status "psvn"
   "Examine the status of Subversion working copy in directory DIR.
 If ARG is -, allow editing of the parameters. One could add -N to
@@ -111,65 +113,16 @@ If there is no .svn directory, examine if there is CVS and run
 `cvs-examine'. Otherwise ask if to run `dired'."
   t)
 
-;;;; vcs
-
-(eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" 'vc-ediff))
-
-;;;; fossil vc mode
-
-(autoload 'vc-fossil-registered "vc-fossil")
-(add-to-list 'vc-handled-backends 'Fossil)
-
-;;;; ansi-color
-
-(require 'ansi-color)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-(add-hook 'compilation-mode-hook 'ansi-color-for-comint-mode-on)
-(defun colorize-compilation-buffer ()
-  (let ((inhibit-read-only t))
-    (ansi-color-apply-on-region compilation-filter-start (point-max))))
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-(ansi-color-for-comint-mode-on) ; allow terminal colorization
-
-;;;; highlight entire expression within parens
-(show-paren-mode t)
-(setq show-paren-style 'expression)
-(set-face-background 'show-paren-match-face "#1f3f3f")
-
-(when (fboundp 'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
-
-;; ido-mode or ivy-mode
-
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (require 'ido)
-              (if t
-                  (ido-mode 1)
-                (ivy-mode 1))))
-
-;; codesearch
-(require 'codesearch)
-
 ;; flycheck is the successor to flymake
 (add-hook 'after-init-hook #'global-flycheck-mode)
 (setq-default flycheck-emacs-lisp-load-path 'inherit)
 
-;;;; key bindings
-
-(global-set-key (kbd "C-x C-f") #'(lambda (&optional arg)
-                                    "C-x C-f invokes #'ido-file-file; with C-u prefix, invokes #'find-file-in-repository."
-                                    (interactive "P")
-                                    (if (equal current-prefix-arg nil)
-                                        (ido-find-file)
-                                      (find-file-in-repository))))
-
+;; key bindings
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)
 (global-set-key (kbd "M-g") #'goto-line)
 ;; (global-set-key (kbd "s-r") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key (kbd "<f2>") #'clean-and-indent)
-(global-set-key (kbd "<f3>") #'copy-and-comment)
 (global-set-key (kbd "<f8>") #'recompile)
 (global-set-key (kbd "<S-f8>") #'compile)
 
@@ -203,52 +156,16 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
 (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)
 
-;;;; don't let the cursor go into minibuffer prompt (thank's, xah!)
+;; don't let the cursor go into minibuffer prompt (thank's, xah!)
 (setq minibuffer-prompt-properties '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
 
-;;;; writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (require 'wgrep)
-              (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
-              (setq wgrep-auto-save-buffer t)))
-
-;;;; edit-server for browsers
-;; install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome
-
-(eval-after-load "edit-server"
-  (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
-    (require 'edit-server)
+;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
+(when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
+  (eval-after-load "edit-server"
     (setq edit-server-new-frame nil)
     (edit-server-start)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (require 'clean-and-indent)
-              (require 'copy-and-comment)
-              (require 'make-shebang-executable)
-              (require 'setup-autocomplete)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Language specific setup files
-
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (require 'setup-elisp-mode)
-              (require 'setup-go-mode) ; golang
-              (require 'setup-javascript-mode)
-              (require 'setup-python-mode)
-              (require 'setup-ruby-mode)
-              (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(condition-case err
-    (require 'localhost)
-  (file-error
-   (message "no localhost file found: %s" err)))
 
 (setq visible-bell (cond
                     ((eq system-type 'darwin) nil) ; darwin: do not use visibile-bell
@@ -259,13 +176,25 @@ If there is no .svn directory, examine if there is CVS and run
   ;; (setq ring-bell-function #'(lambda ()))
   (setq ns-function-modifier 'hyper
         ns-use-srgb-colorspace t)
-  ;;darwin ls program
-  (setq ls-lisp-use-insert-directory-program nil)
-  (require 'ls-lisp))
+  ;; darwin ls program
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; display
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; ansi-color
+;; (require 'ansi-color)
+;; (add-hook 'shell-mode-hook #'ansi-color-for-comint-mode-on)
+;; (add-to-list 'comint-output-filter-functions #'ansi-color-process-output)
+
+;; (require 'compile)
+;; (add-hook 'compilation-mode-hook #'ansi-color-for-comint-mode-on)
+;; (add-hook 'compilation-filter-hook
+;;           #'(lambda ()
+;;               (ansi-color-apply-on-region compilation-filter-start (point-max))))
+
+                                        ; TODO: put #'ansi-color-process-output in comint-output-filter-functions
 
 ;;;; add line and column numbers to the modeline
 (line-number-mode 1)
@@ -275,21 +204,66 @@ If there is no .svn directory, examine if there is CVS and run
       inhibit-startup-message t)
 (put 'narrow-to-region 'disabled nil)
 
-;;;; disable menu, scroll, and tool bars
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
 (if (fboundp 'menu-bar-mode)
     (menu-bar-mode -1))
+(when (fboundp 'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
 
-(add-hook 'after-init-hook #'(lambda () (load-theme 'zenburn t)))
+;;; configuration
+
+;; compilation
+(setq compilation-scroll-output 'first-error)
+
+;; parentheses matching
+(show-paren-mode t)
+(setq show-paren-style 'expression) ; highlight entire expression within parens
+(set-face-background 'show-paren-match-face "#1f3f3f")
+
+;; clean-and-indent
+(require 'clean-and-indent)
+(dolist (h '(sh-mode-hook css-mode-hook))
+  (add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
+(global-set-key (kbd "<f2>") #'clean-and-indent)
+
+;; copy-and-comment
+(require 'copy-and-comment)
+(global-set-key (kbd "<f3>") #'copy-and-comment)
+
+;; ls-lisp -- emulate insert-directory completely in Emacs Lisp
+(require 'ls-lisp)
+(setq ls-lisp-use-insert-directory-program nil)
+
+;; writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
+(when (require 'wgrep 'nil 'no-error)
+  (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
+  (setq wgrep-auto-save-buffer t))
+
+(require 'codesearch)
+(require 'find-file-dynamic)
+(require 'make-shebang-executable)
+(require 'setup-autocomplete)
+
+(load-theme 'zenburn t)
 
 (when window-system
-  (server-start)
-  (require 'nice-font))
+  (require 'nice-font)
+  (when (require 'server nil 'no-error)
+    (unless (server-running-p) (message "window-system and server is not yet running; starting server") (server-start))))
+
+(if (locate-library "localhost")
+    (require 'localhost)
+  (message "no localhost file found"))
+
+;; post-pone some initialization until after basic init complete
+(add-hook 'after-init-hook
+          #'(lambda ()
+              ))
 
 ;;; init.el ends here
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

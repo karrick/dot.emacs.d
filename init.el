@@ -94,7 +94,7 @@
       uniquify-ignore-buffers-re "^\\*")
 
 ;; vcs
-(eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" 'vc-ediff))
+(eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" #'vc-ediff))
 
 ;; fossil vc mode
 (autoload 'vc-fossil-registered "vc-fossil")
@@ -123,13 +123,13 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "M-g") #'goto-line)
 ;; (global-set-key (kbd "s-r") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key (kbd "<f8>") #'recompile)
 (global-set-key (kbd "<S-f8>") #'compile)
+(global-set-key (kbd "<f8>") #'recompile)
 
-;;;; window movement
+;; window movement
 
 (defun other-window-backwards (&optional n)
-  "Select Nth previous window"
+  "Select Nth previous window."
   (interactive "p")
   (other-window (- (prefix-numeric-value n))))
 
@@ -144,24 +144,24 @@ If there is no .svn directory, examine if there is CVS and run
   (global-set-key (kbd "s-<right>") #'windmove-right)
   (global-set-key (kbd "s-<up>") #'windmove-up))
 
-;; expand-region
-(global-set-key (kbd "H-=") #'er/expand-region)
-(global-set-key (kbd "H--") #'er/contract-region)
+(with-eval-after-load 'expand-region
+  (global-set-key (kbd "H-=") #'er/expand-region)
+  (global-set-key (kbd "H--") #'er/contract-region))
 
-;; multiple-cursors
-(global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
-(global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
-(global-set-key (kbd "C->") #'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
-(global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)
+(with-eval-after-load 'multiple-cursors
+  (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
+  (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
+  (global-set-key (kbd "C->") #'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
+  (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
 
 ;; don't let the cursor go into minibuffer prompt (thank's, xah!)
 (setq minibuffer-prompt-properties '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
 
 ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
 (when (and (fboundp 'daemonp) (daemonp) (locate-library "edit-server"))
-  (eval-after-load "edit-server"
+  (with-eval-after-load "edit-server"
     (setq edit-server-new-frame nil)
     (edit-server-start)))
 
@@ -181,7 +181,7 @@ If there is no .svn directory, examine if there is CVS and run
   (setq ls-lisp-use-insert-directory-program nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; display
+;; display
 
 ;; ansi-color
 ;; (require 'ansi-color)
@@ -196,7 +196,7 @@ If there is no .svn directory, examine if there is CVS and run
 
                                         ; TODO: put #'ansi-color-process-output in comint-output-filter-functions
 
-;;;; add line and column numbers to the modeline
+;; add line and column numbers to the modeline
 (line-number-mode 1)
 (column-number-mode 1)
 (setq scroll-conservatively 5
@@ -232,25 +232,21 @@ If there is no .svn directory, examine if there is CVS and run
 (require 'copy-and-comment)
 (global-set-key (kbd "<f3>") #'copy-and-comment)
 
-;; ls-lisp -- emulate insert-directory completely in Emacs Lisp
-(require 'ls-lisp)
-(setq ls-lisp-use-insert-directory-program nil)
-
 ;; writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
-(when (require 'wgrep 'nil 'no-error)
+(with-eval-after-load 'wgrep
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
   (setq wgrep-auto-save-buffer t))
 
-(require 'codesearch)
 (require 'find-file-dynamic)
 (require 'make-shebang-executable)
 (require 'setup-autocomplete)
+(require 'setup-codesearch)
 
 (load-theme 'zenburn t)
 
 (when window-system
   (require 'nice-font)
-  (when (require 'server nil 'no-error)
+  (with-eval-after-load 'server
     (unless (server-running-p) (message "window-system and server is not yet running; starting server") (server-start))))
 
 (if (locate-library "localhost")
@@ -258,9 +254,9 @@ If there is no .svn directory, examine if there is CVS and run
   (message "no localhost file found"))
 
 ;; post-pone some initialization until after basic init complete
-(add-hook 'after-init-hook
-          #'(lambda ()
-              ))
+;; (add-hook 'after-init-hook
+;;           #'(lambda ()
+;;               ))
 
 ;;; init.el ends here
 
@@ -271,7 +267,7 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (auto-complete bash-completion edit-server expand-region fic-mode find-file-in-repository flycheck go-eldoc go-mode go-rename golint ivy js2-mode json-mode markdown-mode maxframe multiple-cursors puppet-mode shell-command smart-tab wgrep-ack yaml-mode zenburn-theme ))))
+    (auto-complete bash-completion edit-server expand-region fic-mode find-file-in-repository flycheck go-eldoc go-mode go-rename golint ivy js2-mode json-mode markdown-mode maxframe multiple-cursors puppet-mode shell-command smart-tab wgrep-ack yaml-mode zenburn-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

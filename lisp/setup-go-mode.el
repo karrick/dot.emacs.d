@@ -2,49 +2,52 @@
 
 ;;; Commentary:
 
-;; Install the following go packages:
-;;
-;; go get -u github.com/golang/lint/golint
-;; go get -u github.com/google/codesearch/cmd/...
-;; go get -u github.com/kisielk/errcheck
-;; go get -u github.com/mdempsky/unconvert
-;; go get -u github.com/nsf/gocode
-;; go get -u github.com/rogpeppe/godef
-;; go get -u golang.org/x/tools/cmd/goimports
-;; go get -u golang.org/x/tools/cmd/gorename
-
 ;;; Code:
 
-;; emacs package requirements
-
-(require 'setup-packages)
-
-;; (setup-packages/install '(
-;;                ;; (go-autocomplete "melpa-stable")
-;;                (go-mode "melpa-stable" t)
-;;                (go-eldoc "melpa-stable" t)
-;;                ;; (go-rename "melpa" t)
-;;                (golint "melpa" t)
-;;                ))
-
-
-;; (add-to-list 'setup-packages/package-list pkg t #'setup-packages/compare-packages))
-
-;; (package-refresh-contents)
-
-;; (setup-packages/with-pinned-packages
-;; (setup-packages/install-missing-packages (mapcar #'car
+;; configure emacs and environment for the Go programming language
 
 (require 'path)
 (let ((gopath (expand-file-name "~/go")))
   (path-prepend (concat gopath "/bin"))
   (setenv "GOPATH" gopath))
 
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+(require 'setup-packages)
+(setup-packages/install '(
+                          (go-autocomplete "melpa-stable" t)
+                          (go-eldoc "melpa-stable" t)
+                          (go-mode "melpa-stable" t)
+                          ))
 
-;; This block sets up global Go configuration and is invoked a single time after go-mode is loaded.
-
+;; This block sets up global Go configuration and is invoked a single time after go-mode is first loaded.
 (with-eval-after-load 'go-mode
+
+  ;; display messages for missing command line tools that don't have required packages
+  (dolist (tuple '(
+                   ("godef" "github.com/rogpeppe/godef")
+                   ("unconvert" "github.com/mdempsky/unconvert")
+                   ))
+    (unless (executable-find (car tuple))
+      (message "Cannot find %s: `go get -u %s`" (car tuple) (cadr tuple))))
+
+  ;; these command line tools have corresponding packages to install and configure
+  (let ((packages nil))
+    ;; gorename
+    (if (executable-find "gorename")
+        (add-to-list 'packages '(go-rename "melpa" t) t #'setup-packages/compare-packages)
+      (message "Cannot find gorename: `go get -u golang.org/x/tools/cmd/gorename`"))
+
+    ;; golint
+    (if (executable-find "golint")
+        (add-to-list 'packages '(golint "melpa" t) t #'setup-packages/compare-packages)
+      (message "Cannot find golint: `go get -u github.com/golang/lint/golint`"))
+
+    ;; prefer goimports, but if not found, display message and use gofmt
+    (setq gofmt-command (or (executable-find "goimports")
+                            (progn
+                              (message "Cannot find goimports: `go get -u golang.org/x/tools/cmd/goimports`")
+                              (executable-find "gofmt"))))
+
+    (setup-packages/install packages))
 
   ;; go-eldoc -- eldoc for the Go programming language
   (with-eval-after-load 'go-autocomplete
@@ -54,22 +57,19 @@
     (add-hook 'go-mode-hook #'go-eldoc-setup))
 
   ;; gocode -- an autocompletion daemon for the Go programming language
-  (let ((dir (concat (getenv "GOPATH") "/src/github.com/nsf/gocode/emacs")))
+  (let ((dir (path-concat (getenv "GOPATH") "src/github.com/nsf/gocode/emacs")))
     (if (file-directory-p dir)
         (progn
           (add-to-list 'load-path dir)
           (require 'go-autocomplete)
           (require 'auto-complete-config)
           (ac-config-default))
-      (message "Cannot find gocode: %s" dir)))
+      (message "Cannot find gocode: `go get -u github.com/nsf/gocode`")))
 
   ;; go-mode configuration
-  (setq godoc-command "godoc")
-  (setq gofmt-command (or (executable-find "goimports")
-                          (executable-find "gofmt"))))
+  (setq godoc-command (executable-find "godoc")))
 
 ;; This block sets up buffer scoped configuration and is invoked every time a new go-mode buffer is created.
-
 (add-hook 'go-mode-hook #'(lambda ()
                             (add-hook 'before-save-hook #'gofmt-before-save nil t)
                             (flyspell-prog-mode)
@@ -79,6 +79,8 @@
                             (local-set-key (kbd "M-.") #'godef-jump)
                             (if (not (string-match "^go" compile-command))
                                 (set (make-local-variable 'compile-command) "go vet && golint && go test"))))
+
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
 (provide 'setup-go-mode)
 

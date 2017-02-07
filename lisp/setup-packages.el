@@ -112,10 +112,10 @@
       (mapc #'(lambda (pkg)
                 (progn
                   (message "Attempting to install package: %s" pkg)
-                  ;; (condition-case err
+                  (condition-case err
                       (package-install pkg)
-                  ;;   (error (message "Cannot install package: %s" err)))
-))
+                    (error (message "Cannot install package: %s" err)))
+		  ))
             missing-packages))))
 
 (defun setup-packages/install (tuples)

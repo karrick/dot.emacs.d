@@ -5,9 +5,11 @@
 ;;; Code:
 
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
+
 (eval-after-load "ruby-mode"
   #'(lambda ()
       (flyspell-prog-mode)
+      (setq fill-column 100)
       (setq ruby-deep-indent-paren nil) ; avoid ridiculous ruby indentation
       (defun ruby--jump-to-test ()
         (find-file

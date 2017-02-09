@@ -30,29 +30,39 @@
 
 (defun require-package/pt-feature (package-tuple)
   "Return feature slot of PACKAGE-TUPLE."
-  (car package-tuple))			; feature name is first element
+  (if (atom package-tuple)
+      package-tuple
+    (car package-tuple)))			; feature name is first element
 
 (defun require-package/pt-package (package-tuple)
   "Return package name slot of PACKAGE-TUPLE."
-  (or (require-package/value-from-key :package package-tuple)
-      (car package-tuple)))		; package name defaults to FEATURE name
+  (if (atom package-tuple)
+      package-tuple
+    (or (require-package/value-from-key :package package-tuple)
+	(car package-tuple))))		; package name defaults to FEATURE name
 
 (defun require-package/pt-archive (package-tuple)
   "Return archive slot of PACKAGE-TUPLE."
-  (require-package/value-from-key :archive package-tuple))
+  (if (atom package-tuple)
+      nil
+    (require-package/value-from-key :archive package-tuple)))
 
 (defun require-package/pt-pinned-alist (package-tuple)
   "Return alist used by package-pinned-packages for PACKAGE-TUPLE."
-  (cons (require-package/pt-package package-tuple)
-	(require-package/pt-archive package-tuple)))
+  (if (atom package-tuple)
+      (cons package-tuple nil)
+    (cons (require-package/pt-package package-tuple)
+	  (require-package/pt-archive package-tuple))))
 
 (defcustom require-package/signature-requirement-default nil
   "Value used for package-check-signature when installing feature without specified :signature-requirement keyword.")
 
 (defun require-package/pt-signature-requirement (package-tuple)
   "Return signature-requirement slot of PACKAGE-TUPLE."
-  (or (require-package/value-from-key :signature-requirement package-tuple)
-      require-package/signature-requirement-default))
+  (if (atom package-tuple)
+      require-package/signature-requirement-default
+    (or (require-package/value-from-key :signature-requirement package-tuple)
+	require-package/signature-requirement-default)))
 
 (defun require-package/pinned-packages (package-tuples)
   "Return alist of PACKAGE-TUPLES which are pinned."
@@ -205,9 +215,9 @@ install, return nil."
 ;; (defun test-ensure-installed ()
 ;;   (interactive)
 ;;   (message "ensure-installed return: %s"
-;; 	   (require-package/ensure-installed
-;; 	    (list (car require-package/package-tuples)
-;; 		  (cadr require-package/package-tuples)))))
+;;	   (require-package/ensure-installed
+;;	    (list (car require-package/package-tuples)
+;;		  (cadr require-package/package-tuples)))))
 
 (defmacro require-package/with-requirements (requirements &rest body)
   "Requires REQUIREMENTS then executes BODY.

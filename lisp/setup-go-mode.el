@@ -13,9 +13,7 @@
   (path-prepend (concat gopath "/bin"))
   (setenv "GOPATH" gopath))
 
-(require-package/with-requirements '(
-				     (go-mode :archive "melpa-stable")
-				     )
+(require-package/with-requirements '((go-mode :archive "melpa-stable"))
   ;; display messages for missing command line tools that don't have required packages
   (dolist (tuple '(
 		   ("godef" "github.com/rogpeppe/godef")

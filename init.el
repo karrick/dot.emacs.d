@@ -52,13 +52,16 @@
   (dolist (dir directories)
     (path-prepend dir)))
 
-(let ((cmd (executable-find "emacsclient")))
-  (when cmd
-    (setenv "EDITOR" cmd)
-    (setenv "VISUAL" cmd)))
+(setenv "GIT_PAGER" "")                  ; elide git paging capability.
+(setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 
-(setenv "GIT_PAGER" "")			; elide git paging capability.
-(setenv "PAGER" "cat")                  ; in lieu of paging files, dump them to a buffer using `cat`.
+(when window-system
+  (let ((cmd (executable-find "emacsclient")))
+    (when cmd
+      (require 'server)
+      (unless (server-running-p) (message "window-system and server is not yet running; starting server") (server-start))
+      (setenv "EDITOR" cmd)
+      (setenv "VISUAL" cmd))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; configuration
@@ -219,10 +222,6 @@ If there is no .svn directory, examine if there is CVS and run
   ;; darwin ls program
   (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil))
-
-(when window-system
-  (require 'server)
-  (unless (server-running-p) (message "window-system and server is not yet running; starting server") (server-start)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display

@@ -221,8 +221,8 @@ If there is no .svn directory, examine if there is CVS and run
   (setq ls-lisp-use-insert-directory-program nil))
 
 (when window-system
-  (with-eval-after-load 'server
-    (unless (server-running-p) (message "window-system and server is not yet running; starting server") (server-start))))
+  (require 'server)
+  (unless (server-running-p) (message "window-system and server is not yet running; starting server") (server-start)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display

@@ -42,8 +42,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; process environment
 
-(when (and (fboundp 'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
-
 (require 'path)
 (let ((directories (list
                     "/usr/local/bin"
@@ -54,6 +52,8 @@
 
 (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
+
+(when (and (fboundp 'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
 
 (when window-system
   (let ((cmd (executable-find "emacsclient")))

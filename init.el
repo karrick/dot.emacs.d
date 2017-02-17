@@ -226,10 +226,11 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display
 
+(require-package/with-requirements '((switch-window :archive "melpa-stable"))
+  (global-set-key (kbd "C-x o") 'switch-window))
+
 (require-package/with-requirements '((zenburn-theme :archive "melpa-stable"))
   (load-theme 'zenburn t))
-
-(require-package/ensure-require '((switch-window :archive "melpa-stable")))
 
 (when window-system
   (require 'nice-font))

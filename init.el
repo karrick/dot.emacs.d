@@ -27,17 +27,21 @@
 ;; in. `require-package/ensure-installed` appends new package
 ;; requirements to `package-pinned-packages` before installing new
 ;; packages.
-(dolist (package '(
-                   (bash-completion . "melpa-stable")
-                   (dash . "melpa-stable") ; flycheck
-                   (epl . "melpa-stable") ; pkg-info
-                   (ivy . "gnu") ; :signature-requirement t)
-                   (pkg-info . "melpa-stable") ; flycheck
-                   (popup . "melpa-stable")    ; auto-complete
-                   (simple-httpd . "melpa-stable") ; ac-js2
-                   (skewer-mode . "melpa-stable") ; ac-js2
-                   ))
-  (require-package/pin-package package))
+(require-package/pin-package-tuples '(
+                                      (bash-completion :archive "melpa-stable")
+                                      (dash :archive "melpa-stable") ; flycheck, magit
+                                      (epl :archive "melpa-stable") ; pkg-info
+                                      (ivy :archive "gnu") ; :signature-requirement t)
+                                      (pkg-info :archive "melpa-stable") ; flycheck
+                                      (popup :archive "melpa-stable")    ; auto-complete
+                                      (simple-httpd :archive "melpa-stable") ; ac-js2
+                                      (skewer-mode :archive "melpa-stable") ; ac-js2
+
+                                      (async :archive "melpa-stable") ; magit
+                                      (with-editor :archive "melpa-stable") ; magit
+                                      (git-commit :archive "melpa-stable") ; magit
+                                      (magit-popup :archive "melpa-stable") ; magit
+                                      ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; process environment
@@ -142,6 +146,9 @@
 ;; fossil vc mode
 (autoload 'vc-fossil-registered "vc-fossil")
 (add-to-list 'vc-handled-backends 'Fossil)
+
+;; magit mode
+(require-package/ensure-require '((magit :archive "melpa-stable") (magit-filenotify :archive "melpa-stable")))
 
 ;; svn mode
 (autoload 'svn-status "psvn"
@@ -309,7 +316,7 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (go-autocomplete go-eldoc golint go-rename go-mode zenburn-theme yaml-mode wgrep-ack wgrep switch-window multiple-cursors markdown-mode keyword-search ivy find-file-in-repository fic-mode expand-region edit-server bash-completion auto-complete ac-emoji popup flycheck dash puppet-mode pkg-info epl))))
+    (magit-filenotify magit go-autocomplete go-eldoc golint go-rename go-mode zenburn-theme yaml-mode wgrep-ack wgrep switch-window multiple-cursors markdown-mode keyword-search ivy find-file-in-repository fic-mode expand-region edit-server bash-completion auto-complete ac-emoji popup flycheck dash puppet-mode pkg-info epl))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -170,6 +170,13 @@ Elements from B will override any corresponding element from A."
   (cl-remove-if #'(lambda (dotted-pair) (null (cdr dotted-pair)))
                 (mapcar #'require-package/dotted-pair-from-package-tuple package-tuples)))
 
+(defun require-package/merge-pinned-packages (package-tuples)
+  "Merge PACKAGE-TUPLES with package-pinned-packages.
+
+Elements from package-pinned-packages will override corresponding elements from PACKAGE-TUPLES."
+  (dolist (package-tuple (require-package/pinned-package-alist-from-package-tuples package-tuples))
+    (cl-pushnew package-tuple package-pinned-packages :key #'car)))
+
 (defmacro require-package/with-merged-pinned-packages (package-tuples &rest body)
   "Merge PACKAGE-TUPLES with package-pinned-packages and execute BODY."
   (declare (indent 1))
@@ -187,32 +194,32 @@ Elements from B will override any corresponding element from A."
 If any package-tuple cannot be loaded, prompt user to install
 corresponding package. If user declines or package fails to
 install, stop processing PACKAGE-TUPLES and return nil."
-  (require-package/with-merged-pinned-packages package-tuples
-    (catch 'missing-requirement
-      (dolist (pt package-tuples)
-        (let ((feature (require-package/feature-from-package-tuple pt))
-              (package-name (require-package/package-from-package-tuple pt))
-              (archive-name (require-package/archive-from-package-tuple pt))
-              (signature (require-package/signature-requirement-from-package-tuple pt)))
-          (unless
-              (or
-               (require feature nil 'no-error)
-               (y-or-n-p (format "Install package (%s)%s? "
-                                 package-name
-                                 (if (null archive-name)
-                                     ""
-                                   (format " from (%s)" archive-name)))))
-            (throw 'missing-requirement nil))
-          (condition-case err
-              (progn
-                (require-package/maybe-package-refresh-contents)
-                (require-package/with-package-check-signature signature
-                  (package-install package-name))
-                (require feature))
-            (error (progn
-                     (message "Cannot install package: %s: %s" package-name err)
-                     (throw 'missing-requirement nil))))))
-      t)))
+  (require-package/merge-pinned-packages package-tuples)
+  (catch 'missing-requirement
+    (dolist (pt package-tuples)
+      (let ((feature (require-package/feature-from-package-tuple pt))
+            (package-name (require-package/package-from-package-tuple pt))
+            (archive-name (require-package/archive-from-package-tuple pt))
+            (signature (require-package/signature-requirement-from-package-tuple pt)))
+        (unless
+            (or
+             (require feature nil 'no-error)
+             (y-or-n-p (format "Install package (%s)%s? "
+                               package-name
+                               (if (null archive-name)
+                                   ""
+                                 (format " from (%s)" archive-name)))))
+          (throw 'missing-requirement nil))
+        (condition-case err
+            (progn
+              (require-package/maybe-package-refresh-contents)
+              (require-package/with-package-check-signature signature
+                (package-install package-name))
+              (require feature))
+          (error (progn
+                   (message "Cannot install package: %s: %s" package-name err)
+                   (throw 'missing-requirement nil))))))
+    t))
 
 (defmacro require-package/with-requirements (package-tuples &rest body)
   "Requires PACKAGE-TUPLES then executes BODY.

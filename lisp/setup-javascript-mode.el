@@ -4,7 +4,11 @@
 
 ;;; Code:
 
-(require-package/with-requirements '((json-mode :archive "melpa-stable"))
+(require-package/with-requirements '(
+                                     (json-mode :archive "melpa-stable")
+                                     (json-reformat :archive "melpa-stable")
+                                     (json-snatcher :archive "melpa-stable")
+                                     )
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
 
 (require-package/with-requirements '((js2-mode :archive "melpa-stable"))

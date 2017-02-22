@@ -17,8 +17,13 @@ mv -f ~/.emacs ~/.emacs.disabled
 cd ~
 git clone https://github.com/karrick/dot.emacs.d
 mv -f ~/dot.emacs.d ~/.emacs.d
-make packages compile
+cd ~/.emacs.d
+make compile
 ```
+
+During startup, initialization will prompt user to install any
+required packages that are not yet installed that are specified in the
+initialization.
 
 ## Create Desktop Launcher
 

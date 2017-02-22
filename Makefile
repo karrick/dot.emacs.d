@@ -14,9 +14,6 @@ build:
 compile:
 	cd lisp && emacs --batch --eval "(progn (add-to-list 'load-path \".\") (byte-recompile-directory \".\" 0))"
 
-packages:
-	emacs --script install-packages.el
-
 markdown: $(TARGET)
 
 $(TARGET): Makefile
@@ -29,4 +26,4 @@ clean:
 %.html: %.md
 	$(MARKDOWN) --output $@ $<
 
-.PHONY: clean markdown packages
+.PHONY: clean markdown

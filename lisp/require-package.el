@@ -26,8 +26,8 @@
 (defun require-package/maybe-package-refresh-contents ()
   "Refresh package contents if not yet refreshed.
 
-Prevents every 'ensure-require' from triggering invocation of
-'package-refresh-contents'."
+Prevents every `ensure-require' from triggering invocation of
+`package-refresh-contents'."
   (unless require-package/package-contents-refreshed
     (package-refresh-contents)
     (setq require-package/package-contents-refreshed (current-time-string))))
@@ -46,7 +46,7 @@ Elements from B will override any corresponding element from A."
     result))
 
 (defun require-package/pin-package (dotted-pair)
-  "Prepend package DOTTED-PAIR to 'package-pinned-packages' if not yet a member."
+  "Prepend package DOTTED-PAIR to `package-pinned-packages' if not yet a member."
   (cl-pushnew dotted-pair package-pinned-packages :key #'car))
 
 (defun require-package/pin-package-tuples (package-tuples)
@@ -70,23 +70,23 @@ Elements from B will override any corresponding element from A."
        (setq ,name saved))))
 
 (defmacro require-package/with-package-archives (archives &rest body)
-  "Temporarily set 'package-archives' to ARCHIVES and execute BODY."
+  "Temporarily set `package-archives' to ARCHIVES and execute BODY."
   (declare (indent 1))
   `(require-package/with-variable package-archives ,archives ,@body))
 
 (defmacro require-package/with-package-check-signature (signature &rest body)
-  "Temporarily set 'package-check-signature' set to SIGNATURE and execute BODY."
+  "Temporarily set `package-check-signature' set to SIGNATURE and execute BODY."
   ;; valid options: t nil 'allow-unsigned
   (declare (indent 1))
   `(require-package/with-variable package-check-signature ,signature ,@body))
 
 (defmacro require-package/with-package-pinned-packages (pinned-package-alist &rest body)
-  "Temporarily set 'package-pinned-packages' to PINNED-PACKAGE-ALIST and execute BODY."
+  "Temporarily set `package-pinned-packages' to PINNED-PACKAGE-ALIST and execute BODY."
   (declare (indent 1))
   `(require-package/with-variable package-pinned-packages ,pinned-package-alist ,@body))
 
 (defmacro require-package/with-package-unsigned-archives (archives &rest body)
-  "Temporarily set 'package-unsigned-archives' to ARCHIVES and execute BODY."
+  "Temporarily set `package-unsigned-archives' to ARCHIVES and execute BODY."
   (declare (indent 1))
   `(require-package/with-variable package-unsigned-archives ,archives ,@body))
 
@@ -156,7 +156,7 @@ Elements from B will override any corresponding element from A."
           (require-package/archive-from-package-tuple package-tuple))))
 
 (defcustom require-package/signature-requirement-default nil
-  "Value used for package-check-signature when installing feature without specified :signature-requirement keyword.")
+  "Value used for `package-check-signature' when installing feature without specified :signature-requirement keyword.")
 
 (defun require-package/signature-requirement-from-package-tuple (package-tuple)
   "Return signature-requirement slot of PACKAGE-TUPLE."
@@ -188,7 +188,7 @@ Elements from B will override any corresponding element from A."
   "Return t when all PACKAGE-TUPLES have been successfully required.
 
 If any package-tuple cannot be loaded, prompt user to install
-corresponding package. If user declines or package fails to
+corresponding package.  If user declines or package fails to
 install, stop processing PACKAGE-TUPLES and return nil."
   (require-package/pin-package-tuples package-tuples)
   (catch 'missing-requirement
@@ -218,11 +218,11 @@ install, stop processing PACKAGE-TUPLES and return nil."
     t))
 
 (defmacro require-package/with-requirements (package-tuples &rest body)
-  "Requires PACKAGE-TUPLES then executes BODY.
+  "Require PACKAGE-TUPLES then execute BODY.
 
 If any requirement is not found, it prompts the user to install
-the corresponding specified package. If the user accepts, it
-attempts to install the package. If any package-tuples cannot be
+the corresponding specified package.  If the user accepts, it
+attempts to install the package.  If any package-tuples cannot be
 loaded, it bails."
   (declare (indent 1))
   `(when (require-package/ensure-require ,package-tuples)

@@ -316,7 +316,7 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (magit-filenotify magit go-autocomplete go-eldoc golint go-rename go-mode zenburn-theme yaml-mode wgrep-ack wgrep switch-window multiple-cursors markdown-mode keyword-search ivy find-file-in-repository fic-mode expand-region edit-server bash-completion auto-complete ac-emoji popup flycheck dash puppet-mode pkg-info epl))))
+    (zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

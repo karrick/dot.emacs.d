@@ -9,7 +9,7 @@
 
 (require 'require-package)
 
-(require-package/with-requirements '((find-file-in-repository :archive "melpa-stable"))
+(require-package/with-requirements '(find-file-in-repository)
   (defun find-file-dynamic (&optional arg)
     "C-x C-f invokes #'ido-file-file; with C-u prefix, invokes #'find-file-in-repository."
     (interactive "P")

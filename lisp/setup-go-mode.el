@@ -13,7 +13,7 @@
 
 (require 'require-package)
 
-(require-package/with-requirements '((go-mode :archive "melpa-stable"))
+(require-package/with-requirements '(go-mode)
 
   ;; display messages for missing command line tools that don't have
   ;; associated required packages
@@ -36,19 +36,19 @@
   ;; gorename
   (let ((cmd (executable-find "gorename")))
     (if (not (string-equal cmd ""))
-        (require-package/with-requirements '((go-rename :archive "melpa"))
+        (require-package/with-requirements '(go-rename)
           (setq go-rename-command cmd))
       (message "Cannot find gorename: `go get golang.org/x/tools/cmd/gorename`")))
 
   ;; go-eldoc -- eldoc for the Go programming language
-  (require-package/with-requirements '((go-eldoc :archive "melpa-stable"))
+  (require-package/with-requirements '(go-eldoc)
     (set-face-attribute 'eldoc-highlight-function-argument nil
                         :underline t :foreground "green"
                         :weight 'bold)
     (add-hook 'go-mode-hook #'go-eldoc-setup))
 
   ;; go-autocomplete
-  (require-package/with-requirements '((go-autocomplete :archive "melpa-stable"))
+  (require-package/with-requirements '(go-autocomplete)
     ;; gocode -- autocompletion daemon for the Go programming language (requires go-autocomplete)
     (let ((dir (path-concat (getenv "GOPATH") "src/github.com/nsf/gocode/emacs")))
       (if (file-directory-p dir)
@@ -60,7 +60,7 @@
 
   ;; golint
   (if (executable-find "golint")
-      (require-package/ensure-require '((golint :archive "melpa")))
+      (require-package/ensure-require '(golint))
     (message "Cannot find golint: `go get github.com/golang/lint/golint`"))
 
   ;; This block sets up buffer scoped configuration and is invoked every time a new go-mode buffer is created.

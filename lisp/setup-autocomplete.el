@@ -6,7 +6,7 @@
 
 (require 'require-package)
 
-(require-package/with-requirements '((auto-complete :archive "melpa-stable"))
+(require-package/with-requirements '(auto-complete)
   (require 'auto-complete-config)
   (add-to-list 'ac-dictionary-directories
                (concat user-emacs-directory (convert-standard-filename ".ac-dict")))
@@ -19,7 +19,7 @@
   (defun disable-auto-complete-mode () (auto-complete-mode 0))
   (ac-flyspell-workaround)
 
-  (require-package/with-requirements '((ac-emoji :archive "melpa-stable"))
+  (require-package/with-requirements '(ac-emoji)
     (cond ((eq system-type 'darwin)
            (set-fontset-font
             t 'symbol

@@ -4,14 +4,7 @@
 
 ;;; Code:
 
-(require-package/with-requirements '(
-                                     (json-mode :archive "melpa-stable")
-                                     (json-reformat :archive "melpa-stable")
-                                     (json-snatcher :archive "melpa-stable")
-                                     )
-  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
-
-(require-package/with-requirements '((js2-mode :archive "melpa-stable"))
+(require-package/with-requirements '(js2-mode)
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
   (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 
@@ -20,7 +13,7 @@
   (set-default 'js2-mirror-mode nil)
   (set-default 'js2-mode-escape-quotes nil)
 
-  (require-package/with-requirements '((ac-js2 :archive "melpa"))
+  (require-package/with-requirements '(ac-js2)
     (add-hook 'js2-mode-hook #'ac-js2-mode))
 
   (add-hook 'javascript-mode-hook #'(lambda ()

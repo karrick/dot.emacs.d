@@ -18,31 +18,6 @@
 
 (require 'require-package)
 
-;; Some packages listed here would be installed automatically from
-;; package dependency resolution system, but we want to pin the
-;; package to a given archive to ensure we get a particular version.
-;;
-;; These are typically packages which are dependencies of other
-;; packages we will explicitly pull
-;; in. `require-package/ensure-installed` appends new package
-;; requirements to `package-pinned-packages` before installing new
-;; packages.
-(require-package/pin-package-tuples '(
-                                      (bash-completion :archive "melpa-stable")
-                                      (dash :archive "melpa-stable") ; flycheck, magit
-                                      (epl :archive "melpa-stable") ; pkg-info
-                                      (ivy :archive "gnu") ; :signature-requirement t)
-                                      (pkg-info :archive "melpa-stable") ; flycheck
-                                      (popup :archive "melpa-stable")    ; auto-complete
-                                      (simple-httpd :archive "melpa-stable") ; ac-js2
-                                      (skewer-mode :archive "melpa-stable") ; ac-js2
-
-                                      (async :archive "melpa-stable") ; magit
-                                      (with-editor :archive "melpa-stable") ; magit
-                                      (git-commit :archive "melpa-stable") ; magit
-                                      (magit-popup :archive "melpa-stable") ; magit
-                                      ))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; process environment
 
@@ -73,7 +48,7 @@
 (require 'setup-autocomplete)
 
 ;; flycheck is the successor to flymake
-(require-package/with-requirements '((flycheck :archive "melpa-stable"))
+(require-package/with-requirements '(flycheck)
   (add-hook 'after-init-hook #'global-flycheck-mode)
   (setq-default flycheck-emacs-lisp-load-path 'inherit))
 
@@ -148,7 +123,7 @@
 (add-to-list 'vc-handled-backends 'Fossil)
 
 ;; magit mode
-(require-package/ensure-require '((magit :archive "melpa-stable") (magit-filenotify :archive "melpa-stable")))
+(require-package/ensure-require '(magit magit-filenotify))
 
 ;; svn mode
 (autoload 'svn-status "psvn"
@@ -193,11 +168,11 @@ If there is no .svn directory, examine if there is CVS and run
   ;; (setq windmove-wrap-around t)
   )
 
-(require-package/with-requirements '((expand-region :archive "melpa-stable"))
+(require-package/with-requirements '(expand-region)
   (global-set-key (kbd "H-=") #'er/expand-region)
   (global-set-key (kbd "H--") #'er/contract-region))
 
-(require-package/with-requirements '((multiple-cursors :archive "melpa-stable"))
+(require-package/with-requirements '(multiple-cursors)
   (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
   (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
   (global-set-key (kbd "C->") #'mc/mark-next-like-this)
@@ -206,7 +181,7 @@ If there is no .svn directory, examine if there is CVS and run
   (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
 
 ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
-(require-package/with-requirements '((edit-server :archive "melpa-stable"))
+(require-package/with-requirements '(edit-server)
   (when (and (fboundp 'daemonp) (daemonp))
     (setq edit-server-new-frame nil)
     (edit-server-start)))
@@ -217,7 +192,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;; (require 'setup-codesearch)
 
 ;; writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
-(require-package/with-requirements '((wgrep :archive "melpa-stable") (wgrep-ack :archive "melpa-stable"))
+(require-package/with-requirements '(wgrep wgrep-ack)
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
   (setq wgrep-auto-save-buffer t))
 
@@ -233,10 +208,10 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display
 
-(require-package/with-requirements '((switch-window :archive "melpa-stable"))
+(require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x o") 'switch-window))
 
-(require-package/with-requirements '((zenburn-theme :archive "melpa-stable"))
+(require-package/with-requirements '(zenburn-theme)
   (load-theme 'zenburn t))
 
 (when window-system
@@ -294,11 +269,14 @@ If there is no .svn directory, examine if there is CVS and run
 (require 'setup-python-mode)
 (require 'setup-ruby-mode)
 
+(require-package/with-requirements '(json-mode)
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
+
 (require-package/ensure-require '(
-                                  (fic-mode :archive "melpa")
-                                  (keyword-search :archive "melpa")
-                                  (markdown-mode :archive "melpa-stable")
-                                  (yaml-mode :archive "melpa-stable")
+                                  fic-mode
+                                  keyword-search
+                                  markdown-mode
+                                  yaml-mode
                                   ))
 
 ;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))

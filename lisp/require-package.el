@@ -149,7 +149,7 @@ Elements from B will override any corresponding element from A."
     (require-package/value-from-key :archive package-tuple)))
 
 (defun require-package/dotted-pair-from-package-tuple (package-tuple)
-  "Return dotted-pair as used by package-pinned-packages for PACKAGE-TUPLE."
+  "Return dotted-pair as used by `package-pinned-packages' for PACKAGE-TUPLE."
   (if (atom package-tuple)
       (cons package-tuple nil)
     (cons (require-package/package-from-package-tuple package-tuple)
@@ -174,7 +174,7 @@ Elements from B will override any corresponding element from A."
                 (mapcar #'require-package/dotted-pair-from-package-tuple package-tuples)))
 
 (defmacro require-package/with-merged-pinned-packages-from-package-tuples (package-tuples &rest body)
-  "Merge PACKAGE-TUPLES with package-pinned-packages and execute BODY."
+  "Temporarily merge PACKAGE-TUPLES with `package-pinned-packages' and execute BODY."
   (declare (indent 1))
   `(require-package/with-package-pinned-packages
        (require-package/merge-alists

@@ -208,6 +208,15 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display
 
+(define-key global-map (kbd "M-<up>") #'enlarge-window)
+(define-key global-map (kbd "ESC <up>") #'enlarge-window)
+(define-key global-map (kbd "M-<down>") #'shrink-window)
+(define-key global-map (kbd "ESC <down>") #'shrink-window)
+(define-key global-map (kbd "M-<left>") #'shrink-window-horizontally)
+(define-key global-map (kbd "ESC <left>") #'shrink-window-horizontally)
+(define-key global-map (kbd "M-<right>") #'enlarge-window-horizontally)
+(define-key global-map (kbd "ESC <right>") #'enlarge-window-horizontally)
+
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x o") 'switch-window))
 

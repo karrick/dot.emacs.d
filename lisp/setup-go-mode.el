@@ -65,6 +65,7 @@
 
   ;; This block sets up buffer scoped configuration and is invoked every time a new go-mode buffer is created.
   (add-hook 'go-mode-hook #'(lambda ()
+                              (hl-line-mode 1)
                               (add-hook 'before-save-hook #'gofmt-before-save nil t)
                               (flyspell-prog-mode)
                               (setq fill-column 100)

@@ -32,7 +32,7 @@
 (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 
-(when (and (fboundp 'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
+(when (and (fboundp #'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
 
 (when window-system
   (let ((cmd (executable-find "emacsclient")))
@@ -49,16 +49,10 @@
 
 ;; flycheck is the successor to flymake
 (require-package/with-requirements '(flycheck)
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  (setq-default flycheck-emacs-lisp-load-path 'inherit))
-
-;; compilation
-(setq compilation-scroll-output 'first-error)
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 ;; parentheses matching
 (show-paren-mode t)
-(setq show-paren-style 'expression) ; highlight entire expression within parens
-(set-face-background 'show-paren-match-face "#1f3f3f")
 
 ;; clean-and-indent
 (require 'clean-and-indent)
@@ -81,7 +75,7 @@
       (switch-to-buffer output-buffer)
       (setq default-directory dir))))
 
-(when (fboundp 'async-shell-command)
+(when (fboundp #'async-shell-command)
   (defadvice async-shell-command (before buffer-named-with-command
                                          (command &optional output-buffer error-buffer)
                                          activate compile)
@@ -89,31 +83,19 @@
     (let ((dir default-directory))
       (switch-to-buffer output-buffer)
       (setq default-directory dir)))
-  (global-set-key [(meta !)] 'async-shell-command))
+  (global-set-key (kbd "M-!") #'async-shell-command))
 
 (prefer-coding-system 'utf-8)
-(setq make-backup-files nil
-      dired-listing-switches "-Bhl"
-      diff-switches "-u"
-      ediff-diff-options "-w"
+(setq ediff-diff-options "-w"
       ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands, keep it all in one frame
       ediff-split-window-function 'split-window-horizontally) ; have ediff buffers show in a side-by-side view
 
 ;; tabs and indenting
-(setq-default indent-tabs-mode nil
-              tab-width 8)
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
 (defvaralias 'perl-indent-level 'tab-width)
 
-;; uniquify buffer names
 (require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward
-      uniquify-after-kill-buffer-p nil
-      uniquify-ignore-buffers-re "^\\*")
-
-;; don't let the cursor go into minibuffer prompt (thank's, xah!)
-(setq minibuffer-prompt-properties '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
 
 ;; vcs
 (eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" #'vc-ediff))
@@ -121,9 +103,6 @@
 ;; fossil vc mode
 (autoload 'vc-fossil-registered "vc-fossil")
 (add-to-list 'vc-handled-backends 'Fossil)
-
-;; magit mode
-(require-package/ensure-require '(magit magit-filenotify))
 
 ;; svn mode
 (autoload 'svn-status "psvn"
@@ -141,32 +120,11 @@ If there is no .svn directory, examine if there is CVS and run
 ;; key bindings
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)
-(global-set-key (kbd "M-g") #'goto-line)
+;; (global-set-key (kbd "M-g") #'goto-line)
 ;; (global-set-key (kbd "s-r") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key (kbd "<S-f8>") #'compile)
-(global-set-key (kbd "<f8>") #'recompile)
-
-;; window movement
-
-(defun other-window-backwards (&optional n)
-  "Select Nth previous window."
-  (interactive "p")
-  (other-window (- (prefix-numeric-value n))))
-
-(global-set-key (kbd "C-x C-n") #'other-window)
-(global-set-key (kbd "C-x C-p") #'other-window-backwards)
-(global-set-key (kbd "C-x n") #'other-window)
-(global-set-key (kbd "C-x p") #'other-window-backwards)
-
-(when (eq system-type 'darwin)
-  ;; (global-set-key (kbd "s-<down>") #'windmove-down)
-  ;; (global-set-key (kbd "s-<left>") #'windmove-left)
-  ;; (global-set-key (kbd "s-<right>") #'windmove-right)
-  ;; (global-set-key (kbd "s-<up>") #'windmove-up))
-  (windmove-default-keybindings)
-  ;; (setq windmove-wrap-around t)
-  )
+(global-set-key (kbd "<f5>") #'compile)
+(global-set-key (kbd "<f4>") #'recompile)
 
 (require-package/with-requirements '(expand-region)
   (global-set-key (kbd "H-=") #'er/expand-region)
@@ -182,8 +140,7 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
 (require-package/with-requirements '(edit-server)
-  (when (and (fboundp 'daemonp) (daemonp))
-    (setq edit-server-new-frame nil)
+  (when (and (fboundp #'daemonp) (daemonp))
     (edit-server-start)))
 
 (require 'browser-open)
@@ -193,17 +150,7 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;; writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
 (require-package/with-requirements '(wgrep wgrep-ack)
-  (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
-  (setq wgrep-auto-save-buffer t))
-
-;;;; Darwin fixes
-(when (eq system-type 'darwin)
-  ;; (setq ring-bell-function #'(lambda ()))
-  (setq ns-function-modifier 'hyper
-        ns-use-srgb-colorspace t)
-  ;; darwin ls program
-  (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil))
+  (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display
@@ -216,35 +163,34 @@ If there is no .svn directory, examine if there is CVS and run
 (define-key global-map (kbd "ESC <left>") #'shrink-window-horizontally)
 (define-key global-map (kbd "M-<right>") #'enlarge-window-horizontally)
 (define-key global-map (kbd "ESC <right>") #'enlarge-window-horizontally)
+(define-key global-map (kbd "C-c H") #'hl-line-mode)
 
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x o") 'switch-window))
 
-(require-package/with-requirements '(zenburn-theme)
-  (load-theme 'zenburn t))
+(require 'raghu)
+
+(when nil
+  (require-package/with-requirements '(zenburn-theme)
+    (load-theme 'zenburn t)))
 
 (when window-system
   (require 'nice-font))
 
-(setq visible-bell (cond
-                    ((eq system-type 'darwin) nil) ; darwin: do not use visibile-bell
-                    (t t)))                        ; all others: flash frame instead of bell
-
 ;; add line and column numbers to the modeline
 (line-number-mode 1)
 (column-number-mode 1)
-(setq scroll-conservatively 5
-      scroll-step 1
-      inhibit-startup-message t)
+;; (setq scroll-conservatively 5
+;;       scroll-step 1)
 (put 'narrow-to-region 'disabled nil)
 
-(if (fboundp 'tool-bar-mode)
+(if (fboundp #'tool-bar-mode)
     (tool-bar-mode -1))
-(if (fboundp 'scroll-bar-mode)
+(if (fboundp #'scroll-bar-mode)
     (scroll-bar-mode -1))
-(if (fboundp 'menu-bar-mode)
+(if (fboundp #'menu-bar-mode)
     (menu-bar-mode -1))
-(when (fboundp 'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
+(when (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
 
 (require-package/with-requirements '(xterm-color)
   (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)
@@ -301,12 +247,35 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(compilation-scroll-output (quote first-error))
+ '(diff-switches "-u")
+ '(dired-listing-switches "-Bhlo")
+ '(edit-server-new-frame nil)
+ '(eshell-output-filter-functions
+   (quote
+    (eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt)))
+ '(flycheck-emacs-lisp-load-path (quote inherit))
+ '(indent-tabs-mode nil)
+ '(inhibit-startup-screen t)
+ '(make-backup-files nil)
+ '(minibuffer-prompt-properties
+   (quote
+    (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
+ '(ns-function-modifier (quote hyper))
+ '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji))))
+    (wgrep zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+ '(show-paren-style (quote expression))
+ '(tab-width 4)
+ '(uniquify-buffer-name-style (quote post-forward) nil (uniquify))
+ '(uniquify-ignore-buffers-re "^\\*")
+ '(visible-bell t)
+ '(wgrep-auto-save-buffer t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(hl-line ((((type x ns) (class color) (background dark)) (:background "green4")))))
+ '(hl-line ((((type x ns) (class color) (background dark)) (:background "firebrick4"))))
+ '(show-paren-match ((((type x ns) (class color) (background light)) (:background "PaleTurquoise1")))))

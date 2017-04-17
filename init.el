@@ -64,26 +64,8 @@
 (require 'copy-and-comment)
 (global-set-key (kbd "<f3>") #'copy-and-comment)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; advise the shell commands to name the buffer after the command itself
-(eval-after-load 'shell-command
-  (defadvice shell-command (before buffer-named-with-command
-                                   (command &optional output-buffer error-buffer)
-                                   activate compile)
-    (setq output-buffer (or output-buffer (concat "*Shell: " command "*")))
-    (let ((dir default-directory))
-      (switch-to-buffer output-buffer)
-      (setq default-directory dir))))
-
-(when (fboundp #'async-shell-command)
-  (defadvice async-shell-command (before buffer-named-with-command
-                                         (command &optional output-buffer error-buffer)
-                                         activate compile)
-    (setq output-buffer (or output-buffer (concat "*Async: " command "*")))
-    (let ((dir default-directory))
-      (switch-to-buffer output-buffer)
-      (setq default-directory dir)))
-  (global-set-key (kbd "M-!") #'async-shell-command))
+(require 'async-shell-command-wrapper)
+(global-set-key (kbd "M-&") #'ksm/async-shell-command)
 
 (prefer-coding-system 'utf-8)
 (setq ediff-diff-options "-w"

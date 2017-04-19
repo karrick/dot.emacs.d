@@ -68,6 +68,7 @@
 (global-set-key (kbd "M-&") #'ksm/async-shell-command)
 
 (prefer-coding-system 'utf-8)
+
 (setq ediff-diff-options "-w"
       ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands, keep it all in one frame
       ediff-split-window-function 'split-window-horizontally) ; have ediff buffers show in a side-by-side view
@@ -100,6 +101,11 @@ If there is no .svn directory, examine if there is CVS and run
   t)
 
 ;; key bindings
+
+(define-key global-map (kbd "C-z") nil)     ; disable suspend-frame
+(define-key global-map (kbd "C-x C-z") nil) ; disable suspend-frame
+(define-key global-map (kbd "C-x C-c") nil) ; disable save-buffers-kill-terminal
+
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 (global-set-key (kbd "C-x C-r") #'rgrep)
 ;; (global-set-key (kbd "M-g") #'goto-line)
@@ -137,6 +143,8 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display
 
+(define-key global-map (kbd "C-c H") #'hl-line-mode)
+
 (define-key global-map (kbd "M-<up>") #'enlarge-window)
 (define-key global-map (kbd "ESC <up>") #'enlarge-window)
 (define-key global-map (kbd "M-<down>") #'shrink-window)
@@ -145,7 +153,6 @@ If there is no .svn directory, examine if there is CVS and run
 (define-key global-map (kbd "ESC <left>") #'shrink-window-horizontally)
 (define-key global-map (kbd "M-<right>") #'enlarge-window-horizontally)
 (define-key global-map (kbd "ESC <right>") #'enlarge-window-horizontally)
-(define-key global-map (kbd "C-c H") #'hl-line-mode)
 
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x o") 'switch-window))
@@ -166,13 +173,10 @@ If there is no .svn directory, examine if there is CVS and run
 ;;       scroll-step 1)
 (put 'narrow-to-region 'disabled nil)
 
-(if (fboundp #'tool-bar-mode)
-    (tool-bar-mode -1))
-(if (fboundp #'scroll-bar-mode)
-    (scroll-bar-mode -1))
-(if (fboundp #'menu-bar-mode)
-    (menu-bar-mode -1))
-(when (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(menu-bar-mode -1)
+(if (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
 
 (require-package/with-requirements '(xterm-color)
   (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)

@@ -114,8 +114,10 @@ If there is no .svn directory, examine if there is CVS and run
 (define-key global-map (kbd "<f4>") #'recompile)
 
 (require-package/with-requirements '(expand-region)
-  (global-set-key (kbd "H-=") #'er/expand-region)
-  (global-set-key (kbd "H--") #'er/contract-region))
+  (define-key global-map (kbd "M-=") #'er/expand-region)
+  (define-key global-map (kbd "ESC =") #'er/expand-region)
+  (define-key global-map (kbd "M--") #'er/contract-region)
+  (define-key global-map (kbd "ESC -") #'er/contract-region))
 
 (require-package/with-requirements '(multiple-cursors)
   (define-key global-map (kbd "C-S-c C-S-c") #'mc/edit-lines)

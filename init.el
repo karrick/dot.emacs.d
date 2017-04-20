@@ -144,6 +144,23 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display
 
+(defun ksm/forward-line-scroll-up (&optional n)
+  "Scroll window down N lines, keeping point at same relative position."
+  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
+  (or n (setq n 1))
+  (forward-line n)
+  (scroll-up n))
+(define-key global-map (kbd "C-S-n") #'ksm/forward-line-scroll-up)
+
+(defun ksm/previous-line-scroll-down (&optional n)
+  "Scroll window up N lines, keeping point at same relative position."
+  (declare (interactive-only
+            "use `ksm/forward-line-scroll-up' with negative argument instead."))
+  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
+  (or n (setq n 1))
+  (ksm/forward-line-scroll-up (- n)))
+(define-key global-map (kbd "C-S-p") #'ksm/previous-line-scroll-down)
+
 (define-key global-map (kbd "C-c H") #'hl-line-mode)
 
 (define-key global-map (kbd "M-<up>") #'enlarge-window)

@@ -58,14 +58,15 @@
 (require 'clean-and-indent)
 (dolist (h '(sh-mode-hook css-mode-hook))
   (add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
-(global-set-key (kbd "<f2>") #'clean-and-indent)
+(define-key global-map (kbd "<f2>") #'clean-and-indent)
 
 ;; copy-and-comment
 (require 'copy-and-comment)
-(global-set-key (kbd "<f3>") #'copy-and-comment)
+(define-key global-map (kbd "<f3>") #'copy-and-comment)
 
 (require 'async-shell-command-wrapper)
-(global-set-key (kbd "M-&") #'ksm/async-shell-command)
+(define-key global-map (kbd "M-&") #'ksm/async-shell-command)
+(define-key global-map (kbd "ESC &") #'ksm/async-shell-command)
 
 (prefer-coding-system 'utf-8)
 
@@ -106,25 +107,23 @@ If there is no .svn directory, examine if there is CVS and run
 (define-key global-map (kbd "C-x C-z") nil) ; disable suspend-frame
 (define-key global-map (kbd "C-x C-c") nil) ; disable save-buffers-kill-terminal
 
-(global-set-key (kbd "C-x C-b") #'ibuffer)
-(global-set-key (kbd "C-x C-r") #'rgrep)
-;; (global-set-key (kbd "M-g") #'goto-line)
-;; (global-set-key (kbd "s-r") #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key (kbd "<f5>") #'compile)
-(global-set-key (kbd "<f4>") #'recompile)
+(define-key global-map (kbd "C-x C-b") #'ibuffer)
+(define-key global-map (kbd "C-x C-r") #'rgrep)
+(define-key global-map (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
+(define-key global-map (kbd "<f5>") #'compile)
+(define-key global-map (kbd "<f4>") #'recompile)
 
 (require-package/with-requirements '(expand-region)
   (global-set-key (kbd "H-=") #'er/expand-region)
   (global-set-key (kbd "H--") #'er/contract-region))
 
 (require-package/with-requirements '(multiple-cursors)
-  (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
-  (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
-  (global-set-key (kbd "C->") #'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
-  (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
+  (define-key global-map (kbd "C-S-c C-S-c") #'mc/edit-lines)
+  (define-key global-map (kbd "C-c C-S-c") #'mc/edit-lines)
+  (define-key global-map (kbd "C->") #'mc/mark-next-like-this)
+  (define-key global-map (kbd "C-<") #'mc/mark-previous-like-this)
+  (define-key global-map (kbd "C-c C-<") #'mc/mark-all-like-this)
+  (define-key global-map (kbd "C-c C->") #'mc/mark-more-like-this-extended))
 
 ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
 (require-package/with-requirements '(edit-server)
@@ -155,7 +154,7 @@ If there is no .svn directory, examine if there is CVS and run
 (define-key global-map (kbd "ESC <right>") #'enlarge-window-horizontally)
 
 (require-package/with-requirements '(switch-window)
-  (global-set-key (kbd "C-x o") 'switch-window))
+  (define-key global-map (kbd "C-x o") 'switch-window))
 
 (require 'raghu)
 

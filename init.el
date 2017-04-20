@@ -175,6 +175,11 @@ If there is no .svn directory, examine if there is CVS and run
 (require-package/with-requirements '(switch-window)
   (define-key global-map (kbd "C-x o") 'switch-window))
 
+(define-key global-map (kbd "C-<up>") #'windmove-up)
+(define-key global-map (kbd "C-<down>") #'windmove-down)
+(define-key global-map (kbd "C-<left>") #'windmove-left)
+(define-key global-map (kbd "C-<right>") #'windmove-right)
+
 (require 'raghu)
 
 (when nil

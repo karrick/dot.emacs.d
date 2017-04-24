@@ -72,7 +72,7 @@
                               ;; (local-set-key (kbd "C-c C-j") 'godef-jump-other-window)
                               (local-set-key (kbd "M-.") #'godef-jump)
                               (if (not (string-match "^go" compile-command))
-                                  (set (make-local-variable 'compile-command) "go vet && go test"))))
+                                  (set (make-local-variable 'compile-command) "go vet && golint && go test -cover"))))
 
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
 

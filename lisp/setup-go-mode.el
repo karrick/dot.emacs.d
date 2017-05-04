@@ -68,7 +68,7 @@
                               (hl-line-mode 1)
                               (add-hook 'before-save-hook #'gofmt-before-save nil t)
                               (flyspell-prog-mode)
-                              (setq fill-column 100)
+                              (setq fill-column 80)
                               ;; (local-set-key (kbd "C-c C-j") 'godef-jump-other-window)
                               (local-set-key (kbd "M-.") #'godef-jump)
                               (if (not (string-match "^go" compile-command))

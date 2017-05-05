@@ -142,7 +142,7 @@ If there is no .svn directory, examine if there is CVS and run
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display
+;; window scrolling
 
 (defun ksm/forward-line-scroll-up (&optional n)
   "Scroll window down N lines, keeping point at same relative position."
@@ -150,7 +150,6 @@ If there is no .svn directory, examine if there is CVS and run
   (or n (setq n 1))
   (forward-line n)
   (scroll-up n))
-(define-key global-map (kbd "C-S-n") #'ksm/forward-line-scroll-up)
 
 (defun ksm/previous-line-scroll-down (&optional n)
   "Scroll window up N lines, keeping point at same relative position."
@@ -159,9 +158,25 @@ If there is no .svn directory, examine if there is CVS and run
   (interactive "^p")                    ; number, if no prefix argument, defaults to 1
   (or n (setq n 1))
   (ksm/forward-line-scroll-up (- n)))
-(define-key global-map (kbd "C-S-p") #'ksm/previous-line-scroll-down)
 
-(define-key global-map (kbd "C-c H") #'hl-line-mode)
+(defun ksm/see-more-down (&optional n)
+  "Scroll window down N lines, keeping point at same relative position."
+  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
+  (or n (setq n 1))
+  (scroll-up n))
+(define-key global-map (kbd "C-S-n") #'ksm/see-more-down)
+
+(defun ksm/see-more-up (&optional n)
+  "Scroll window up N lines, keeping point at same relative position."
+  (declare (interactive-only
+            "use `ksm/forward-line-scroll-up' with negative argument instead."))
+  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
+  (or n (setq n 1))
+  (ksm/see-more-down (- n)))
+(define-key global-map (kbd "C-S-p") #'ksm/see-more-up)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; window sizing
 
 (define-key global-map (kbd "M-<up>") #'enlarge-window)
 (define-key global-map (kbd "ESC <up>") #'enlarge-window)
@@ -171,6 +186,11 @@ If there is no .svn directory, examine if there is CVS and run
 (define-key global-map (kbd "ESC <left>") #'shrink-window-horizontally)
 (define-key global-map (kbd "M-<right>") #'enlarge-window-horizontally)
 (define-key global-map (kbd "ESC <right>") #'enlarge-window-horizontally)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display
+
+(define-key global-map (kbd "C-c H") #'hl-line-mode)
 
 (require-package/with-requirements '(switch-window)
   (define-key global-map (kbd "C-x o") 'switch-window))
@@ -189,8 +209,6 @@ If there is no .svn directory, examine if there is CVS and run
 ;; add line and column numbers to the modeline
 (line-number-mode 1)
 (column-number-mode 1)
-;; (setq scroll-conservatively 5
-;;       scroll-step 1)
 (put 'narrow-to-region 'disabled nil)
 
 (tool-bar-mode -1)
@@ -272,6 +290,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(package-selected-packages
    (quote
     (wgrep zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+ '(scroll-conservatively 5)
  '(show-paren-style (quote expression))
  '(tab-width 4)
  '(uniquify-buffer-name-style (quote post-forward) nil (uniquify))

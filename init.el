@@ -63,7 +63,7 @@
 ;; copy-and-comment
 (require 'copy-and-comment)
 (define-key global-map (kbd "<f3>") #'copy-and-comment)
-(require 'raghu/duplicate-and-comment)
+(require 'raghu-duplicate-and-comment)
 
 (require 'async-shell-command-wrapper)
 (define-key global-map (kbd "M-&") #'ksm/async-shell-command)

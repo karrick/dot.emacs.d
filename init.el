@@ -283,6 +283,7 @@ If there is no .svn directory, examine if there is CVS and run
    (quote
     (eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt)))
  '(flycheck-emacs-lisp-load-path (quote inherit))
+ '(flycheck-global-modes (quote (not go-mode)))
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)

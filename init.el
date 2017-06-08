@@ -198,6 +198,9 @@ If there is no .svn directory, examine if there is CVS and run
 
 (windmove-default-keybindings)          ; S-<arrow> selects window in respective direction
 
+(require-package/with-requirements '(swap-buffers)
+  (define-key global-map (kbd "C-c b") 'swap-buffers))
+
 (require 'raghu)
 
 (when nil
@@ -290,7 +293,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (wgrep zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+    (swap-buffers wgrep zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))
  '(tab-width 4)

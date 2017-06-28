@@ -45,6 +45,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; configuration
 
+(global-unset-key (kbd "s-t"))
+
 (require 'setup-autocomplete)
 
 ;; flycheck is the successor to flymake

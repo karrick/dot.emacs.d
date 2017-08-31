@@ -9,7 +9,7 @@
 (eval-after-load "ruby-mode"
   #'(lambda ()
       (flyspell-prog-mode)
-      (setq fill-column 100)
+      (setq fill-column 80)
       (setq ruby-deep-indent-paren nil) ; avoid ridiculous ruby indentation
       (defun ruby--jump-to-test ()
         (find-file

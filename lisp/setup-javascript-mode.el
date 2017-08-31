@@ -19,7 +19,7 @@
   (add-hook 'javascript-mode-hook #'(lambda ()
                                       (add-hook 'before-save-hook #'clean-and-indent nil t)
                                       (flyspell-prog-mode)
-                                      (setq fill-column 100
+                                      (setq fill-column 80
                                             indent-tabs-mode t
                                             ;; js-indent-level 4
                                             ))))

@@ -21,7 +21,7 @@
               (hl-line-mode 1)
               (eldoc-mode)
               (flyspell-prog-mode)
-              (setq fill-column 100)))
+              (setq fill-column 80)))
 
 (provide 'setup-elisp-mode)
 

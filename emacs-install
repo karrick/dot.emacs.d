@@ -2,7 +2,7 @@
 
 set -eE
 
-release=25.2
+release=25.3
 
 ################
 

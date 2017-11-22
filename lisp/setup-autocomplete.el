@@ -20,16 +20,17 @@
   (ac-flyspell-workaround)
 
   (require-package/with-requirements '(ac-emoji)
-    (cond ((eq system-type 'darwin)
-           (set-fontset-font
-            t 'symbol
-            (font-spec :family "Apple Color Emoji") nil 'prepend))
-          ((eq system-type 'gnu/linux)
-           (set-fontset-font
-            t 'symbol
-            (font-spec :family "Symbola") nil 'prepend)))
-    (add-hook 'markdown-mode-hook #'ac-emoji-setup)
-    (add-hook 'git-commit-mode-hook #'ac-emoji-setup)))
+    (when (fboundp #'set-fontset-font)
+      (cond ((eq system-type 'darwin)
+             (set-fontset-font
+              t 'symbol
+              (font-spec :family "Apple Color Emoji") nil 'prepend))
+            ((eq system-type 'gnu/linux)
+             (set-fontset-font
+              t 'symbol
+              (font-spec :family "Symbola") nil 'prepend)))
+      (add-hook 'markdown-mode-hook #'ac-emoji-setup)
+      (add-hook 'git-commit-mode-hook #'ac-emoji-setup))))
 
 (provide 'setup-autocomplete)
 

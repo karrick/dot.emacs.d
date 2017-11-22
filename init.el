@@ -217,10 +217,10 @@ If there is no .svn directory, examine if there is CVS and run
 (column-number-mode 1)
 (put 'narrow-to-region 'disabled nil)
 
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(menu-bar-mode -1)
-(if (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
+(when (fboundp #'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp #'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp #'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
 
 (require-package/with-requirements '(xterm-color)
   (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)

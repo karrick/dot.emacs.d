@@ -111,8 +111,7 @@ tar -Jx -C $src_dir -f $bundle_local
 # sudo yum install gnutls gnutls-utils
 
 cd $build_dir
-# ./configure --with-x-toolkit=lucid
-./configure --enable-link-time-optimization
+./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
 make
 
 sudo make install && sudo alternatives --install /usr/bin/emacs emacs /usr/local/bin/emacs 20000

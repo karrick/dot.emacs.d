@@ -75,24 +75,25 @@ if [ ! -f $sig_local ] ; then
     curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
 fi
 
-while ! gpg --verify $sig_local $bundle_local ; do
-    if [ -f $sig_local -a -f $bundle_local ] ; then
-        echo "ERROR: bundle file doesn't match its signature." >&2
-        read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
-        case $yn in
-            Y|y)
-                rm -f $sig_local $bundle_local
-                ;;
-            N|n)
-                echo "exiting because bundle does not match signature..."
-                exit 1
-                ;;
-        esac
-    fi
-    curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
-    curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
-    # gpg --keyserver pgpkeys.mit.edu --recv-key A0B0F199
-done
+# while ! gpg --verify $sig_local $bundle_local ; do
+#     if [ -f $sig_local -a -f $bundle_local ] ; then
+#         echo "ERROR: bundle file doesn't match its signature." >&2
+#         read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
+#         case $yn in
+#             Y|y)
+#                 rm -f $sig_local $bundle_local
+#                 ;;
+#             N|n)
+#                 echo "exiting because bundle does not match signature..."
+#                 exit 1
+#                 ;;
+#         esac
+#     fi
+#     curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+#     curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+#     # gpg --keyserver pgpkeys.mit.edu --recv-key A0B0F199
+#     # gpg --keyserver pgpkeys.mit.edu --recv-key 7C207910
+# done
 
 ################
 
@@ -104,15 +105,12 @@ tar -Jx -C $src_dir -f $bundle_local
 
 ################
 
-# sudo yum install dbus-devel
-# sudo yum install librsvg2 librsvg2-devel
-# sudo yum install ImageMagick ImageMagick-devel
-# sudo yum install GConf2 GConf2-devel GConf2-gtk
-# sudo yum install gnutls gnutls-utils
-
 cd $build_dir
-./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
+# ./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
+# ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
+./configure --without-all --with-x-toolkit=no --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
 make
 
-sudo make install && sudo alternatives --install /usr/bin/emacs emacs /usr/local/bin/emacs 20000
+sudo make install
+sudo alternatives --install /usr/bin/emacs emacs /usr/local/bin/emacs 20000
 sudo alternatives --install /usr/bin/emacsclient emacsclient /usr/local/bin/emacsclient 20000

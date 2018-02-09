@@ -34,7 +34,7 @@
 
 (when (and (fboundp #'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
 
-(when window-system
+(when (or t window-system)
   (let ((cmd (executable-find "emacsclient")))
     (when cmd
       (require 'server)

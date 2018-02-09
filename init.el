@@ -65,7 +65,7 @@
 ;; copy-and-comment
 (require 'copy-and-comment)
 (define-key global-map (kbd "<f3>") #'copy-and-comment)
-(require 'raghu-duplicate-and-comment)
+(when nil (require 'raghu-duplicate-and-comment))
 
 (require 'async-shell-command-wrapper)
 (define-key global-map (kbd "M-&") #'ksm/async-shell-command)
@@ -250,6 +250,7 @@ If there is no .svn directory, examine if there is CVS and run
 
 (require 'setup-elisp-mode)
 (require 'setup-go-mode) ; golang
+(require 'setup-rust-mode)
 (require 'setup-javascript-mode)
 (require 'setup-python-mode)
 (require 'setup-ruby-mode)
@@ -278,6 +279,9 @@ If there is no .svn directory, examine if there is CVS and run
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(compilation-scroll-output (quote first-error))
+ '(custom-safe-themes
+   (quote
+    ("bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default)))
  '(diff-switches "-u")
  '(dired-listing-switches "-Bhlo")
  '(edit-server-new-frame nil)
@@ -296,7 +300,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (swap-buffers wgrep zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+    (cargo flycheck-rust rust-mode rust-playground ample-theme ample-zen-theme afternoon-theme atom-dark-theme abyss-theme darkokai-theme monokai-alt-theme monokai-theme dracula-theme swap-buffers wgrep zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))
  '(tab-width 4)

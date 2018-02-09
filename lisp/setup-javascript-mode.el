@@ -18,6 +18,7 @@
 
   (add-hook 'javascript-mode-hook #'(lambda ()
                                       (add-hook 'before-save-hook #'clean-and-indent nil t)
+                                      (hl-line-mode 1)
                                       (flyspell-prog-mode)
                                       (setq fill-column 80
                                             indent-tabs-mode t

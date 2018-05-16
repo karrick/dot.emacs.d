@@ -6,6 +6,7 @@
 
 ;; only enable when emacs running under a graphical window system
 (when window-system
+  (setq nice-font-height 140)           ; units of 1/10th of a point
   (add-to-list 'default-frame-alist '(font-backend . "xft"))
   (when (boundp 'font-use-system-font)
     (setq font-use-system-font t))
@@ -20,7 +21,7 @@
     "Prompt the user and change the font to REQUESTED type face."
     (interactive "sName of Font: ")
     (if (member requested (nice-font--font-family-list-sorted))
-        (set-face-attribute 'default nil :family requested :height 140)
+        (set-face-attribute 'default nil :family requested :height nice-font-height)
       (message "Font not available: %s" requested)))
 
   (defun nice-font--filter (condp lst)
@@ -38,7 +39,7 @@
             ((eq 1 count)
              (let ((selection (nth 0 matches)))
                (if (y-or-n-p (concat "Font Matches: " selection "; Use? "))
-                   (set-face-attribute 'default nil :family selection :height 140))))
+                   (set-face-attribute 'default nil :family selection :height nice-font-height))))
             (t (message "Search Matches %d fonts: %s" count (mapconcat #'identity matches ", "))))))
 
   ;; Darwin: command key maps to super modifier; therefore use super so that Command =, Command -,
@@ -60,7 +61,7 @@
                 )
               #'(lambda (f)
                   (when (member f (nice-font--font-family-list-sorted))
-                    (add-to-list 'default-frame-alist `(font . ,(concat f "-16")))))))
+                    (add-to-list 'default-frame-alist `(font . ,(concat f "-14")))))))
 
 (provide 'nice-font)
 

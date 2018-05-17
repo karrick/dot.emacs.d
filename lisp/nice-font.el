@@ -6,7 +6,7 @@
 
 ;; only enable when emacs running under a graphical window system
 (when window-system
-  (setq nice-font-height 140)           ; units of 1/10th of a point
+  (setq nice-font-height 100)           ; units of 1/10th of a point
   (add-to-list 'default-frame-alist '(font-backend . "xft"))
   (when (boundp 'font-use-system-font)
     (setq font-use-system-font t))
@@ -61,7 +61,7 @@
                 )
               #'(lambda (f)
                   (when (member f (nice-font--font-family-list-sorted))
-                    (add-to-list 'default-frame-alist `(font . ,(concat f "-14")))))))
+                    (add-to-list 'default-frame-alist `(font . ,(concat f "-12")))))))
 
 (provide 'nice-font)
 

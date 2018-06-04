@@ -34,6 +34,14 @@
 
 (when (and (fboundp #'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
 
+;; ITERM2 MOUSE SUPPORT
+(unless (display-graphic-p)
+  (require 'mouse)
+  (xterm-mouse-mode t)
+  (defun track-mouse (e))
+  (setq mouse-sel-mode t)
+  )
+
 (when (or t window-system)
   (let ((cmd (executable-find "emacsclient")))
     (when cmd

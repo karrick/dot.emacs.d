@@ -308,7 +308,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (homebrew-mode cargo flycheck-rust rust-mode rust-playground ample-theme ample-zen-theme afternoon-theme atom-dark-theme abyss-theme darkokai-theme monokai-alt-theme monokai-theme dracula-theme swap-buffers wgrep zenburn-theme yaml-mode xterm-color wgrep-ack switch-window multiple-cursors markdown-mode keyword-search json-mode golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+    (abyss-theme ac-emoji ac-js2 afternoon-theme ample-theme ample-zen-theme atom-dark-theme cargo darkokai-theme dracula-theme edit-server expand-region fic-mode find-file-in-repository flycheck flycheck-rust go-autocomplete go-eldoc go-rename golint homebrew-mode json-mode keyword-search markdown-mode monokai-alt-theme monokai-theme multiple-cursors rust-mode rust-playground swap-buffers switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme)))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))
  '(tab-width 4)

@@ -26,8 +26,8 @@ function determine_os_type_from_file () {
     local type
     read contents <$file
     case $contents in
-        'Red Hat'*) type=rhel ;;
-        'Debian'*) type=debian ;;
+        *'Red Hat'*) type=rhel ;;
+        *'Debian'*) type=debian ;;
         *)
             echo "unknown os type: $contents" >&2
             exit 1

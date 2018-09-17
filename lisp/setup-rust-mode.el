@@ -10,6 +10,11 @@
 
 (path-prepend (expand-file-name "~/.cargo/bin"))
 
+(require-package/with-requirements '(rust-mode)
+  ;; (autoload 'rust-mode "rust-mode" nil t)
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode)))
+
+
 (provide 'setup-rust-mode)
 
 ;;; setup-rust-mode.el ends here

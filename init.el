@@ -286,6 +286,8 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
  '(compilation-scroll-output (quote first-error))
  '(custom-safe-themes
    (quote
@@ -296,6 +298,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(eshell-output-filter-functions
    (quote
     (eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt)))
+ '(fci-rule-color "#383838")
  '(flycheck-emacs-lisp-load-path (quote inherit))
  '(flycheck-global-modes (quote (not go-mode)))
  '(indent-tabs-mode nil)
@@ -304,16 +307,42 @@ If there is no .svn directory, examine if there is CVS and run
  '(minibuffer-prompt-properties
    (quote
     (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(ns-function-modifier (quote hyper))
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (abyss-theme ac-emoji ac-js2 afternoon-theme ample-theme ample-zen-theme atom-dark-theme cargo darkokai-theme dracula-theme edit-server expand-region fic-mode find-file-in-repository flycheck flycheck-rust go-autocomplete go-eldoc go-rename golint homebrew-mode json-mode keyword-search markdown-mode monokai-alt-theme monokai-theme multiple-cursors rust-mode rust-playground swap-buffers switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme)))
+    (flymake-rust go-impl go-guru go-dlv abyss-theme ac-emoji ac-js2 afternoon-theme ample-theme ample-zen-theme atom-dark-theme cargo darkokai-theme dracula-theme edit-server expand-region fic-mode find-file-in-repository flycheck flycheck-rust go-autocomplete go-eldoc go-rename golint homebrew-mode json-mode keyword-search markdown-mode monokai-alt-theme monokai-theme multiple-cursors rust-mode rust-playground swap-buffers switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme)))
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))
  '(tab-width 4)
  '(uniquify-buffer-name-style (quote post-forward) nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\*")
+ '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#BC8383")
+     (40 . "#CC9393")
+     (60 . "#DFAF8F")
+     (80 . "#D0BF8F")
+     (100 . "#E0CF9F")
+     (120 . "#F0DFAF")
+     (140 . "#5F7F5F")
+     (160 . "#7F9F7F")
+     (180 . "#8FB28F")
+     (200 . "#9FC59F")
+     (220 . "#AFD8AF")
+     (240 . "#BFEBBF")
+     (260 . "#93E0E3")
+     (280 . "#6CA0A3")
+     (300 . "#7CB8BB")
+     (320 . "#8CD0D3")
+     (340 . "#94BFF3")
+     (360 . "#DC8CC3"))))
+ '(vc-annotate-very-old-color "#DC8CC3")
  '(visible-bell t)
  '(wgrep-auto-save-buffer t))
 (custom-set-faces

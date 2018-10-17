@@ -291,7 +291,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(compilation-scroll-output (quote first-error))
  '(custom-safe-themes
    (quote
-    ("bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default)))
+    ("cd4d1a0656fee24dc062b997f54d6f9b7da8f6dc8053ac858f15820f9a04a679" "bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default)))
  '(diff-switches "-u")
  '(dired-listing-switches "-Bhlo")
  '(edit-server-new-frame nil)
@@ -314,7 +314,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (flymake-rust go-impl go-guru go-dlv abyss-theme ac-emoji ac-js2 afternoon-theme ample-theme ample-zen-theme atom-dark-theme cargo darkokai-theme dracula-theme edit-server expand-region fic-mode find-file-in-repository flycheck flycheck-rust go-autocomplete go-eldoc go-rename golint homebrew-mode json-mode keyword-search markdown-mode monokai-alt-theme monokai-theme multiple-cursors rust-mode rust-playground swap-buffers switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme)))
+    (gruvbox-theme flymake-rust go-impl go-guru go-dlv abyss-theme ac-emoji ac-js2 afternoon-theme ample-theme ample-zen-theme atom-dark-theme cargo darkokai-theme dracula-theme edit-server expand-region fic-mode find-file-in-repository flycheck flycheck-rust go-autocomplete go-eldoc go-rename golint homebrew-mode json-mode keyword-search markdown-mode monokai-alt-theme monokai-theme multiple-cursors rust-mode rust-playground swap-buffers switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))

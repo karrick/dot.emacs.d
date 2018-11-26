@@ -291,7 +291,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(compilation-scroll-output (quote first-error))
  '(custom-safe-themes
    (quote
-    ("cd4d1a0656fee24dc062b997f54d6f9b7da8f6dc8053ac858f15820f9a04a679" "bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default)))
+    ("84890723510d225c45aaff941a7e201606a48b973f0121cb9bcb0b9399be8cba" "cd4d1a0656fee24dc062b997f54d6f9b7da8f6dc8053ac858f15820f9a04a679" "bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default)))
  '(diff-switches "-u")
  '(dired-listing-switches "-Bhlo")
  '(edit-server-new-frame nil)

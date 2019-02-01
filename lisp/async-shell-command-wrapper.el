@@ -1,5 +1,7 @@
 ;;; async-shell-command-wrapper --- async shell commands are invoked in buffer named after the command
 
+;;; Code:
+
 (defun ksm/async-shell-command (command)
   "Run shell COMMAND asynchronously in buffer named after command."
   (interactive
@@ -16,3 +18,4 @@
       (async-shell-command command output-buffer))))
 
 (provide 'async-shell-command-wrapper)
+;;; async-shell-command-wrapper.el ends here

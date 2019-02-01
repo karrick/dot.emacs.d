@@ -2,10 +2,12 @@
 
 ;;; Commentary:
 
+;;; Includes guard to ensure only runs when emacs process is capable of using
+;;; multiple fonts, typically when running as a graphical process.
+
 ;;; Code:
 
-;; only enable when emacs running under a graphical window system
-(when window-system
+(when (display-multi-font-p)
   (setq nice-font-height 100)           ; units of 1/10th of a point
   (add-to-list 'default-frame-alist '(font-backend . "xft"))
   (when (boundp 'font-use-system-font)

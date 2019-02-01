@@ -2,6 +2,11 @@
 
 ;;; Commentary:
 
+;; Minimalistic.
+
+;; Uses built-in emacs package manager to specify which optional packages to
+;; install.
+
 ;;; Code:
 
 ;; Added by Package.el.  This must come before configurations of
@@ -19,7 +24,7 @@
 (require 'require-package)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; process environment
+;;; PROCESS ENVIRONMENT
 
 (require 'path)
 (let ((directories (list
@@ -32,67 +37,88 @@
 (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 
-(when (and (fboundp #'daemonp) (daemonp)) (cd (expand-file-name "~"))) ; change to home directory when invoked as daemon
+(when (and (fboundp #'daemonp) (daemonp)) ; when invoked as a daemon
+  (cd (expand-file-name "~"))             ; change to home directory at startup
+  ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
+  (require-package/with-requirements '(edit-server)
+    (edit-server-start)))
 
-;; ITERM2 MOUSE SUPPORT
-(unless (display-graphic-p)
-  (require 'mouse)
-  (xterm-mouse-mode t)
-  (defun track-mouse (e))
-  (setq mouse-sel-mode t)
-  )
-
-(when (or t window-system)
-  (let ((cmd (executable-find "emacsclient")))
-    (when cmd
-      (require 'server)
-      (unless (server-running-p) (message "window-system and server is not yet running; starting server") (server-start))
-      (setenv "EDITOR" cmd)
-      (setenv "VISUAL" cmd))))
+;; While this process is running, make certain any sub process knows to use
+;; emacsclient as editor and can route file editing requests to this process.
+(let ((cmd (executable-find "emacsclient")))
+  (when cmd
+    (setenv "EDITOR" cmd)
+    (setenv "VISUAL" cmd)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; configuration
+;;; CONFIGURATION
 
-(global-unset-key (kbd "s-t"))
+(when (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
+(when (fboundp #'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp #'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp #'tool-bar-mode) (tool-bar-mode -1))
 
+(column-number-mode 1)
+(line-number-mode 1)
+(prefer-coding-system 'utf-8)
+(put 'narrow-to-region 'disabled nil)
+(show-paren-mode t)                     ; parentheses matching
+
+(require 'browser-open)
+(require 'eshell)
+(require 'find-file-dynamic)
+(require 'make-shebang-executable)
+;; (require 'raghu)
 (require 'setup-autocomplete)
+;; (require 'setup-codesearch)
+(require 'uniquify)                     ; uniquify buffer names
 
 ;; flycheck is the successor to flymake
 (require-package/with-requirements '(flycheck)
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
-;; parentheses matching
-(show-paren-mode t)
+;; Writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
+(require-package/with-requirements '(wgrep wgrep-ack)
+  (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
 
-;; clean-and-indent
-(require 'clean-and-indent)
-(dolist (h '(sh-mode-hook css-mode-hook))
-  (add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
-(define-key global-map (kbd "<f2>") #'clean-and-indent)
-
-;; copy-and-comment
-(require 'copy-and-comment)
-(define-key global-map (kbd "<f3>") #'copy-and-comment)
-(when nil (require 'raghu-duplicate-and-comment))
-
-(require 'async-shell-command-wrapper)
-(define-key global-map (kbd "M-&") #'ksm/async-shell-command)
-(define-key global-map (kbd "ESC &") #'ksm/async-shell-command)
-
-(prefer-coding-system 'utf-8)
+(global-set-key (kbd "C-c H") #'hl-line-mode)
 
 (setq ediff-diff-options "-w"
       ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands, keep it all in one frame
       ediff-split-window-function 'split-window-horizontally) ; have ediff buffers show in a side-by-side view
 
-;; tabs and indenting
-(defvaralias 'c-basic-offset 'tab-width)
-(defvaralias 'cperl-indent-level 'tab-width)
-(defvaralias 'perl-indent-level 'tab-width)
+;; clean-and-indent
+(require 'clean-and-indent)
+(dolist (h '(sh-mode-hook css-mode-hook))
+  (add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
+(global-set-key (kbd "<f2>") #'clean-and-indent)
 
-(require 'uniquify)
+;; copy-and-comment
+(require 'copy-and-comment)
+(global-set-key (kbd "<f3>") #'copy-and-comment)
+(when nil (require 'raghu-duplicate-and-comment))
 
-;; vcs
+(require 'async-shell-command-wrapper)
+(global-set-key (kbd "M-&") #'ksm/async-shell-command)
+(global-set-key (kbd "ESC &") #'ksm/async-shell-command)
+
+(require-package/with-requirements '(expand-region)
+  (global-set-key (kbd "M-=") #'er/expand-region)
+  (global-set-key (kbd "ESC =") #'er/expand-region)
+  (global-set-key (kbd "M--") #'er/contract-region)
+  (global-set-key (kbd "ESC -") #'er/contract-region))
+
+(require-package/with-requirements '(multiple-cursors)
+  (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
+  (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
+  (global-set-key (kbd "C->") #'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
+  (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; VCS
+
 (eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" #'vc-ediff))
 
 ;; fossil vc mode
@@ -112,149 +138,13 @@ If there is no .svn directory, examine if there is CVS and run
 `cvs-examine'. Otherwise ask if to run `dired'."
   t)
 
-;; key bindings
-
-(define-key global-map (kbd "C-z") nil)     ; disable suspend-frame
-(define-key global-map (kbd "C-x C-z") nil) ; disable suspend-frame
-(define-key global-map (kbd "C-x C-c") nil) ; disable save-buffers-kill-terminal
-
-(define-key global-map (kbd "C-x C-b") #'ibuffer)
-(define-key global-map (kbd "C-x C-r") #'rgrep)
-(define-key global-map (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
-(define-key global-map (kbd "<f5>") #'compile)
-(define-key global-map (kbd "<f4>") #'recompile)
-
-(require-package/with-requirements '(expand-region)
-  (define-key global-map (kbd "M-=") #'er/expand-region)
-  (define-key global-map (kbd "ESC =") #'er/expand-region)
-  (define-key global-map (kbd "M--") #'er/contract-region)
-  (define-key global-map (kbd "ESC -") #'er/contract-region))
-
-(require-package/with-requirements '(multiple-cursors)
-  (define-key global-map (kbd "C-S-c C-S-c") #'mc/edit-lines)
-  (define-key global-map (kbd "C-c C-S-c") #'mc/edit-lines)
-  (define-key global-map (kbd "C->") #'mc/mark-next-like-this)
-  (define-key global-map (kbd "C-<") #'mc/mark-previous-like-this)
-  (define-key global-map (kbd "C-c C-<") #'mc/mark-all-like-this)
-  (define-key global-map (kbd "C-c C->") #'mc/mark-more-like-this-extended))
-
-;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
-(require-package/with-requirements '(edit-server)
-  (when (and (fboundp #'daemonp) (daemonp))
-    (edit-server-start)))
-
-(require 'browser-open)
-(require 'find-file-dynamic)
-(require 'make-shebang-executable)
-;; (require 'setup-codesearch)
-
-;; writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
-(require-package/with-requirements '(wgrep wgrep-ack)
-  (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; window scrolling
+;;; PROGRAMMING LANGUAGE SPECIFIC
 
-(defun ksm/forward-line-scroll-up (&optional n)
-  "Scroll window down N lines, keeping point at same relative position."
-  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
-  (or n (setq n 1))
-  (forward-line n)
-  (scroll-up n))
-
-(defun ksm/previous-line-scroll-down (&optional n)
-  "Scroll window up N lines, keeping point at same relative position."
-  (declare (interactive-only
-            "use `ksm/forward-line-scroll-up' with negative argument instead."))
-  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
-  (or n (setq n 1))
-  (ksm/forward-line-scroll-up (- n)))
-
-(defun ksm/see-more-down (&optional n)
-  "Scroll window down N lines, keeping point at same relative position."
-  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
-  (or n (setq n 1))
-  (scroll-up n))
-(define-key global-map (kbd "C-S-n") #'ksm/see-more-down)
-
-(defun ksm/see-more-up (&optional n)
-  "Scroll window up N lines, keeping point at same relative position."
-  (declare (interactive-only
-            "use `ksm/forward-line-scroll-up' with negative argument instead."))
-  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
-  (or n (setq n 1))
-  (ksm/see-more-down (- n)))
-(define-key global-map (kbd "C-S-p") #'ksm/see-more-up)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; window sizing
-
-(define-key global-map (kbd "M-<up>") #'enlarge-window)
-(define-key global-map (kbd "ESC <up>") #'enlarge-window)
-(define-key global-map (kbd "M-<down>") #'shrink-window)
-(define-key global-map (kbd "ESC <down>") #'shrink-window)
-(define-key global-map (kbd "M-<left>") #'shrink-window-horizontally)
-(define-key global-map (kbd "ESC <left>") #'shrink-window-horizontally)
-(define-key global-map (kbd "M-<right>") #'enlarge-window-horizontally)
-(define-key global-map (kbd "ESC <right>") #'enlarge-window-horizontally)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display
-
-(define-key global-map (kbd "C-c H") #'hl-line-mode)
-
-(require-package/with-requirements '(switch-window)
-  (define-key global-map (kbd "C-x o") 'switch-window))
-
-(windmove-default-keybindings)          ; S-<arrow> selects window in respective direction
-
-(require-package/with-requirements '(swap-buffers)
-  (define-key global-map (kbd "C-c b") 'swap-buffers))
-
-(require 'raghu)
-
-(when nil
-  (require-package/with-requirements '(zenburn-theme)
-    (load-theme 'zenburn t)))
-
-(when window-system
-  (require 'nice-font))
-
-;; add line and column numbers to the modeline
-(line-number-mode 1)
-(column-number-mode 1)
-(put 'narrow-to-region 'disabled nil)
-
-(when (fboundp #'tool-bar-mode) (tool-bar-mode -1))
-(when (fboundp #'scroll-bar-mode) (scroll-bar-mode -1))
-(when (fboundp #'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
-
-(require-package/with-requirements '(xterm-color)
-  (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)
-         (setq comint-output-filter-functions (remove 'ansi-color-process-output comint-output-filter-functions)))
-
-  (require 'eshell)
-  (add-hook 'eshell-mode-hook #'(lambda () (setq xterm-color-preserve-properties t)))
-
-  (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
-  (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
-
-  (add-hook 'compilation-start-hook
-            #'(lambda (proc)
-                ;; We need to differentiate between compilation-mode buffers
-                ;; and running as part of comint (which at this point we assume
-                ;; has been configured separately for xterm-color)
-                (when (eq (process-filter proc) 'compilation-filter)
-                  ;; This is a process associated with a compilation-mode buffer.
-                  ;; We may call `xterm-color-filter' before its own filter function.
-                  (set-process-filter
-                   proc
-                   #'(lambda (proc string)
-                       (funcall 'compilation-filter proc (xterm-color-filter string))))))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; language specific configuration
+;; tabs and indenting
+(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
+(defvaralias 'perl-indent-level 'tab-width)
 
 (require 'setup-elisp-mode)
 (require 'setup-go-mode) ; golang
@@ -274,6 +164,112 @@ If there is no .svn directory, examine if there is CVS and run
                                   ))
 
 ;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; KEY BINDINGS
+
+;; (global-set-key (kbd "C-x C-r") #'rgrep)
+(global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
+(global-set-key (kbd "<f5>") #'compile)
+(global-set-key (kbd "<f4>") #'recompile)
+;; (global-unset-key (kbd "s-t")) ;; commented out until I figure out what this was doing
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
+;; to keep ability to use emacs in a tmux frame, you need to use a
+;; different key prefix in emacs than tmux.
+
+;; (global-set-key (kbd "C-x C-b") #'ibuffer)
+;; (global-set-key (kbd "C-x C-c") nil)    ; disable save-buffers-kill-terminal
+(global-set-key (kbd "C-z") nil)        ; disable suspend-frame
+(global-set-key (kbd "C-x c") #'shell)	; create shell
+
+(require 'ksm-window-toggle)
+(global-set-key (kbd "C-x z") #'ksm/window-toggle)
+(global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
+
+(global-set-key (kbd "C-x 2") #'(lambda() (interactive) (message "Use C-x \"")))
+(global-set-key (kbd "C-x \"") #'split-window-below)
+
+(global-set-key (kbd "C-x 3") #'(lambda() (interactive) (message "Use C-x %%")))
+(global-set-key (kbd "C-x %") #'split-window-right)
+
+(global-set-key (kbd "C-x x") #'kill-buffer-and-window)
+
+(global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
+(global-set-key (kbd "C-x <up>") #'windmove-up)
+(global-set-key (kbd "C-x <down>") #'windmove-down)
+(global-set-key (kbd "C-x <right>") #'windmove-right)
+(global-set-key (kbd "C-x <left>") #'windmove-left)
+
+;; The following would be equivalent to tmux key bindings, but it does
+;; not work for me yet.
+;;
+;; (global-set-key (kbd "C-x M-<up>") #'enlarge-window)
+;; (global-set-key (kbd "C-x M-<down>") #'shrink-window)
+;; (global-set-key (kbd "C-x M-<right>") #'shrink-window-horizontally)
+;; (global-set-key (kbd "C-x M-<left>") #'enlarge-window-horizontally)
+
+(global-set-key (kbd "C-x S-<up>") #'enlarge-window)
+(global-set-key (kbd "C-x S-<down>") #'shrink-window)
+(global-set-key (kbd "C-x S-<right>") #'shrink-window-horizontally)
+(global-set-key (kbd "C-x S-<left>") #'enlarge-window-horizontally)
+
+(require-package/with-requirements '(buffer-move)
+  (global-set-key (kbd "<C-S-up>")     #'buf-move-up)
+  (global-set-key (kbd "<C-S-down>")   #'buf-move-down)
+  (global-set-key (kbd "<C-S-left>")   #'buf-move-left)
+  (global-set-key (kbd "<C-S-right>")  #'buf-move-right))
+
+(when nil                               ; disabled in deference to buffer-move package
+  (require-package/with-requirements '(swap-buffers)
+    (global-set-key (kbd "C-c b") 'swap-buffers)))
+
+(require 'ksm-window-scrolling)
+;; (global-set-key (kbd "C-M-P") #'ksm/forward-line-scroll-up)
+;; (global-set-key (kbd "C-M-N") #'ksm/previous-line-scroll-down)
+;; (global-set-key (kbd "C-M-P") #'ksm/see-more-upup)
+;; (global-set-key (kbd "C-M-N") #'ksm/see-more-down)
+
+(require-package/with-requirements '(switch-window)
+  (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q
+
+(when (display-color-p)
+  (require-package/with-requirements '(zenburn-theme)
+    (load-theme 'zenburn t))
+  (require-package/with-requirements '(xterm-color)
+    (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)
+           (setq comint-output-filter-functions (remove 'ansi-color-process-output comint-output-filter-functions)))
+
+    (require 'eshell)
+    (add-hook 'eshell-mode-hook #'(lambda () (setq xterm-color-preserve-properties t)))
+    (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+    (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+
+    (add-hook 'compilation-start-hook
+              #'(lambda (proc)
+                  ;; We need to differentiate between compilation-mode buffers
+                  ;; and running as part of comint (which at this point we assume
+                  ;; has been configured separately for xterm-color)
+                  (when (eq (process-filter proc) 'compilation-filter)
+                    ;; This is a process associated with a compilation-mode buffer.
+                    ;; We may call `xterm-color-filter' before its own filter function.
+                    (set-process-filter
+                     proc
+                     #'(lambda (proc string)
+                         (funcall 'compilation-filter proc (xterm-color-filter string)))))))))
+
+(when (display-mouse-p) ; previously used display-graph-p, so this might not work
+  ;; iTerm2 mouse support
+  (require 'mouse)
+  (xterm-mouse-mode t)
+  (defun track-mouse (e))
+  (setq mouse-sel-mode t))
+
+(require 'nice-font)                ; nice-font guards with display-multi-font-p
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LOCALHOST CONFIGURATION
 
 (if (locate-library "localhost")
     (require 'localhost)
@@ -314,7 +310,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (protobuf-mode gruvbox-theme flymake-rust go-impl go-guru go-dlv abyss-theme ac-emoji ac-js2 afternoon-theme ample-theme ample-zen-theme atom-dark-theme cargo darkokai-theme dracula-theme edit-server expand-region fic-mode find-file-in-repository flycheck flycheck-rust go-autocomplete go-eldoc go-rename golint homebrew-mode json-mode keyword-search markdown-mode monokai-alt-theme monokai-theme multiple-cursors rust-mode rust-playground swap-buffers switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme)))
+    (buffer-move zenburn-theme yaml-mode xterm-color wgrep-ack switch-window swap-buffers rust-mode multiple-cursors markdown-mode keyword-search json-mode gruvbox-theme golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))
@@ -345,6 +341,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(vc-annotate-very-old-color "#DC8CC3")
  '(visible-bell t)
  '(wgrep-auto-save-buffer t))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

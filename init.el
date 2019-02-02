@@ -226,10 +226,10 @@ If there is no .svn directory, examine if there is CVS and run
     (global-set-key (kbd "C-c b") 'swap-buffers)))
 
 (require 'ksm-window-scrolling)
-;; (global-set-key (kbd "C-M-P") #'ksm/forward-line-scroll-up)
-;; (global-set-key (kbd "C-M-N") #'ksm/previous-line-scroll-down)
-;; (global-set-key (kbd "C-M-P") #'ksm/see-more-upup)
-;; (global-set-key (kbd "C-M-N") #'ksm/see-more-down)
+(global-set-key (kbd "C-M-n") #'ksm/forward-line-scroll-up)
+(global-set-key (kbd "C-M-p") #'ksm/previous-line-scroll-down)
+(global-set-key (kbd "M-p") #'ksm/see-more-up)
+(global-set-key (kbd "M-n") #'ksm/see-more-down)
 
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q

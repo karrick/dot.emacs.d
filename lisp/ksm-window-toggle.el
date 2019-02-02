@@ -28,25 +28,90 @@
 ;;;
 ;;; Code:
 
-(defvar ksm/window-toggle-zoomed nil "Internal variable that is non-nil when zoomed from multiple windows.")
+(defvar ksm/window-configurations nil "Associative array of saved window configurations.")
 
-(defun ksm/window-toggle ()
-  "Toggle current frame between single window and multiple windows."
-  (interactive)
+(defun ksm/window-config-drop (name)
+  "Prompt user and drop window configuration identified by NAME."
+  (interactive "sDrop Window Config: ")
+  (let ((config (assoc name ksm/window-configurations)))
+    (if config
+        (progn
+          (setq ksm/window-configurations
+                (ksm/window--remove-from-alist config ksm/window-configurations #'(lambda (a b) (equal (car a) (car b)))))
+          (message "dropped window configuration: %s" (car config)))
+      (message "cannot drop unknown window configuration: %s" (car config)))))
 
-  (if ksm/window-toggle-zoomed
-      (progn
-        (jump-to-register ?0)
-        (setq ksm/window-toggle-zoomed nil)
-        (message "restored to previously saved window layout"))
-    (if (eq 1 (length (window-list)))
-        (message "cannot zoom when already single window")
-      (progn
-        ;; When not zoomed in, and multiple windows, then save this layout.
-        (window-configuration-to-register ?0)
-        (delete-other-windows)
-        (setq ksm/window-toggle-zoomed t)
-        (message "zoomed in from multiple window layout")))))
+(defun ksm/window-config-restore (name)
+  "Prompt user and restore window configuration identified by NAME."
+  (interactive "sRestore Window Config: ")
+  (let ((config (cdr (assoc name ksm/window-configurations))))
+    (if config
+        (progn
+          (set-window-configuration (car config))
+          (goto-char (cdr config))
+          (message "restored window configuration: %s" name))
+      (message "cannot restore unknown window configuration: %s" name))))
+
+(defun ksm/window-config-save (name)
+  "Prompt user and save window configuration identified by NAME."
+  (interactive "sSave Window Config As: ")
+  (add-to-list 'ksm/window-configurations
+               (cons name (cons (current-window-configuration) (point-marker)))
+               nil
+               #'(lambda (a b) (equal (car a) (car b)))))
+
+(defun ksm/window--remove-from-alist (element list &optional testfn)
+  "Return new list with all instances of ELEMENT removed from LIST, using optional TESTFN."
+  (when list
+    (unless testfn (setq testfn #'eql))
+    (let* ((head (car list))
+           (tail (ksm/window--remove-from-alist element (cdr list) testfn)))
+      (if (funcall testfn element head)
+          tail
+        (if tail
+            (list head tail)
+          head)))))
+
+;;   (ksm/window--remove-from-alist (list "baz")
+;;                          (list (cons "foo" (cons 'c1 'm1))
+;;                                (cons "bar" (cons 'c2 'm2))
+;;                                (cons "baz" (cons 'c3 'm3)))
+;;                          #'(lambda (a b) (equal (car a) (car b))))
+
+
+;; (list (current-window-configuration) (point-marker))
+
+;; (set-window-configuration (car val))
+;; (goto-char (cadr val))
+
+;; (defun ksm/window-toggle ()
+;;   "Toggle current frame between single window and multiple windows."
+;;   (interactive)
+
+;;   (if ksm/window-toggle-zoomed
+;;       (let* ((this (car ksm/window-toggle-zoomed))
+;;              (ksm/window-toggle-zoomed (cdr ksm/window-toggle-zoomed)))
+;;         (jump-to-register this)
+;;         (message "restored to previously saved window layout %s" this))
+;;     (
+
+
+;;      (if (eq 1 (length (window-list)))
+
+;;          (progn
+;;            (if (eq 1 (length (window-list)))
+;;                (message "cannot zoom when already single window")
+;;              (progn
+;;                ;; When not zoomed in, and multiple windows, then save this layout.
+;;                (window-configuration-to-register ?0)
+;;                (delete-other-windows)
+;;                (setq ksm/window-toggle-zoomed t)
+;;                (message "zoomed in from multiple window layout")))))
+
+
+;; (defvar ksm/window-toggle-zoomed nil "Internal variable that is non-nil when zoomed from multiple windows.")
+;; (defvar ksm/window-config-list nil "Internal variable that is non-nil when zoomed from multiple windows.")
+;; (defvar ksm/window-config-index 0 "index of currently selected window configuration.")
 
 (provide 'ksm-window-toggle)
 

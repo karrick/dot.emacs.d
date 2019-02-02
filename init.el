@@ -184,9 +184,9 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-z") nil)        ; disable suspend-frame
 (global-set-key (kbd "C-x c") #'shell)	; create shell
 
-(require 'ksm-window-toggle)
-(global-set-key (kbd "C-x z") #'ksm/window-toggle)
-(global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
+;; (require 'ksm-window-toggle)
+;; (global-set-key (kbd "C-x z") #'ksm/window-toggle)
+;; (global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
 
 (global-set-key (kbd "C-x 2") #'(lambda() (interactive) (message "Use C-x \"")))
 (global-set-key (kbd "C-x \"") #'split-window-below)

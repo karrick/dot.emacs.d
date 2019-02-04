@@ -179,13 +179,19 @@ If there is no .svn directory, examine if there is CVS and run
 ;; to keep ability to use emacs in a tmux frame, you need to use a
 ;; different key prefix in emacs than tmux.
 
-;; (global-set-key (kbd "C-x C-b") #'ibuffer)
+(global-set-key (kbd "C-x C-b") #'ibuffer)
 ;; (global-set-key (kbd "C-x C-c") nil)    ; disable save-buffers-kill-terminal
 (global-set-key (kbd "C-z") nil)        ; disable suspend-frame
-(global-set-key (kbd "C-x c") #'shell)	; create shell
+;; (global-set-key (kbd "C-x c") #'shell)	; create shell
+
+(require 'ksm-window-scrolling)
+(global-set-key (kbd "C-N") #'ksm/forward-line-scroll-up)
+(global-set-key (kbd "C-P") #'ksm/previous-line-scroll-down)
+(global-set-key (kbd "M-p") #'ksm/see-more-up)
+(global-set-key (kbd "M-n") #'ksm/see-more-down)
 
 (require 'ksm-window-config)
-(global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
+;; (global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
 (global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
 (global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
 (global-set-key (kbd "C-x w") #'ksm/window-zoom-out) ; pop and restore window configuration from stack
@@ -205,18 +211,10 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x <right>") #'windmove-right)
 (global-set-key (kbd "C-x <left>") #'windmove-left)
 
-;; The following would be equivalent to tmux key bindings, but it does
-;; not work for me yet.
-;;
-;; (global-set-key (kbd "C-x M-<up>") #'enlarge-window)
-;; (global-set-key (kbd "C-x M-<down>") #'shrink-window)
-;; (global-set-key (kbd "C-x M-<right>") #'shrink-window-horizontally)
-;; (global-set-key (kbd "C-x M-<left>") #'enlarge-window-horizontally)
-
-(global-set-key (kbd "C-x S-<up>") #'enlarge-window)
-(global-set-key (kbd "C-x S-<down>") #'shrink-window)
-(global-set-key (kbd "C-x S-<right>") #'shrink-window-horizontally)
-(global-set-key (kbd "C-x S-<left>") #'enlarge-window-horizontally)
+(global-set-key (kbd "C-x C-<up>") #'enlarge-window)
+(global-set-key (kbd "C-x C-<down>") #'shrink-window)
+(global-set-key (kbd "C-x C-<right>") #'shrink-window-horizontally)
+(global-set-key (kbd "C-x C-<left>") #'enlarge-window-horizontally)
 
 (require-package/with-requirements '(buffer-move)
   (global-set-key (kbd "<C-S-up>")     #'buf-move-up)
@@ -227,12 +225,6 @@ If there is no .svn directory, examine if there is CVS and run
 (when nil                               ; disabled in deference to buffer-move package
   (require-package/with-requirements '(swap-buffers)
     (global-set-key (kbd "C-c b") 'swap-buffers)))
-
-(require 'ksm-window-scrolling)
-(global-set-key (kbd "C-M-n") #'ksm/forward-line-scroll-up)
-(global-set-key (kbd "C-M-p") #'ksm/previous-line-scroll-down)
-(global-set-key (kbd "M-p") #'ksm/see-more-up)
-(global-set-key (kbd "M-n") #'ksm/see-more-down)
 
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q

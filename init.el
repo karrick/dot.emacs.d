@@ -185,8 +185,8 @@ If there is no .svn directory, examine if there is CVS and run
 ;; (global-set-key (kbd "C-x c") #'shell)	; create shell
 
 (require 'ksm-window-scrolling)
-(global-set-key (kbd "C-N") #'ksm/forward-line-scroll-up)
-(global-set-key (kbd "C-P") #'ksm/previous-line-scroll-down)
+;; (global-set-key (kbd "C-N") #'ksm/forward-line-scroll-up)
+;; (global-set-key (kbd "C-P") #'ksm/previous-line-scroll-down)
 (global-set-key (kbd "M-p") #'ksm/see-more-up)
 (global-set-key (kbd "M-n") #'ksm/see-more-down)
 

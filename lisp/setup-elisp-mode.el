@@ -18,10 +18,7 @@
           #'(lambda ()
               (add-hook 'after-save-hook #'auto-recompile-el-buffer)
               (add-hook 'before-save-hook #'clean-and-indent nil t)
-              (hl-line-mode 1)
-              (eldoc-mode)
-              (flyspell-prog-mode)
-              (setq fill-column 80)))
+              (eldoc-mode)))
 
 (provide 'setup-elisp-mode)
 

@@ -1,4 +1,4 @@
-;;; setup-go-mode --- customizations for the Go programming language
+;;; setup-golang-mode --- customizations for the Go programming language
 
 ;;; Commentary:
 
@@ -65,10 +65,7 @@
 
   ;; This block sets up buffer scoped configuration and is invoked every time a new go-mode buffer is created.
   (add-hook 'go-mode-hook #'(lambda ()
-                              (hl-line-mode 1)
                               (add-hook 'before-save-hook #'gofmt-before-save nil t)
-                              (flyspell-prog-mode)
-                              (setq fill-column 80)
                               ;; (local-set-key (kbd "C-c C-j") 'godef-jump-other-window)
                               (local-set-key (kbd "M-.") #'godef-jump)
                               (if (not (string-match "^go" compile-command))
@@ -76,6 +73,6 @@
 
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
 
-(provide 'setup-go-mode)
+(provide 'setup-golang-mode)
 
-;;; setup-go-mode.el ends here
+;;; setup-golang-mode.el ends here

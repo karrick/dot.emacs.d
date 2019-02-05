@@ -4,9 +4,7 @@
 
 (add-hook 'python-mode-hook
           #'(lambda ()
-              (flyspell-prog-mode)
-              (setq fill-column 80
-                    indent-tabs-mode nil
+              (setq indent-tabs-mode nil
                     tab-width 4)))
 
 (provide 'setup-python-mode)

@@ -141,13 +141,18 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
+(add-hook 'prog-mode-hook #'(lambda ()
+                              (setq fill-column 80)
+                              (flyspell-prog-mode)
+                              (hl-line-mode 1)))
+
 ;; tabs and indenting
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
 (defvaralias 'perl-indent-level 'tab-width)
 
 (require 'setup-elisp-mode)
-(require 'setup-go-mode) ; golang
+(require 'setup-golang-mode)
 (require 'setup-rust-mode)
 (require 'setup-javascript-mode)
 (require 'setup-python-mode)

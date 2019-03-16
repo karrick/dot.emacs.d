@@ -31,7 +31,7 @@
                             (executable-find "gofmt"))))
 
   ;; prefer `go doc` over `godoc` because it provides more information
-  (setq godoc-command (executable-find "godoc"))
+  (setq godoc-command "go doc")
 
   ;; gorename
   (let ((cmd (executable-find "gorename")))

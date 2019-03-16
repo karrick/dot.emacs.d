@@ -1,4 +1,4 @@
-;;; ksm-window-config --- provides handy window configuration functions
+;;; ksm-window --- provides handy window management functions
 ;;;
 ;;; Commentary:
 ;;;
@@ -14,7 +14,7 @@
 ;;; I put this file somewhere Emacs will find it, then added the below to my
 ;;; ~/.emacs/init.el file.
 ;;;
-;;;    (require 'ksm-window-config)
+;;;    (require 'ksm-window)
 ;;;    (global-set-key (kbd "C-x w") #'ksm/window-zoom-out)
 ;;;
 ;;; Some people might like to override the default key-binding for the
@@ -41,6 +41,36 @@
 ;;;    (global-set-key (kbd "C-x j") #'ksm/window-config-restore)
 ;;;
 ;;; Code:
+
+(defun ksm/window-delete-above ()
+  "Delete the window above the current window."
+  (interactive)
+  (delete-window (window-in-direction 'above)))
+
+(defun ksm/window-delete-below ()
+  "Delete the window below the current window."
+  (interactive)
+  (delete-window (window-in-direction 'below)))
+
+(defun ksm/window-delete-left ()
+  "Delete the window to the left of the current window."
+  (interactive)
+  (delete-window (window-in-direction 'left)))
+
+(defun ksm/window-delete-right ()
+  "Delete the window to the right of the current window."
+  (interactive)
+  (delete-window (window-in-direction 'right)))
+
+(defun ksm/window-lock ()
+  "Mark the current window as dedicated for its current buffer."
+  (interactive)
+  (set-window-dedicated-p (get-buffer-window) t))
+
+(defun ksm/window-unlock ()
+  "Unmark the current window as dedicated for its current buffer."
+  (interactive)
+  (set-window-dedicated-p (get-buffer-window) nil))
 
 (defvar ksm/window-configurations-list nil "Stack of saved window configurations.")
 
@@ -103,6 +133,6 @@
     (message "dropped window configuration: %s" name))
    (t (message "cannot drop unknown window configuration: %s" name))))
 
-(provide 'ksm-window-config)
+(provide 'ksm-window)
 
-;;; ksm-window-config.el ends here
+;;; ksm-window.el ends here

@@ -195,7 +195,7 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "M-p") #'ksm/see-more-up)
 (global-set-key (kbd "M-n") #'ksm/see-more-down)
 
-(require 'ksm-window-config)
+(require 'ksm-window)
 ;; (global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
 (global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
 (global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
@@ -310,7 +310,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (buffer-move zenburn-theme yaml-mode xterm-color wgrep-ack switch-window swap-buffers rust-mode multiple-cursors markdown-mode keyword-search json-mode gruvbox-theme golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+    (protobuf-mode buffer-move zenburn-theme yaml-mode xterm-color wgrep-ack switch-window swap-buffers rust-mode multiple-cursors markdown-mode keyword-search json-mode gruvbox-theme golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))

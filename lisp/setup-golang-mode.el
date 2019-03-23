@@ -9,6 +9,7 @@
 (require 'path)
 (let ((gopath (expand-file-name "~/go")))
   (path-prepend (concat gopath "/bin"))
+  ;; (setenv "GOBIN" (expand-file-name "~/bin"))
   (setenv "GOPATH" gopath))
 
 (require 'require-package)
@@ -19,6 +20,7 @@
   ;; associated required packages
   (dolist (tuple '(
                    ("godef" "github.com/rogpeppe/godef")
+                   ("maligned" "github.com/mdempsky/maligned") ; ???
                    ("unconvert" "github.com/mdempsky/unconvert")
                    ))
     (unless (executable-find (car tuple))

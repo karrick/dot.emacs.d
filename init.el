@@ -186,8 +186,10 @@ If there is no .svn directory, examine if there is CVS and run
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 ;; (global-set-key (kbd "C-x C-c") nil)    ; disable save-buffers-kill-terminal
-(global-set-key (kbd "C-z") nil)        ; disable suspend-frame
 ;; (global-set-key (kbd "C-x c") #'shell)	; create shell
+
+;; (global-set-key (kbd "C-z") nil)        ; disable suspend-frame
+(global-set-key (kbd "C-z") #'delete-other-windows-vertically)
 
 (require 'ksm-window-scrolling)
 ;; (global-set-key (kbd "C-N") #'ksm/forward-line-scroll-up)
@@ -202,30 +204,34 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x w") #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows; similar key-binding to tmux
 
-(global-set-key (kbd "C-x 2") #'(lambda() (interactive) (message "Use C-x \"")))
-(global-set-key (kbd "C-x \"") #'split-window-below)
+;; (global-set-key (kbd "C-x 2") #'(lambda() (interactive) (message "Use C-x \"")))
+;; (global-set-key (kbd "C-x \"") #'split-window-below)
 
-(global-set-key (kbd "C-x 3") #'(lambda() (interactive) (message "Use C-x %%")))
-(global-set-key (kbd "C-x %") #'split-window-right)
+;; (global-set-key (kbd "C-x 3") #'(lambda() (interactive) (message "Use C-x %%")))
+;; (global-set-key (kbd "C-x %") #'split-window-right)
 
 (global-set-key (kbd "C-x x") #'kill-buffer-and-window) ; similar key-binding to tmux
 
-(global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
-(global-set-key (kbd "C-x <up>") #'windmove-up)
-(global-set-key (kbd "C-x <down>") #'windmove-down)
-(global-set-key (kbd "C-x <right>") #'windmove-right)
-(global-set-key (kbd "C-x <left>") #'windmove-left)
+;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
+(global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
+(global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
+(global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
+(global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
 
-(global-set-key (kbd "C-x C-<up>") #'enlarge-window)
-(global-set-key (kbd "C-x C-<down>") #'shrink-window)
-(global-set-key (kbd "C-x C-<right>") #'shrink-window-horizontally)
-(global-set-key (kbd "C-x C-<left>") #'enlarge-window-horizontally)
+;; (global-set-key (kbd "C-x C-<up>") #'enlarge-window)
+;; (global-set-key (kbd "C-x C-<down>") #'shrink-window)
+;; (global-set-key (kbd "C-x C-<right>") #'shrink-window-horizontally)
+;; (global-set-key (kbd "C-x C-<left>") #'enlarge-window-horizontally)
+(global-set-key (kbd "C-M-<up>")    #'enlarge-window)
+(global-set-key (kbd "C-M-<down>")  #'shrink-window)
+(global-set-key (kbd "C-M-<right>") #'shrink-window-horizontally)
+(global-set-key (kbd "C-M-<left>")  #'enlarge-window-horizontally)
 
 (require-package/with-requirements '(buffer-move)
-  (global-set-key (kbd "<C-S-up>")     #'buf-move-up)
-  (global-set-key (kbd "<C-S-down>")   #'buf-move-down)
-  (global-set-key (kbd "<C-S-left>")   #'buf-move-left)
-  (global-set-key (kbd "<C-S-right>")  #'buf-move-right))
+  (global-set-key (kbd "<C-S-up>")     #'buf-move-up)     ; swap buffer that has point with buffer above it
+  (global-set-key (kbd "<C-S-down>")   #'buf-move-down)   ; swap buffer that has point with buffer below it
+  (global-set-key (kbd "<C-S-left>")   #'buf-move-left)   ; swap buffer that has point with buffer on its left
+  (global-set-key (kbd "<C-S-right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
 
 (when nil                               ; disabled in deference to buffer-move package
   (require-package/with-requirements '(swap-buffers)

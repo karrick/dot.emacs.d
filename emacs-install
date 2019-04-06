@@ -98,6 +98,7 @@ fi
 ################
 
 src_dir=~/src
+mkdir -p $src_dir
 build_dir=$src_dir/emacs-${release}
 
 rm -rf $build_dir

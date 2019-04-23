@@ -73,8 +73,8 @@
     (if (string-equal cmd "")
         (message "Cannot find guru: `go get golang.org/x/tools/cmd/guru`")
       (progn
-        (setq go-guru-command cmd)
         (require 'go-guru)
+        (setq go-guru-command cmd)
         (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode)
         (set-face-attribute 'go-guru-hl-identifier-face nil
                             :background "chartreuse"

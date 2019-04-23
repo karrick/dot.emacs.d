@@ -32,19 +32,6 @@
                             (message "Cannot find goimports: `go get golang.org/x/tools/cmd/goimports`")
                             (executable-find "gofmt"))))
 
-  ;; gogetdoc: provides better documentation
-  (let ((cmd (executable-find "gogetdoc")))
-    (if (string-equal cmd "")
-        (message "Cannot find gogetdoc: `go get github.com/zmb3/gogetdoc`")
-      (setq godoc-at-point-function #'godoc-gogetdoc)))
-
-  ;; gorename
-  (let ((cmd (executable-find "gorename")))
-    (if (string-equal cmd "")
-        (message "Cannot find gorename: `go get golang.org/x/tools/cmd/gorename`")
-      (require-package/with-requirements '(go-rename)
-        (setq go-rename-command cmd))))
-
   ;; go-eldoc -- eldoc for the Go programming language
   (require-package/with-requirements '(go-eldoc)
     (set-face-attribute 'eldoc-highlight-function-argument nil
@@ -63,10 +50,38 @@
             (add-hook 'go-mode-hook #'(lambda () (auto-complete-mode 1))))
         (message "Cannot find gocode: `go get github.com/nsf/gocode`"))))
 
+  ;; gogetdoc: provides better documentation
+  (let ((cmd (executable-find "gogetdoc")))
+    (if (string-equal cmd "")
+        (message "Cannot find gogetdoc: `go get github.com/zmb3/gogetdoc`")
+      (setq godoc-at-point-function #'godoc-gogetdoc)))
+
+  ;; gorename
+  (let ((cmd (executable-find "gorename")))
+    (if (string-equal cmd "")
+        (message "Cannot find gorename: `go get golang.org/x/tools/cmd/gorename`")
+      (require-package/with-requirements '(go-rename)
+        (setq go-rename-command cmd))))
+
   ;; golint
   (if (executable-find "golint")
       (require-package/ensure-require '(golint))
     (message "Cannot find golint: `go get github.com/golang/lint/golint`"))
+
+  ;; guru
+  (let ((cmd (executable-find "guru")))
+    (if (string-equal cmd "")
+        (message "Cannot find guru: `go get golang.org/x/tools/cmd/guru`")
+      (progn
+        (setq go-guru-command cmd)
+        (require 'go-guru)
+        (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode)
+        (set-face-attribute 'go-guru-hl-identifier-face nil
+                            :background "chartreuse"
+                            :foreground "gray0")
+        (defun go-set-scope-here ()
+          (interactive)
+          (setq go-guru-scope (file-name-directory (buffer-file-name)))))))
 
   ;; This block sets up buffer scoped configuration and is invoked every time a new go-mode buffer is created.
   (add-hook 'go-mode-hook #'(lambda ()

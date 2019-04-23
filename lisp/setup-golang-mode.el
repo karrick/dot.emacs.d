@@ -32,15 +32,18 @@
                             (message "Cannot find goimports: `go get golang.org/x/tools/cmd/goimports`")
                             (executable-find "gofmt"))))
 
-  ;; prefer `go doc` over `godoc` because it provides more information
-  (setq godoc-command "go doc")
+  ;; gogetdoc: provides better documentation
+  (let ((cmd (executable-find "gogetdoc")))
+    (if (string-equal cmd "")
+        (message "Cannot find gogetdoc: `go get github.com/zmb3/gogetdoc`")
+      (setq godoc-at-point-function #'godoc-gogetdoc)))
 
   ;; gorename
   (let ((cmd (executable-find "gorename")))
-    (if (not (string-equal cmd ""))
-        (require-package/with-requirements '(go-rename)
-          (setq go-rename-command cmd))
-      (message "Cannot find gorename: `go get golang.org/x/tools/cmd/gorename`")))
+    (if (string-equal cmd "")
+        (message "Cannot find gorename: `go get golang.org/x/tools/cmd/gorename`")
+      (require-package/with-requirements '(go-rename)
+        (setq go-rename-command cmd))))
 
   ;; go-eldoc -- eldoc for the Go programming language
   (require-package/with-requirements '(go-eldoc)
@@ -68,10 +71,9 @@
   ;; This block sets up buffer scoped configuration and is invoked every time a new go-mode buffer is created.
   (add-hook 'go-mode-hook #'(lambda ()
                               (add-hook 'before-save-hook #'gofmt-before-save nil t)
-                              ;; (local-set-key (kbd "C-c C-j") 'godef-jump-other-window)
-                              (local-set-key (kbd "M-.") #'godef-jump)
-                              (if (not (string-match "^go" compile-command))
-                                  (set (make-local-variable 'compile-command) "go test -v && golint"))))
+                              (local-set-key (kbd "C-c C-d") #'godoc-at-point)
+                              (local-set-key (kbd "M-.") #'godef-jump-other-window)
+                              (set (make-local-variable 'compile-command) "go test")))
 
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
 

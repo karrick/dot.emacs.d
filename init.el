@@ -87,16 +87,13 @@
       ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands, keep it all in one frame
       ediff-split-window-function 'split-window-horizontally) ; have ediff buffers show in a side-by-side view
 
-;; clean-and-indent
 (require 'clean-and-indent)
+(global-set-key (kbd "<f2>") #'clean-and-indent)
 (dolist (h '(sh-mode-hook css-mode-hook))
   (add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
-(global-set-key (kbd "<f2>") #'clean-and-indent)
 
-;; copy-and-comment
 (require 'copy-and-comment)
 (global-set-key (kbd "<f3>") #'copy-and-comment)
-(when nil (require 'raghu-duplicate-and-comment))
 
 (require 'async-shell-command-wrapper)
 (global-set-key (kbd "M-&") #'ksm/async-shell-command)
@@ -175,8 +172,8 @@ If there is no .svn directory, examine if there is CVS and run
 
 (global-set-key (kbd "C-x C-r") #'rgrep)
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
-(global-set-key (kbd "<f5>") #'compile)
 (global-set-key (kbd "<f4>") #'recompile)
+(global-set-key (kbd "<f5>") #'compile)
 (when (eq system-type 'darwin)
   (global-unset-key (kbd "s-t"))) ;; this is so distracting: ns-popup-font-panel
 

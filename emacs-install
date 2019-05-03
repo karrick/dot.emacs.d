@@ -40,7 +40,7 @@ function determine_os_type_from_file () {
 
 case $(determine_os_type) in
     rhel)
-        sudo yum install gtk2 gtk2-devel libXpm-devel giflib-devel libtiff-devel libjpeg libjpeg-devel ncurses ncurses-devel
+        sudo yum install giflib-devel gtk2 gtk2-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel ncurses ncurses-devel openjpeg-devel
         # NOTE: needed for lucid
         # sudo yum install libXaw libXaw-devel
         ;;
@@ -69,11 +69,11 @@ if [ ! -f $bundle_local ] ; then
     curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
 fi
 
-sig=${bundle}.sig
-sig_local=~/Downloads/$sig
-if [ ! -f $sig_local ] ; then
-    curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
-fi
+# sig=${bundle}.sig
+# sig_local=~/Downloads/$sig
+# if [ ! -f $sig_local ] ; then
+#     curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+# fi
 
 # while ! gpg --verify $sig_local $bundle_local ; do
 #     if [ -f $sig_local -a -f $bundle_local ] ; then

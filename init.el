@@ -173,11 +173,12 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS
 
-;; (global-set-key (kbd "C-x C-r") #'rgrep)
+(global-set-key (kbd "C-x C-r") #'rgrep)
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f5>") #'compile)
 (global-set-key (kbd "<f4>") #'recompile)
-;; (global-unset-key (kbd "s-t")) ;; commented out until I figure out what this was doing
+(when (eq system-type 'darwin)
+  (global-unset-key (kbd "s-t"))) ;; this is so distracting: ns-popup-font-panel
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
@@ -189,7 +190,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;; (global-set-key (kbd "C-x c") #'shell)	; create shell
 
 ;; (global-set-key (kbd "C-z") nil)        ; disable suspend-frame
-(global-set-key (kbd "C-z") #'delete-other-windows-vertically)
+;; (global-set-key (kbd "C-z") #'delete-other-windows-vertically) ;; does not work inside tmux
 
 (require 'ksm-window-scrolling)
 ;; (global-set-key (kbd "C-N") #'ksm/forward-line-scroll-up)
@@ -198,19 +199,12 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "M-n") #'ksm/see-more-down)
 
 (require 'ksm-window)
-;; (global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
 (global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
 (global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
 (global-set-key (kbd "C-x w") #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows; similar key-binding to tmux
 
-;; (global-set-key (kbd "C-x 2") #'(lambda() (interactive) (message "Use C-x \"")))
-;; (global-set-key (kbd "C-x \"") #'split-window-below)
-
-;; (global-set-key (kbd "C-x 3") #'(lambda() (interactive) (message "Use C-x %%")))
-;; (global-set-key (kbd "C-x %") #'split-window-right)
-
-(global-set-key (kbd "C-x x") #'kill-buffer-and-window) ; similar key-binding to tmux
+(global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
 
 ;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
 (global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
@@ -218,10 +212,6 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
 (global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
 
-;; (global-set-key (kbd "C-x C-<up>") #'enlarge-window)
-;; (global-set-key (kbd "C-x C-<down>") #'shrink-window)
-;; (global-set-key (kbd "C-x C-<right>") #'shrink-window-horizontally)
-;; (global-set-key (kbd "C-x C-<left>") #'enlarge-window-horizontally)
 (global-set-key (kbd "C-M-<up>")    #'enlarge-window)
 (global-set-key (kbd "C-M-<down>")  #'shrink-window)
 (global-set-key (kbd "C-M-<right>") #'shrink-window-horizontally)

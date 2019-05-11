@@ -66,7 +66,7 @@
   ;; golint
   (if (executable-find "golint")
       (require-package/ensure-require '(golint))
-    (message "Cannot find golint: `go get github.com/golang/lint/golint`"))
+    (message "Cannot find golint: `go get golang.org/x/lint/golint`"))
 
   ;; guru
   (let ((cmd (executable-find "guru")))

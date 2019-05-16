@@ -2,7 +2,17 @@
 
 set -eE
 
-release=26.2
+defaultRelease=26.2
+release=$1
+
+if [ -z $release ] ; then
+    read -e -p "Which release? [$defaultRelease] " release
+    if [ -z "$release" ] ; then
+        release=$defaultRelease
+    fi
+fi
+
+downloads=~/Downloads
 
 ################
 
@@ -56,53 +66,63 @@ esac
 
 ################
 
+# The supposition here is that when the file is not there, it has yet to be
+# imported, but once imported, it tends to just stick around and take up space.
 keyring=gnu-keyring.gpg
-keyring_local=~/Downloads/$keyring
+keyring_local=$downloads/$keyring
 if [ ! -f $keyring_local ] ; then
     curl -L --create-dirs --output $keyring_local http://ftp.gnu.org/gnu/$keyring
     gpg --import $keyring_local
 fi
 
+# These are the keys used to sign emacs releases, and as best as I can tell,
+# trusting them is idempotent.
+gpg --recv-key 7C207910          # versions 24.5 -- 25.3
+gpg --recv-key 6AFCF978          # versions 26.1 --
+
+# Download signature and bundle file if they do not exist
 bundle=emacs-${release}.tar.xz
-bundle_local=~/Downloads/$bundle
+bundle_local=$downloads/$bundle
+
+sig=${bundle}.sig
+sig_local=$downloads/$sig
+
 if [ ! -f $bundle_local ] ; then
     curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
 fi
 
-# sig=${bundle}.sig
-# sig_local=~/Downloads/$sig
-# if [ ! -f $sig_local ] ; then
-#     curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
-# fi
+if [ ! -f $sig_local ] ; then
+    curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+fi
 
-# while ! gpg --verify $sig_local $bundle_local ; do
-#     if [ -f $sig_local -a -f $bundle_local ] ; then
-#         echo "ERROR: bundle file doesn't match its signature." >&2
-#         read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
-#         case $yn in
-#             Y|y)
-#                 rm -f $sig_local $bundle_local
-#                 ;;
-#             N|n)
-#                 echo "exiting because bundle does not match signature..."
-#                 exit 1
-#                 ;;
-#         esac
-#     fi
-#     curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
-#     curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
-#     # gpg --keyserver pgpkeys.mit.edu --recv-key A0B0F199
-#     # gpg --keyserver pgpkeys.mit.edu --recv-key 7C207910
-# done
+while ! gpg --verify $sig_local $bundle_local ; do
+    echo "WARNING: bundle file doesn't match its signature." >&2
+    echo "bundle:    $bundle_local" >&2
+    echo "signature: $sig_local" >&2
+    read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
+    case $yn in
+        Y|y)
+            rm -fv $sig_local $bundle_local
+            echo "Re-downloading bundle file..."
+            curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+            echo "Re-downloading signature file..."
+            curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+            ;;
+        N|n)
+            echo "Exiting because bundle does not match signature."
+            exit 1
+            ;;
+    esac
+done
+
+echo "Bundle file matches its signature"
 
 ################
 
-src_dir=~/src
-mkdir -p $src_dir
-build_dir=$src_dir/emacs-${release}
-
+build_dir=$downloads/emacs-${release}
 rm -rf $build_dir
-tar -Jx -C $src_dir -f $bundle_local
+tar -Jx -C $downloads -f $bundle_local
+ls -dlF $build_dir
 
 ################
 

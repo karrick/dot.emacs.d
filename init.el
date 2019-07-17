@@ -170,7 +170,11 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS
 
+;; By default bind "C-x C-r" to rgrep, but when deadgrep is installed, rebind to that...
 (global-set-key (kbd "C-x C-r") #'rgrep)
+(require-package/with-requirements '(deadgrep)
+  (global-set-key (kbd "C-x C-r") #'deadgrep))
+
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f4>") #'recompile)
 (global-set-key (kbd "<f5>") #'compile)
@@ -303,7 +307,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (go-guru protobuf-mode buffer-move zenburn-theme yaml-mode xterm-color wgrep-ack switch-window swap-buffers rust-mode multiple-cursors markdown-mode keyword-search json-mode gruvbox-theme golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+    (deadgrep go-guru protobuf-mode buffer-move zenburn-theme yaml-mode xterm-color wgrep-ack switch-window swap-buffers rust-mode multiple-cursors markdown-mode keyword-search json-mode gruvbox-theme golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))

@@ -154,6 +154,7 @@ If there is no .svn directory, examine if there is CVS and run
 (require 'setup-javascript-mode)
 (require 'setup-python-mode)
 (require 'setup-ruby-mode)
+;; (require 'setup-zig-mode)
 
 (require-package/with-requirements '(json-mode)
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
@@ -307,7 +308,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (deadgrep go-guru protobuf-mode buffer-move zenburn-theme yaml-mode xterm-color wgrep-ack switch-window swap-buffers rust-mode multiple-cursors markdown-mode keyword-search json-mode gruvbox-theme golint go-rename go-eldoc go-autocomplete flycheck find-file-in-repository fic-mode expand-region edit-server ac-js2 ac-emoji)))
+    (ac ack autocomplete buffer buffers color cursors deadgrep edit eldoc emoji expand fic file find flycheck go golint gruvbox guru in js2 json keyword markdown mode move multiple protobuf region rename repository rust search server swap switch theme wgrep window xterm yaml zenburn zig)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))

@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;;; Includes guard to ensure only runs when emacs process is capable of using
+;;; Includes guard to ensure only runs when Emacs process is capable of using
 ;;; multiple fonts, typically when running as a graphical process.
 
 ;;; Code:
@@ -55,7 +55,6 @@
             #'(lambda (f)
                 (when (member f (nice-font--font-family-list-sorted))
                   (add-to-list 'default-frame-alist `(font . ,(concat f "-12"))))))
-
 (add-hook 'after-make-frame-functions
           #'(lambda ()
               (when (display-graphic-p)

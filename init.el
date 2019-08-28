@@ -308,7 +308,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (ac ack autocomplete buffer buffers color cursors deadgrep edit eldoc emoji expand fic file find flycheck go golint gruvbox guru in js2 json keyword markdown mode move multiple protobuf region rename repository rust search server swap switch theme wgrep window xterm yaml zenburn zig)))
+    (default-text-scale ac ack autocomplete buffer buffers color cursors deadgrep edit eldoc emoji expand fic file find flycheck go golint gruvbox guru in js2 json keyword markdown mode move multiple protobuf region rename repository rust search server swap switch theme wgrep window xterm yaml zenburn zig)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))

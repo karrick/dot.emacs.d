@@ -19,18 +19,19 @@
   (defun disable-auto-complete-mode () (auto-complete-mode 0))
   (ac-flyspell-workaround)
 
-  (require-package/with-requirements '(ac-emoji)
-    (when (fboundp #'set-fontset-font)
-      (cond ((eq system-type 'darwin)
-             (set-fontset-font
-              t 'symbol
-              (font-spec :family "Apple Color Emoji") nil 'prepend))
-            ((eq system-type 'gnu/linux)
-             (set-fontset-font
-              t 'symbol
-              (font-spec :family "Symbola") nil 'prepend)))
-      (add-hook 'markdown-mode-hook #'ac-emoji-setup)
-      (add-hook 'git-commit-mode-hook #'ac-emoji-setup))))
+  (when nil
+    (require-package/with-requirements '(ac-emoji)
+      (when (fboundp #'set-fontset-font)
+        (cond ((eq system-type 'darwin)
+               (set-fontset-font
+                t 'symbol
+                (font-spec :family "Apple Color Emoji") nil 'prepend))
+              ((eq system-type 'gnu/linux)
+               (set-fontset-font
+                t 'symbol
+                (font-spec :family "Symbola") nil 'prepend)))
+        (add-hook 'markdown-mode-hook #'ac-emoji-setup)
+        (add-hook 'git-commit-mode-hook #'ac-emoji-setup)))))
 
 (provide 'setup-autocomplete)
 

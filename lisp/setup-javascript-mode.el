@@ -13,8 +13,9 @@
   (set-default 'js2-mirror-mode nil)
   (set-default 'js2-mode-escape-quotes nil)
 
-  (require-package/with-requirements '(ac-js2)
-    (add-hook 'js2-mode-hook #'ac-js2-mode))
+  (when nil
+    (require-package/with-requirements '(ac-js2)
+      (add-hook 'js2-mode-hook #'ac-js2-mode)))
 
   (add-hook 'javascript-mode-hook #'(lambda ()
                                       (add-hook 'before-save-hook #'clean-and-indent nil t)

@@ -99,19 +99,21 @@
 (global-set-key (kbd "M-&") #'ksm/async-shell-command)
 (global-set-key (kbd "ESC &") #'ksm/async-shell-command)
 
-(require-package/with-requirements '(expand-region)
-  (global-set-key (kbd "M-=") #'er/expand-region)
-  (global-set-key (kbd "ESC =") #'er/expand-region)
-  (global-set-key (kbd "M--") #'er/contract-region)
-  (global-set-key (kbd "ESC -") #'er/contract-region))
+(when nil
+  (require-package/with-requirements '(expand-region)
+    (global-set-key (kbd "M-=") #'er/expand-region)
+    (global-set-key (kbd "ESC =") #'er/expand-region)
+    (global-set-key (kbd "M--") #'er/contract-region)
+    (global-set-key (kbd "ESC -") #'er/contract-region)))
 
-(require-package/with-requirements '(multiple-cursors)
-  (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
-  (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
-  (global-set-key (kbd "C->") #'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
-  (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
+(when nil
+  (require-package/with-requirements '(multiple-cursors)
+    (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
+    (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
+    (global-set-key (kbd "C->") #'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
+    (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VCS
@@ -308,7 +310,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (default-text-scale ac ack autocomplete buffer buffers color cursors deadgrep edit eldoc emoji expand fic file find flycheck go golint gruvbox guru in js2 json keyword markdown mode move multiple protobuf region rename repository rust search server swap switch theme wgrep window xterm yaml zenburn zig)))
+    (buffer-move deadgrep default-text-scale fic-mode find-file-in-repository flycheck go-autocomplete go-eldoc go-guru go-rename golint js2-mode json-mode keyword-search markdown-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))
@@ -345,5 +347,6 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F"))))
  '(hl-line ((((type x ns) (class color) (background dark)) (:background "firebrick4"))))
  '(show-paren-match ((((type x ns) (class color) (background light)) (:background "PaleTurquoise1")))))

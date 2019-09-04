@@ -211,10 +211,15 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
 
 ;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
-(global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
-(global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
-(global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
-(global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
+;; (global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
+;; (global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
+;; (global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
+;; (global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
+
+(global-set-key (kbd "C-M-i") #'windmove-up)    ; move point to buffer above it
+(global-set-key (kbd "C-M-j") #'windmove-left)  ; move point to buffer on its left
+(global-set-key (kbd "C-M-k") #'windmove-down)  ; move point to buffer below it
+(global-set-key (kbd "C-M-l") #'windmove-right) ; move point to buffer on its right
 
 (global-set-key (kbd "C-M-<up>")    #'enlarge-window)
 (global-set-key (kbd "C-M-<down>")  #'shrink-window)

@@ -81,6 +81,7 @@
 (require-package/with-requirements '(wgrep wgrep-ack)
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
 
+(global-set-key (kbd "s-q") #'(lambda() (interactive) (message "Use M-x kill-emacs to exit")))
 (global-set-key (kbd "C-c H") #'hl-line-mode)
 
 (setq ediff-diff-options "-w"

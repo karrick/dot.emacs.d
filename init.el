@@ -183,6 +183,7 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "<f5>") #'compile)
 
 (when (eq system-type 'darwin)
+  (global-unset-key (kbd "s-p"))
   (global-unset-key (kbd "s-q"))
   (global-unset-key (kbd "s-t"))) ;; this is so distracting: ns-popup-font-panel
 

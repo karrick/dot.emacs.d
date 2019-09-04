@@ -81,7 +81,6 @@
 (require-package/with-requirements '(wgrep wgrep-ack)
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
 
-(global-set-key (kbd "s-q") #'(lambda() (interactive) (message "Use M-x kill-emacs to exit")))
 (global-set-key (kbd "C-c H") #'hl-line-mode)
 
 (setq ediff-diff-options "-w"
@@ -182,7 +181,9 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f4>") #'recompile)
 (global-set-key (kbd "<f5>") #'compile)
+
 (when (eq system-type 'darwin)
+  (global-unset-key (kbd "s-q"))
   (global-unset-key (kbd "s-t"))) ;; this is so distracting: ns-popup-font-panel
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

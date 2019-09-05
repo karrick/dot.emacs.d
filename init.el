@@ -352,4 +352,5 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If there is more than one, they won't work right.
  '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F"))))
  '(hl-line ((((type x ns) (class color) (background dark)) (:background "firebrick4"))))
+ '(markdown-code-face ((t (:inherit fixed-pitch :background "DarkOliveGreen" :foreground "gray75"))))
  '(show-paren-match ((((type x ns) (class color) (background light)) (:background "PaleTurquoise1")))))

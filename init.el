@@ -218,21 +218,21 @@ If there is no .svn directory, examine if there is CVS and run
 ;; (global-unset-key (kbd "C-x C-c"))      ; disable save-buffers-kill-terminal
 ;; (global-unset-key (kbd "C-z"))          ; disable suspend-frame
 
-(global-set-key (kbd "C-M-i") #'windmove-up)    ; move point to buffer above it
-(global-set-key (kbd "C-M-j") #'windmove-left)  ; move point to buffer on its left
-(global-set-key (kbd "C-M-k") #'windmove-down)  ; move point to buffer below it
-(global-set-key (kbd "C-M-l") #'windmove-right) ; move point to buffer on its right
+(global-set-key (kbd "C-S-i") #'windmove-up)    ; move point to buffer above it
+(global-set-key (kbd "C-S-j") #'windmove-left)  ; move point to buffer on its left
+(global-set-key (kbd "C-S-k") #'windmove-down)  ; move point to buffer below it
+(global-set-key (kbd "C-S-l") #'windmove-right) ; move point to buffer on its right
 
-(global-set-key (kbd "C-M-<up>")    #'enlarge-window)
-(global-set-key (kbd "C-M-<down>")  #'shrink-window)
-(global-set-key (kbd "C-M-<right>") #'shrink-window-horizontally)
-(global-set-key (kbd "C-M-<left>")  #'enlarge-window-horizontally)
+(global-set-key (kbd "C-S-<up>")    #'enlarge-window)
+(global-set-key (kbd "C-S-<down>")  #'shrink-window)
+(global-set-key (kbd "C-S-<right>") #'shrink-window-horizontally)
+(global-set-key (kbd "C-S-<left>")  #'enlarge-window-horizontally)
 
 (require-package/with-requirements '(buffer-move)
-  (global-set-key (kbd "<C-S-up>")     #'buf-move-up)     ; swap buffer that has point with buffer above it
-  (global-set-key (kbd "<C-S-down>")   #'buf-move-down)   ; swap buffer that has point with buffer below it
-  (global-set-key (kbd "<C-S-left>")   #'buf-move-left)   ; swap buffer that has point with buffer on its left
-  (global-set-key (kbd "<C-S-right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
+  (global-set-key (kbd "<C-M-up>")     #'buf-move-up)     ; swap buffer that has point with buffer above it
+  (global-set-key (kbd "<C-M-down>")   #'buf-move-down)   ; swap buffer that has point with buffer below it
+  (global-set-key (kbd "<C-M-left>")   #'buf-move-left)   ; swap buffer that has point with buffer on its left
+  (global-set-key (kbd "<C-M-right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
 
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q

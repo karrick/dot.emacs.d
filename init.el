@@ -61,7 +61,7 @@
 (column-number-mode 1)
 (line-number-mode 1)
 (prefer-coding-system 'utf-8)
-(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)   ; this is such a useful feature
 (show-paren-mode t)                     ; parentheses matching
 
 (require 'browser-open)
@@ -80,8 +80,6 @@
 ;; Writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
 (require-package/with-requirements '(wgrep wgrep-ack)
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
-
-(global-set-key (kbd "C-c H") #'hl-line-mode)
 
 (setq ediff-diff-options "-w"
       ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands, keep it all in one frame
@@ -173,6 +171,8 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS
 
+(global-set-key (kbd "C-c H") #'hl-line-mode)
+
 ;; By default bind "C-x C-r" to rgrep, but when deadgrep is installed, rebind to that...
 (global-set-key (kbd "C-x C-r") #'rgrep)
 (require-package/with-requirements '(deadgrep)
@@ -182,22 +182,15 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "<f4>") #'recompile)
 (global-set-key (kbd "<f5>") #'compile)
 
-(when (eq system-type 'darwin)
-  (global-unset-key (kbd "s-p"))
-  (global-unset-key (kbd "s-q"))
-  (global-unset-key (kbd "s-t"))) ;; this is so distracting: ns-popup-font-panel
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
 ;; to keep ability to use emacs in a tmux frame, you need to use a
 ;; different key prefix in emacs than tmux.
 
-(global-set-key (kbd "C-x C-b") #'ibuffer)
-;; (global-set-key (kbd "C-x C-c") nil)    ; disable save-buffers-kill-terminal
-;; (global-set-key (kbd "C-x c") #'shell)	; create shell
-
-;; (global-set-key (kbd "C-z") nil)        ; disable suspend-frame
-;; (global-set-key (kbd "C-z") #'delete-other-windows-vertically) ;; does not work inside tmux
+(when (eq system-type 'darwin)
+  (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer
+  (global-unset-key (kbd "s-q"))   ; disable abrupt Emacs exit
+  (global-unset-key (kbd "s-t")))  ; disable ns-popup-font-panel
 
 (require 'ksm-window-scrolling)
 ;; (global-set-key (kbd "C-N") #'ksm/forward-line-scroll-up)
@@ -211,13 +204,19 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x w") #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows; similar key-binding to tmux
 
-(global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
-
 ;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
 ;; (global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
 ;; (global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
 ;; (global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
 ;; (global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
+
+(global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
+(global-set-key (kbd "C-x C-b") #'ibuffer)
+
+;; (global-set-key (kbd "C-x c") #'shell)                         ; create shell
+;; (global-set-key (kbd "C-z") #'delete-other-windows-vertically) ; does not work inside tmux
+;; (global-unset-key (kbd "C-x C-c"))      ; disable save-buffers-kill-terminal
+;; (global-unset-key (kbd "C-z"))          ; disable suspend-frame
 
 (global-set-key (kbd "C-M-i") #'windmove-up)    ; move point to buffer above it
 (global-set-key (kbd "C-M-j") #'windmove-left)  ; move point to buffer on its left
@@ -234,10 +233,6 @@ If there is no .svn directory, examine if there is CVS and run
   (global-set-key (kbd "<C-S-down>")   #'buf-move-down)   ; swap buffer that has point with buffer below it
   (global-set-key (kbd "<C-S-left>")   #'buf-move-left)   ; swap buffer that has point with buffer on its left
   (global-set-key (kbd "<C-S-right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
-
-(when nil                               ; disabled in deference to buffer-move package
-  (require-package/with-requirements '(swap-buffers)
-    (global-set-key (kbd "C-c b") 'swap-buffers)))
 
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q

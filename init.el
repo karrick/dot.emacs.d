@@ -225,8 +225,8 @@ If there is no .svn directory, examine if there is CVS and run
 
 (global-set-key (kbd "C-S-<up>")    #'enlarge-window)
 (global-set-key (kbd "C-S-<down>")  #'shrink-window)
-(global-set-key (kbd "C-S-<right>") #'shrink-window-horizontally)
-(global-set-key (kbd "C-S-<left>")  #'enlarge-window-horizontally)
+(global-set-key (kbd "C-S-<left>") #'shrink-window-horizontally)
+(global-set-key (kbd "C-S-<right>")  #'enlarge-window-horizontally)
 
 (require-package/with-requirements '(buffer-move)
   (global-set-key (kbd "<C-M-up>")     #'buf-move-up)     ; swap buffer that has point with buffer above it

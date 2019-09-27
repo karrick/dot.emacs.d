@@ -39,6 +39,7 @@
 
 (when (and (fboundp #'daemonp) (daemonp)) ; when invoked as a daemon
   (cd (expand-file-name "~"))             ; change to home directory at startup
+  (server-start)
   ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
   (require-package/with-requirements '(edit-server)
     (edit-server-start)))
@@ -68,7 +69,6 @@
 (require 'eshell)
 (require 'find-file-dynamic)
 (require 'make-shebang-executable)
-;; (require 'raghu)
 (require 'setup-autocomplete)
 ;; (require 'setup-codesearch)
 (require 'uniquify)                     ; uniquify buffer names
@@ -186,6 +186,10 @@ If there is no .svn directory, examine if there is CVS and run
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
 ;; to keep ability to use emacs in a tmux frame, you need to use a
 ;; different key prefix in emacs than tmux.
+
+(require-package/with-requirements '(default-text-scale)
+  (default-text-scale-mode))
+(global-unset-key (kbd "s-z"))          ; disable abrupt Emacs minimize
 
 (when (eq system-type 'darwin)
   (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer

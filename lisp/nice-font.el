@@ -64,9 +64,10 @@
                 ;; Darwin: command key maps to super modifier; therefore use super so that
                 ;; Command =, Command -, and Command 0, all behave similar to how browsers
                 ;; will scale text size due to same key bindings.
-                (define-key global-map (kbd "s-=") #'text-scale-increase)
-                (define-key global-map (kbd "s--") #'text-scale-decrease)
-                (define-key global-map (kbd "s-0") #'(lambda () (interactive) (text-scale-set 0))))))
+                ;; (define-key global-map (kbd "s-=") #'text-scale-increase)
+                ;; (define-key global-map (kbd "s--") #'text-scale-decrease)
+                ;; (define-key global-map (kbd "s-0") #'(lambda () (interactive) (text-scale-set 0)))
+                )))
 
 (provide 'nice-font)
 

@@ -8,7 +8,7 @@
 ;;; Code:
 
 (add-to-list 'default-frame-alist '(font-backend . "xft"))
-(setq nice-font-height 100)             ; units of 1/10th of a point
+(setq nice-font-height 140)             ; units of 1/10th of a point
 
 (defun nice-font--font-family-list-sorted ()
   "Return list of sorted font families."
@@ -54,7 +54,7 @@
               )
             #'(lambda (f)
                 (when (member f (nice-font--font-family-list-sorted))
-                  (add-to-list 'default-frame-alist `(font . ,(concat f "-12"))))))
+                  (add-to-list 'default-frame-alist `(font . ,(concat f "-14"))))))
 (add-hook 'after-make-frame-functions
           #'(lambda ()
               (when (display-graphic-p)

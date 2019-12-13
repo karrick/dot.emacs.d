@@ -223,6 +223,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;; (global-set-key (kbd "C-x c") #'shell)                         ; create shell
 ;; (global-set-key (kbd "C-z") #'delete-other-windows-vertically) ; does not work inside tmux
 ;; (global-unset-key (kbd "C-x C-c"))      ; disable save-buffers-kill-terminal
+(setq confirm-kill-emacs 'yes-or-no-p)
 ;; (global-unset-key (kbd "C-z"))          ; disable suspend-frame
 
 (global-set-key (kbd "C-S-i") #'windmove-up)    ; move point to buffer above it

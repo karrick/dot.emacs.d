@@ -321,7 +321,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (gnu-elpa-keyring-update lsp-ui lsp-mode go-errcheck buffer-move deadgrep default-text-scale fic-mode find-file-in-repository flycheck go-autocomplete go-eldoc go-guru go-rename golint js2-mode json-mode keyword-search markdown-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode)))
+    (buffer-move deadgrep default-text-scale eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-guru go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))

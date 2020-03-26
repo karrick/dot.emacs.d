@@ -2,7 +2,7 @@
 
 set -eE
 
-defaultRelease=26.2
+defaultRelease=26.3
 release=$1
 
 if [ -z $release ] ; then

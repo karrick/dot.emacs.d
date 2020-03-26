@@ -28,9 +28,9 @@
 
 (require 'path)
 (let ((directories (list
-                    "/usr/local/bin"
-                    "~/bin"
-                    )))
+		    "/usr/local/bin"
+		    "~/bin"
+		    )))
   (dolist (dir directories)
     (path-prepend dir)))
 
@@ -40,9 +40,10 @@
 (when (and (fboundp #'daemonp) (daemonp)) ; when invoked as a daemon
   (cd (expand-file-name "~"))             ; change to home directory at startup
   (server-start)
-  ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
-  (require-package/with-requirements '(edit-server)
-    (edit-server-start)))
+  (when nil
+    ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
+    (require-package/with-requirements '(edit-server)
+      (edit-server-start))))
 
 ;; While this process is running, make certain any sub process knows to use
 ;; emacsclient as editor and can route file editing requests to this process.
@@ -141,9 +142,9 @@ If there is no .svn directory, examine if there is CVS and run
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
 (add-hook 'prog-mode-hook #'(lambda ()
-                              (setq fill-column 80)
-                              (flyspell-prog-mode)
-                              (hl-line-mode 1)))
+			      (setq fill-column 80)
+			      (flyspell-prog-mode)
+			      (hl-line-mode 1)))
 
 ;; tabs and indenting
 (defvaralias 'c-basic-offset 'tab-width)
@@ -162,11 +163,11 @@ If there is no .svn directory, examine if there is CVS and run
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
 
 (require-package/ensure-require '(
-                                  fic-mode
-                                  keyword-search
-                                  markdown-mode
-                                  yaml-mode
-                                  ))
+				  fic-mode
+				  keyword-search
+				  markdown-mode
+				  yaml-mode
+				  ))
 
 ;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
@@ -211,11 +212,11 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x w") #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows; similar key-binding to tmux
 
-;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
-;; (global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
-;; (global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
-;; (global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
-;; (global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
+(global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
+(global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
+(global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
+(global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
+(global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
 
 (global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
 (global-set-key (kbd "C-x C-b") #'ibuffer)
@@ -250,7 +251,7 @@ If there is no .svn directory, examine if there is CVS and run
     (load-theme 'zenburn t))
   (require-package/with-requirements '(xterm-color)
     (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)
-           (setq comint-output-filter-functions (remove 'ansi-color-process-output comint-output-filter-functions)))
+	   (setq comint-output-filter-functions (remove 'ansi-color-process-output comint-output-filter-functions)))
 
     (require 'eshell)
     (add-hook 'eshell-mode-hook #'(lambda () (setq xterm-color-preserve-properties t)))
@@ -258,17 +259,17 @@ If there is no .svn directory, examine if there is CVS and run
     (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
 
     (add-hook 'compilation-start-hook
-              #'(lambda (proc)
-                  ;; We need to differentiate between compilation-mode buffers
-                  ;; and running as part of comint (which at this point we assume
-                  ;; has been configured separately for xterm-color)
-                  (when (eq (process-filter proc) 'compilation-filter)
-                    ;; This is a process associated with a compilation-mode buffer.
-                    ;; We may call `xterm-color-filter' before its own filter function.
-                    (set-process-filter
-                     proc
-                     #'(lambda (proc string)
-                         (funcall 'compilation-filter proc (xterm-color-filter string)))))))))
+	      #'(lambda (proc)
+		  ;; We need to differentiate between compilation-mode buffers
+		  ;; and running as part of comint (which at this point we assume
+		  ;; has been configured separately for xterm-color)
+		  (when (eq (process-filter proc) 'compilation-filter)
+		    ;; This is a process associated with a compilation-mode buffer.
+		    ;; We may call `xterm-color-filter' before its own filter function.
+		    (set-process-filter
+		     proc
+		     #'(lambda (proc string)
+			 (funcall 'compilation-filter proc (xterm-color-filter string)))))))))
 
 (when (display-mouse-p) ; previously used display-graph-p, so this might not work
   ;; iTerm2 mouse support
@@ -277,7 +278,7 @@ If there is no .svn directory, examine if there is CVS and run
   (defun track-mouse (e))
   (setq mouse-sel-mode t))
 
-(require 'nice-font)                ; nice-font guards with display-multi-font-p
+;; (require 'nice-font)                ; nice-font guards with display-multi-font-p
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LOCALHOST CONFIGURATION

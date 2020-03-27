@@ -28,9 +28,9 @@
 
 (require 'path)
 (let ((directories (list
-		    "/usr/local/bin"
-		    "~/bin"
-		    )))
+                    "/usr/local/bin"
+                    "~/bin"
+                    )))
   (dolist (dir directories)
     (path-prepend dir)))
 
@@ -142,9 +142,9 @@ If there is no .svn directory, examine if there is CVS and run
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
 (add-hook 'prog-mode-hook #'(lambda ()
-			      (setq fill-column 80)
-			      (flyspell-prog-mode)
-			      (hl-line-mode 1)))
+                              (setq fill-column 80)
+                              (flyspell-prog-mode)
+                              (hl-line-mode 1)))
 
 ;; tabs and indenting
 (defvaralias 'c-basic-offset 'tab-width)
@@ -163,11 +163,11 @@ If there is no .svn directory, examine if there is CVS and run
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
 
 (require-package/ensure-require '(
-				  fic-mode
-				  keyword-search
-				  markdown-mode
-				  yaml-mode
-				  ))
+                                  fic-mode
+                                  keyword-search
+                                  markdown-mode
+                                  yaml-mode
+                                  ))
 
 ;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
@@ -251,7 +251,7 @@ If there is no .svn directory, examine if there is CVS and run
     (load-theme 'zenburn t))
   (require-package/with-requirements '(xterm-color)
     (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)
-	   (setq comint-output-filter-functions (remove 'ansi-color-process-output comint-output-filter-functions)))
+           (setq comint-output-filter-functions (remove 'ansi-color-process-output comint-output-filter-functions)))
 
     (require 'eshell)
     (add-hook 'eshell-mode-hook #'(lambda () (setq xterm-color-preserve-properties t)))
@@ -259,17 +259,17 @@ If there is no .svn directory, examine if there is CVS and run
     (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
 
     (add-hook 'compilation-start-hook
-	      #'(lambda (proc)
-		  ;; We need to differentiate between compilation-mode buffers
-		  ;; and running as part of comint (which at this point we assume
-		  ;; has been configured separately for xterm-color)
-		  (when (eq (process-filter proc) 'compilation-filter)
-		    ;; This is a process associated with a compilation-mode buffer.
-		    ;; We may call `xterm-color-filter' before its own filter function.
-		    (set-process-filter
-		     proc
-		     #'(lambda (proc string)
-			 (funcall 'compilation-filter proc (xterm-color-filter string)))))))))
+              #'(lambda (proc)
+                  ;; We need to differentiate between compilation-mode buffers
+                  ;; and running as part of comint (which at this point we assume
+                  ;; has been configured separately for xterm-color)
+                  (when (eq (process-filter proc) 'compilation-filter)
+                    ;; This is a process associated with a compilation-mode buffer.
+                    ;; We may call `xterm-color-filter' before its own filter function.
+                    (set-process-filter
+                     proc
+                     #'(lambda (proc string)
+                         (funcall 'compilation-filter proc (xterm-color-filter string)))))))))
 
 (when (display-mouse-p) ; previously used display-graph-p, so this might not work
   ;; iTerm2 mouse support
@@ -322,7 +322,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-guru golint go-rename js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode)))
+    (buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-guru go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(scroll-conservatively 5)
  '(show-paren-style (quote expression))

@@ -179,7 +179,8 @@ If there is no .svn directory, examine if there is CVS and run
 ;; By default bind "C-x C-r" to rgrep, but when deadgrep is installed, rebind to that...
 (global-set-key (kbd "C-x C-r") #'rgrep)
 (require-package/with-requirements '(deadgrep)
-  (global-set-key (kbd "C-x C-r") #'deadgrep))
+  (if (executable-find "rg")
+      (global-set-key (kbd "C-x C-r") #'deadgrep)))
 
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f4>") #'recompile)
@@ -190,8 +191,16 @@ If there is no .svn directory, examine if there is CVS and run
 ;; to keep ability to use emacs in a tmux frame, you need to use a
 ;; different key prefix in emacs than tmux.
 
-(require-package/with-requirements '(default-text-scale)
-  (default-text-scale-mode))
+(global-set-key (kbd "C-x C-b") #'ibuffer)
+
+;; (global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
+;; (global-set-key (kbd "C-x c") #'shell)                         ; create shell
+;; (global-set-key (kbd "C-z") #'delete-other-windows-vertically) ; does not work inside tmux
+
+;; (global-unset-key (kbd "C-x C-c"))      ; disable save-buffers-kill-terminal
+(setq confirm-kill-emacs 'yes-or-no-p)
+
+;; (global-unset-key (kbd "C-z"))          ; disable suspend-frame
 (global-unset-key (kbd "s-z"))          ; disable abrupt Emacs minimize
 
 (when (eq system-type 'darwin)
@@ -213,19 +222,13 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows; similar key-binding to tmux
 
 (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
+(require-package/with-requirements '(switch-window)
+  (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q
+
 (global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
 (global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
 (global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
 (global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
-
-(global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
-(global-set-key (kbd "C-x C-b") #'ibuffer)
-
-;; (global-set-key (kbd "C-x c") #'shell)                         ; create shell
-;; (global-set-key (kbd "C-z") #'delete-other-windows-vertically) ; does not work inside tmux
-;; (global-unset-key (kbd "C-x C-c"))      ; disable save-buffers-kill-terminal
-(setq confirm-kill-emacs 'yes-or-no-p)
-;; (global-unset-key (kbd "C-z"))          ; disable suspend-frame
 
 (global-set-key (kbd "C-S-i") #'windmove-up)    ; move point to buffer above it
 (global-set-key (kbd "C-S-j") #'windmove-left)  ; move point to buffer on its left
@@ -234,8 +237,8 @@ If there is no .svn directory, examine if there is CVS and run
 
 (global-set-key (kbd "C-S-<up>")    #'enlarge-window)
 (global-set-key (kbd "C-S-<down>")  #'shrink-window)
-(global-set-key (kbd "C-S-<left>") #'shrink-window-horizontally)
-(global-set-key (kbd "C-S-<right>")  #'enlarge-window-horizontally)
+(global-set-key (kbd "C-S-<left>")  #'shrink-window-horizontally)
+(global-set-key (kbd "C-S-<right>") #'enlarge-window-horizontally)
 
 (require-package/with-requirements '(buffer-move)
   (global-set-key (kbd "<C-M-up>")     #'buf-move-up)     ; swap buffer that has point with buffer above it
@@ -243,8 +246,8 @@ If there is no .svn directory, examine if there is CVS and run
   (global-set-key (kbd "<C-M-left>")   #'buf-move-left)   ; swap buffer that has point with buffer on its left
   (global-set-key (kbd "<C-M-right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
 
-(require-package/with-requirements '(switch-window)
-  (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q
+(require-package/with-requirements '(default-text-scale)
+  (default-text-scale-mode))
 
 (when (display-color-p)
   (require-package/with-requirements '(zenburn-theme)

@@ -115,6 +115,8 @@
     (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)))
 
 (when t
+  ;; (setq org-todo-keywords
+  ;;       '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
   (global-set-key (kbd "C-c c") 'org-capture))

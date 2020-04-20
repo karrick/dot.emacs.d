@@ -114,6 +114,11 @@
     (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
     (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)))
 
+(when t
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c c") 'org-capture))
+
 (require 'sort-commas)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

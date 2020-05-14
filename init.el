@@ -228,7 +228,7 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x w") #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows; similar key-binding to tmux
 
-(global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
+;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q
 

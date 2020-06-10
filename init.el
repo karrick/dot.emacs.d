@@ -123,6 +123,9 @@
 
 (require 'sort-commas)
 
+(when t
+  (require 'setup-gtd))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VCS
 

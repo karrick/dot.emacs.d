@@ -70,10 +70,9 @@
 
   ;; guru
   (let ((cmd (executable-find "guru")))
-    (if (string-equal cmd "")
+    (if (not cmd)
         (message "Cannot find guru: `go get golang.org/x/tools/cmd/guru`")
-      (progn
-        (require 'go-guru)
+      (require-package/with-requirements '(go-guru)
         (setq go-guru-command cmd)
         (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode)
         (set-face-attribute 'go-guru-hl-identifier-face nil

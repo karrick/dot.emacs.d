@@ -21,7 +21,6 @@
 (setq org-refile-targets '(("~/gtd/main.org" :maxlevel . 3)
                            ("~/gtd/agendas.org" :level . 1)
                            ("~/gtd/someday.org" :level . 1)
-                           ("~/gtd/reference.org" :level . 1)
                            ("~/gtd/tickler.org" :maxlevel . 2)))
 
 (setq org-todo-keywords

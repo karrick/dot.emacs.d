@@ -5,21 +5,22 @@
 ;;; Code:
 
 (setq org-agenda-files '("~/gtd/inbox.org"
-                         "~/gtd/main.org"
+                         "~/gtd/projects.org"
                          "~/gtd/tickler.org"))
 
 (setq org-capture-templates '(("t" "Todo [inbox]" entry
-                               (file+headline "~/gtd/inbox.org" "Tasks")
+                               (file+headline "~/gtd/inbox.org" "Inbox")
                                "* TODO %i%?")
                               ;; ("p" "Project [projects]" entry
-                              ;;  (file+headline "~/gtd/main.org" "Projects")
+                              ;;  (file+headline "~/gtd/projects.org" "Projects")
                               ;;  "* TODO %i%?")
                               ("T" "Tickler" entry
                                (file+headline "~/gtd/tickler.org" "Tickler")
                                "* %i%? \n %U")))
 
-(setq org-refile-targets '(("~/gtd/main.org" :maxlevel . 3)
+(setq org-refile-targets '(("~/gtd/projects.org" :maxlevel . 3)
                            ("~/gtd/agendas.org" :level . 1)
+                           ("~/gtd/references.org" :level . 1)
                            ("~/gtd/someday.org" :level . 1)
                            ("~/gtd/tickler.org" :maxlevel . 2)))
 

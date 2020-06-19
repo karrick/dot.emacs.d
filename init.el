@@ -149,6 +149,28 @@ If there is no .svn directory, examine if there is CVS and run
   t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; SPELL CHECK
+;;;
+;;; http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html
+
+(cond
+ ((executable-find "aspell")
+  ;; you may also need `ispell-extra-args`
+  (setq ispell-program-name "aspell"))
+
+ ((executable-find "hunspell")
+  (setq ispell-program-name "hunspell")
+
+  ;; Please note that `ispell-local-dictionary` itself will be passed to
+  ;; hunspell cli with "-d".  It is also used as the key to lookup
+  ;; ispell-local-dictionary-alist if we use a different dictionary.
+  (setq ispell-local-dictionary "en_US")
+  (setq ispell-local-dictionary-alist
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8))))
+
+ (t (setq ispell-program-name nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
 (add-hook 'prog-mode-hook #'(lambda ()

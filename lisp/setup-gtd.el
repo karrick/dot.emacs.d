@@ -20,6 +20,7 @@
 
 (setq org-refile-targets '(("~/gtd/projects.org" :maxlevel . 3)
                            ("~/gtd/agendas.org" :level . 1)
+                           ("~/gtd/inbox.org" :maxlevel . 2)
                            ("~/gtd/references.org" :level . 1)
                            ("~/gtd/someday.org" :level . 1)
                            ("~/gtd/tickler.org" :maxlevel . 2)))

@@ -281,7 +281,7 @@ If there is no .svn directory, examine if there is CVS and run
 (require-package/with-requirements '(default-text-scale)
   (default-text-scale-mode))
 
-(when (display-color-p)
+(when (and (display-color-p) (boundp 'eshell-preoutput-filter-functions))
 
   ;; compilation buffers should convert ANSI sequences to color formatting
   (require 'ansi-color)
@@ -342,43 +342,37 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
- '(compilation-scroll-output (quote first-error))
+ '(compilation-scroll-output 'first-error)
  '(custom-safe-themes
-   (quote
-    ("84890723510d225c45aaff941a7e201606a48b973f0121cb9bcb0b9399be8cba" "cd4d1a0656fee24dc062b997f54d6f9b7da8f6dc8053ac858f15820f9a04a679" "bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default)))
+   '("84890723510d225c45aaff941a7e201606a48b973f0121cb9bcb0b9399be8cba" "cd4d1a0656fee24dc062b997f54d6f9b7da8f6dc8053ac858f15820f9a04a679" "bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default))
  '(diff-switches "-u")
  '(dired-listing-switches "-Bhlo")
  '(edit-server-new-frame nil)
  '(eshell-output-filter-functions
-   (quote
-    (eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt)))
+   '(eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt))
  '(fci-rule-color "#383838")
- '(flycheck-emacs-lisp-load-path (quote inherit))
- '(flycheck-global-modes (quote (not go-mode)))
+ '(flycheck-emacs-lisp-load-path 'inherit)
+ '(flycheck-global-modes '(not go-mode))
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)
  '(minibuffer-prompt-properties
-   (quote
-    (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
+   '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
  '(nrepl-message-colors
-   (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(ns-function-modifier (quote hyper))
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
+ '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   (quote
-    (nix-mode buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode)))
- '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+   '(nix-mode buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
+ '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
- '(show-paren-style (quote expression))
+ '(show-paren-style 'expression)
  '(tab-width 4)
- '(uniquify-buffer-name-style (quote post-forward) nil (uniquify))
+ '(uniquify-buffer-name-style 'post-forward nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\*")
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
+   '((20 . "#BC8383")
      (40 . "#CC9393")
      (60 . "#DFAF8F")
      (80 . "#D0BF8F")
@@ -395,7 +389,7 @@ If there is no .svn directory, examine if there is CVS and run
      (300 . "#7CB8BB")
      (320 . "#8CD0D3")
      (340 . "#94BFF3")
-     (360 . "#DC8CC3"))))
+     (360 . "#DC8CC3")))
  '(vc-annotate-very-old-color "#DC8CC3")
  '(visible-bell t)
  '(wgrep-auto-save-buffer t))

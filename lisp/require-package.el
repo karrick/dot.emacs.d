@@ -47,6 +47,11 @@ using `require-packages/pin-package-tuple'."
   :type 'boolean
   :group 'require-package)
 
+(defcustom require-package/force-refresh nil
+  "When non-nil, requires refresh of package repository contents."
+  :type 'boolean
+  :group 'require-package)
+
 (defvar require-package/package-contents-refreshed nil "Non-nil after `require-package/maybe-package-refresh-contents' successfully run.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -232,7 +237,8 @@ install, stop processing PACKAGE-TUPLES and return nil."
           (throw 'missing-requirement nil))
         (condition-case err
             (progn
-              (require-package/maybe-package-refresh-contents)
+              (when require-package/force-refresh
+                (require-package/maybe-package-refresh-contents))
               (require-package/with-package-check-signature signature
                 (package-install package-name))
               (require feature))

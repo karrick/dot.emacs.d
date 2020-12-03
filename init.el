@@ -197,9 +197,12 @@ If there is no .svn directory, examine if there is CVS and run
 (require-package/ensure-require '(
                                   fic-mode
                                   keyword-search
-                                  markdown-mode
                                   yaml-mode
                                   ))
+
+(require-package/with-requirements
+    '(markdown-mode)
+  (add-hook 'markdown-mode-hook #'visual-line-mode))
 
 ;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 

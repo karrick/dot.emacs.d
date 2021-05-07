@@ -11,7 +11,10 @@
 
 ;; This package extensively uses `package' library, with changes in "25.1" version of Emacs.
 (require 'package)
-(package-initialize)
+
+(when (< emacs-major-version 27)
+  (package-initialize))
+
 (setq package-menu-hide-low-priority :archive)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

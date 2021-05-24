@@ -285,6 +285,21 @@ If there is no .svn directory, examine if there is CVS and run
   (default-text-scale-mode))
 
 (when (and (display-color-p) (boundp 'eshell-preoutput-filter-functions))
+  (when t
+    ;; (add-to-list 'load-path "tty-format.el")
+    (require 'tty-format)
+
+    ;; M-x display-ansi-colors to explicitly decode ANSI color escape sequences
+    (defun display-ansi-colors ()
+      (interactive)
+      (format-decode-buffer 'ansi-colors))
+
+    ;; decode ANSI color escape sequences for *.txt or README files
+    (add-hook 'find-file-hooks 'tty-format-guess)
+
+    ;; decode ANSI color escape sequences for .log files
+    (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
+    )
 
   ;; compilation buffers should convert ANSI sequences to color formatting
   (require 'ansi-color)

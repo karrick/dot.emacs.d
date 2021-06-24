@@ -2,7 +2,7 @@
 
 set -eE
 
-defaultRelease=26.3
+defaultRelease=27.2
 release=$1
 
 if [ -z $release ] ; then
@@ -32,16 +32,11 @@ function determine_os_type () {
 }
 
 function determine_os_type_from_file () {
-    local file=$1
-    local type
-    read contents <$file
-    case $contents in
-        *'Red Hat'*) type=rhel ;;
-        *'Debian'*) type=debian ;;
-        *)
-            echo "unknown os type: $contents" >&2
-            exit 1
-    esac
+    local type=$(awk '{$0 = tolower($0); if ($0 ~ /debian/) {print "debian";exit} ; if ($0 ~ /red hat/) {print "red hat";exit}}' $1)
+    if [ -z $type ] ; then
+        echo "unknown os type: $contents" >&2
+        exit 1
+    fi
     echo $type
 }
 
@@ -56,7 +51,7 @@ case $(determine_os_type) in
         ;;
     debian)
         sudo apt-get install build-essential
-        sudo apt-get build-dep emacs24
+        sudo apt-get build-dep emacs
         ;;
     *)
         echo "ERROR: cannot determine os type. install dependencies manually or fix this script" >&2

@@ -13,14 +13,8 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-;; (package-initialize)
 
-(let ((default-directory (convert-standard-filename (expand-file-name (concat user-emacs-directory "/lisp")))))
-  (normal-top-level-add-to-load-path '("."))
-  ;; optionally benchmark init process
-  (when (require 'benchmark-init-loaddefs nil 'no-error)
-    (benchmark-init/activate)))
-
+(add-to-list 'load-path (directory-file-name (convert-standard-filename (expand-file-name (concat user-emacs-directory "/lisp")))))
 (require 'require-package)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,11 +179,11 @@ If there is no .svn directory, examine if there is CVS and run
 
 (require 'setup-elisp-mode)
 (require 'setup-golang-mode)
-(require 'setup-rust-mode)
 (require 'setup-javascript-mode)
 (require 'setup-python-mode)
 (require 'setup-ruby-mode)
-;; (require 'setup-zig-mode)
+(require 'setup-rust-mode)
+(require 'setup-zig-mode)
 
 (require-package/with-requirements '(json-mode)
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
@@ -200,8 +194,7 @@ If there is no .svn directory, examine if there is CVS and run
                                   yaml-mode
                                   ))
 
-(require-package/with-requirements
-    '(markdown-mode)
+(require-package/with-requirements '(markdown-mode)
   (add-hook 'markdown-mode-hook #'visual-line-mode))
 
 ;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
@@ -366,7 +359,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(nix-mode buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
+   '(go-guru go-mode auto-complete nix-mode buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

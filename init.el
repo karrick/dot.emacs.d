@@ -4,15 +4,15 @@
 
 ;; Minimalistic.
 
-;; Uses built-in emacs package manager to specify which optional packages to
+;; Uses built-in Emacs package manager to specify which optional packages to
 ;; install.
 
 ;;; Code:
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
+;; Added by Package.el. This must come before configurations of installed
+;; packages. Don't delete this line. If you don't want it, just comment it out
+;; by adding a semicolon to the start of the line. You may delete these
+;; explanatory comments.
 
 (add-to-list 'load-path (directory-file-name (convert-standard-filename (expand-file-name (concat user-emacs-directory "/lisp")))))
 (require 'require-package)
@@ -168,7 +168,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
 (add-hook 'prog-mode-hook #'(lambda ()
-                              (setq fill-column 80)
+                              (setq fill-column 70)
                               (flyspell-prog-mode)
                               (hl-line-mode 1)))
 

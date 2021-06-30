@@ -12,7 +12,7 @@ build:
 	type emacs >/dev/null 2>&1 || ./emacs-install
 
 compile:
-	cd lisp && emacs --batch --eval "(progn (add-to-list 'load-path \".\") (byte-recompile-directory \".\" 0))"
+	make -C lisp compile
 
 markdown: $(TARGET)
 

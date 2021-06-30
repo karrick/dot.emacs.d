@@ -34,17 +34,19 @@
 (when (and (fboundp #'daemonp) (daemonp)) ; when invoked as a daemon
   (cd (expand-file-name "~"))             ; change to home directory at startup
   (server-start)
+
+  ;; While this process is running, make certain any sub process knows
+  ;; to use emacsclient as editor and can route file editing requests
+  ;; to this process.
+  (let ((cmd (executable-find "emacsclient")))
+    (when cmd
+      (setenv "EDITOR" cmd)
+      (setenv "VISUAL" cmd)))
+
   (when nil
     ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
     (require-package/with-requirements '(edit-server)
       (edit-server-start))))
-
-;; While this process is running, make certain any sub process knows to use
-;; emacsclient as editor and can route file editing requests to this process.
-(let ((cmd (executable-find "emacsclient")))
-  (when cmd
-    (setenv "EDITOR" cmd)
-    (setenv "VISUAL" cmd)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CONFIGURATION
@@ -177,14 +179,6 @@ If there is no .svn directory, examine if there is CVS and run
 (defvaralias 'cperl-indent-level 'tab-width)
 (defvaralias 'perl-indent-level 'tab-width)
 
-(require 'setup-elisp-mode)
-(require 'setup-golang-mode)
-(require 'setup-javascript-mode)
-(require 'setup-python-mode)
-(require 'setup-ruby-mode)
-(require 'setup-rust-mode)
-(require 'setup-zig-mode)
-
 (require-package/with-requirements '(json-mode)
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
 
@@ -193,6 +187,14 @@ If there is no .svn directory, examine if there is CVS and run
                                   keyword-search
                                   yaml-mode
                                   ))
+
+(require 'setup-elisp-mode)
+(require 'setup-golang-mode)
+(require 'setup-javascript-mode)
+(require 'setup-python-mode)
+(require 'setup-ruby-mode)
+(require 'setup-rust-mode)
+(require 'setup-zig-mode)
 
 (require-package/with-requirements '(markdown-mode)
   (add-hook 'markdown-mode-hook #'visual-line-mode))
@@ -204,11 +206,12 @@ If there is no .svn directory, examine if there is CVS and run
 
 (global-set-key (kbd "C-c H") #'hl-line-mode)
 
-;; By default bind "C-x C-r" to rgrep, but when deadgrep is installed, rebind to that...
-(global-set-key (kbd "C-x C-r") #'rgrep)
-(require-package/with-requirements '(deadgrep)
-  (if (executable-find "rg")
-      (global-set-key (kbd "C-x C-r") #'deadgrep)))
+;; By default bind "C-x C-r" to rgrep, but when ripgrep and deadgrep
+;; are available, rebind to that...
+(if (executable-find "rg")
+    (require-package/with-requirements '(deadgrep)
+      (global-set-key (kbd "C-x C-r") #'deadgrep))
+  (global-set-key (kbd "C-x C-r") #'rgrep))
 
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f4>") #'recompile)
@@ -232,6 +235,9 @@ If there is no .svn directory, examine if there is CVS and run
 (global-unset-key (kbd "s-z"))          ; disable abrupt Emacs minimize
 
 (when (eq system-type 'darwin)
+  (progn
+    (setq ls-lisp-use-insert-directory-program nil)
+    (require 'ls-lisp))
   (global-unset-key (kbd "C-z"))   ; disable suspend-frame
   (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer
   (global-unset-key (kbd "s-q"))   ; disable abrupt Emacs exit
@@ -253,6 +259,7 @@ If there is no .svn directory, examine if there is CVS and run
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q
 
+(require 'windmove)
 (global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
 (global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
 (global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
@@ -274,46 +281,53 @@ If there is no .svn directory, examine if there is CVS and run
   (global-set-key (kbd "<C-M-left>")   #'buf-move-left)   ; swap buffer that has point with buffer on its left
   (global-set-key (kbd "<C-M-right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
 
-(require-package/with-requirements '(default-text-scale)
-  (default-text-scale-mode))
+(when (display-graphic-p)
+  (require-package/with-requirements '(default-text-scale)
+    (default-text-scale-mode)))
 
-(when (and (display-color-p) (boundp 'eshell-preoutput-filter-functions))
-
-  ;; compilation buffers should convert ANSI sequences to color formatting
-  (require 'ansi-color)
-  (defun endless/colorize-compilation ()
-    "Colorize from `compilation-filter-start' to `point'."
-    (let ((inhibit-read-only t))
-      (ansi-color-apply-on-region
-       compilation-filter-start (point))))
-  (add-hook 'compilation-filter-hook
-            #'endless/colorize-compilation)
-
+(when (display-color-p)
   (require-package/with-requirements '(zenburn-theme)
     (load-theme 'zenburn t))
-  (require-package/with-requirements '(xterm-color)
-    (progn (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter)
-           (setq comint-output-filter-functions (remove 'ansi-color-process-output comint-output-filter-functions)))
 
-    (require 'eshell)
-    (add-hook 'eshell-mode-hook #'(lambda () (setq xterm-color-preserve-properties t)))
-    (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
-    (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+  (require-package/with-requirements '(xterm-color) ;; xterm-color is superior to ansi-color
+    ;; compilation buffers
+    (progn
+      (setq compilation-environment '("TERM=xterm-256color"))
+      (defun my/advice-compilation-filter (f proc string)
+        (funcall f proc (xterm-color-filter string)))
+      (advice-add 'compilation-filter :around #'my/advice-compilation-filter))
 
-    (add-hook 'compilation-start-hook
-              #'(lambda (proc)
-                  ;; We need to differentiate between compilation-mode buffers
-                  ;; and running as part of comint (which at this point we assume
-                  ;; has been configured separately for xterm-color)
-                  (when (eq (process-filter proc) 'compilation-filter)
-                    ;; This is a process associated with a compilation-mode buffer.
-                    ;; We may call `xterm-color-filter' before its own filter function.
-                    (set-process-filter
-                     proc
-                     #'(lambda (proc string)
-                         (funcall 'compilation-filter proc (xterm-color-filter string)))))))))
+    ;; shell mode
+    (progn
+      (setq comint-output-filter-functions
+            (remove 'ansi-color-process-output comint-output-filter-functions))
+      (add-hook 'shell-mode-hook
+                #'(lambda ()
+                    ;; Disable font-locking in this buffer to improve performance
+                    (font-lock-mode -1)
+                    ;; Prevent font-locking from being re-enabled in this buffer
+                    (make-local-variable 'font-lock-function)
+                    (setq font-lock-function (lambda (_) nil))
+                    (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t))))
 
-(when (display-mouse-p) ; previously used display-graph-p, so this might not work
+    ;; eshell mode
+    (when nil
+      (require 'eshell) ; or use with-eval-after-load
+      (require 'esh-mode)
+
+      (add-hook 'eshell-before-prompt-hook
+                #'(lambda ()
+                    (setq xterm-color-preserve-properties t)))
+      ;; (add-hook 'eshell-mode-hook
+      ;;           #'(lambda ()
+      ;;               (setq xterm-color-preserve-properties t)))
+
+      (add-to-list 'eshell-preoutput-filter-functions #'xterm-color-filter)
+      (setq eshell-output-filter-functions (remove #'eshell-handle-ansi-color eshell-output-filter-functions)))
+    (setenv "TERM" "xterm-256color")) ;; other color display stuff?
+  )
+
+(when (display-mouse-p)
   ;; iTerm2 mouse support
   (require 'mouse)
   (xterm-mouse-mode t)

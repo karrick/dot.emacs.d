@@ -170,7 +170,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
 (add-hook 'prog-mode-hook #'(lambda ()
-                              (setq fill-column 70)
+                              (setq fill-column 78)
                               (flyspell-prog-mode)
                               (hl-line-mode 1)))
 
@@ -373,7 +373,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(go-guru go-mode auto-complete nix-mode buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
+   '(vc-fossil go-guru go-mode auto-complete nix-mode buffer-move deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-autocomplete go-eldoc go-errcheck go-rename golint js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

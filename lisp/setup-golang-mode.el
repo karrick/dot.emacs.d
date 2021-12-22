@@ -24,12 +24,12 @@
                    ("unconvert" "github.com/mdempsky/unconvert")
                    ))
     (unless (executable-find (car tuple))
-      (message "Cannot find %s: `go get %s`" (car tuple) (cadr tuple))))
+      (message "Cannot find %s: `go install %s@latest`" (car tuple) (cadr tuple))))
 
   ;; prefer goimports, but if not found, display message and use gofmt
   (setq gofmt-command (or (executable-find "goimports")
                           (progn
-                            (message "Cannot find goimports: `go get golang.org/x/tools/cmd/goimports`")
+                            (message "Cannot find goimports: `go install golang.org/x/tools/cmd/goimports@latest`")
                             (executable-find "gofmt"))))
 
   ;; go-eldoc -- eldoc for the Go programming language
@@ -48,30 +48,30 @@
             (add-to-list 'load-path dir)
             (ac-config-default)
             (add-hook 'go-mode-hook #'(lambda () (auto-complete-mode 1))))
-        (message "Cannot find gocode: `go get github.com/nsf/gocode`"))))
+        (message "Cannot find gocode: `go install github.com/nsf/gocode@latest`"))))
 
   ;; gogetdoc: provides better documentation
   (let ((cmd (executable-find "gogetdoc")))
     (if (string-equal cmd "")
-        (message "Cannot find gogetdoc: `go get github.com/zmb3/gogetdoc`")
+        (message "Cannot find gogetdoc: `go install github.com/zmb3/gogetdoc@latest`")
       (setq godoc-at-point-function #'godoc-gogetdoc)))
 
   ;; gorename
   (let ((cmd (executable-find "gorename")))
     (if (string-equal cmd "")
-        (message "Cannot find gorename: `go get golang.org/x/tools/cmd/gorename`")
+        (message "Cannot find gorename: `go install golang.org/x/tools/cmd/gorename@latest`")
       (require-package/with-requirements '(go-rename)
         (setq go-rename-command cmd))))
 
   ;; golint
   (if (executable-find "golint")
       (require-package/ensure-require '(golint))
-    (message "Cannot find golint: `go get golang.org/x/lint/golint`"))
+    (message "Cannot find golint: `go install golang.org/x/lint/golint@latest`"))
 
   ;; guru
   (let ((cmd (executable-find "guru")))
     (if (not cmd)
-        (message "Cannot find guru: `go get golang.org/x/tools/cmd/guru`")
+        (message "Cannot find guru: `go install golang.org/x/tools/cmd/guru@latest`")
       (require-package/with-requirements '(go-guru)
         (setq go-guru-command cmd)
         (add-hook 'go-mode-hook #'go-guru-hl-identifier-mode)

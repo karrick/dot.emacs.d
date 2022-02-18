@@ -149,10 +149,10 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;
 ;;; http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html
 
-(let ((path (executable-find "aspell")))
-  (if (not (stringp path))
+(let ((cmd (executable-find "aspell")))
+  (if (not (stringp cmd))
       (message "Cannot find spelling program: consider installing aspell and en-aspell packages.")
-    (setq ispell-program-name path)
+    (setq ispell-program-name cmd)
     ;; Please note ispell-extra-args contains ACTUAL parameters passed to aspell
     (setq ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
     (add-hook 'prog-mode-hook #'(lambda () (flyspell-prog-mode)))))

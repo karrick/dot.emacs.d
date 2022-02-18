@@ -170,7 +170,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
 (add-hook 'prog-mode-hook #'(lambda ()
-                              (setq fill-column 78)
+                              (setq fill-column 70)
                               (flyspell-prog-mode)
                               (hl-line-mode 1)))
 
@@ -362,7 +362,6 @@ If there is no .svn directory, examine if there is CVS and run
    '(eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt))
  '(fci-rule-color "#383838")
  '(flycheck-emacs-lisp-load-path 'inherit)
- '(flycheck-global-modes '(not go-mode))
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(make-backup-files nil)

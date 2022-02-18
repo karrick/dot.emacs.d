@@ -70,6 +70,13 @@
 ;; (require 'setup-codesearch)
 (require 'uniquify)                     ; uniquify buffer names
 
+(require-package/with-requirements '(eglot)
+  (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
+  (define-key eglot-mode-map (kbd "C-c o") 'eglot-code-action-organize-imports)
+  (define-key eglot-mode-map (kbd "C-c h") 'eldoc)
+  ;; (define-key eglot-mode-map (kbd "<f6>") 'xref-find-definitions)
+  (define-key eglot-mode-map (kbd "C-c j") 'xref-find-definitions))
+
 ;; flycheck is the successor to flymake
 (require-package/with-requirements '(flycheck)
   (add-hook 'after-init-hook #'global-flycheck-mode))

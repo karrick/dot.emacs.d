@@ -35,10 +35,7 @@
 (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 
-(when (and (fboundp #'daemonp) (daemonp)) ; when invoked as a daemon
-  (cd (expand-file-name "~"))             ; change to home directory at startup
-  (server-start)
-
+(when (daemonp)
   ;; While this process is running, make certain any sub process knows
   ;; to use emacsclient as editor and can route file editing requests
   ;; to this process.
@@ -46,11 +43,7 @@
     (when cmd
       (setenv "EDITOR" cmd)
       (setenv "VISUAL" cmd)))
-
-  (when nil
-    ;; edit-server for browsers (install "It's All Text!" on Firefox, or "Edit with Emacs" for Chrome)
-    (require-package/with-requirements '(edit-server)
-      (edit-server-start))))
+  (cd (expand-file-name "~")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CONFIGURATION
@@ -283,11 +276,11 @@ If there is no .svn directory, examine if there is CVS and run
   (global-set-key (kbd "<C-M-left>")   #'buf-move-left)   ; swap buffer that has point with buffer on its left
   (global-set-key (kbd "<C-M-right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
 
-(when (display-graphic-p)
+(when (or (display-graphic-p) (daemonp))
   (require-package/with-requirements '(default-text-scale)
     (default-text-scale-mode)))
 
-(when (display-color-p)
+(when (or (display-color-p) (daemonp))
   (require-package/with-requirements '(zenburn-theme)
     (load-theme 'zenburn t))
 

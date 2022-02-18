@@ -179,7 +179,6 @@ If there is no .svn directory, examine if there is CVS and run
 
 (require-package/ensure-require '(
                                   fic-mode
-                                  keyword-search
                                   yaml-mode
                                   ))
 
@@ -388,7 +387,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(vc-fossil go-mode auto-complete nix-mode deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck flymake gnu-elpa-keyring-update go-errcheck js2-mode json-mode keyword-search lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
+   '(vc-fossil go-mode auto-complete nix-mode deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck js2-mode json-mode lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

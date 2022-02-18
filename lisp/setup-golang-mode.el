@@ -34,14 +34,6 @@
                             (message "Cannot find goimports: 'go install golang.org/x/tools/cmd/goimports@latest'")
                             (executable-find "gofmt"))))
 
-  ;; go-eldoc -- eldoc for the Go programming language
-  ;; TODO: looking at go-eldoc code, looks like it uses 'gocode' binary.
-  (require-package/with-requirements '(go-eldoc)
-    (set-face-attribute 'eldoc-highlight-function-argument nil
-                        :underline t :foreground "green"
-                        :weight 'bold)
-    (add-hook 'go-mode-hook #'go-eldoc-setup))
-
   ;; gogetdoc: provides better documentation
   (let ((cmd (executable-find "gogetdoc")))
     (if (equal cmd nil)
@@ -54,21 +46,14 @@
         (dir (path-concat (getenv "GOPATH") "src/github.com/dougm/goflymake")))
     (if (or (equal cmd nil)
             (not (file-directory-p dir)))
-        (message "Cannot find: 'mkdir -p ~/go/src/github.com/dougm && cd ~/go/src/github.com/dougm && git clone https://github.com/dougm/goflymake && cd goflymake && go install'")
+        ;; mkdir -p ~/go/src/github.com/dougm
+        ;; cd ~/go/src/github.com/dougm
+        ;; git clone https://github.com/dougm/goflymake
+        ;; cd goflymake
+        ;; go install
+        (message "Cannot find: 'goflymake'. See setup-golang-mode for recommended fix.")
       (add-to-list 'load-path dir)
       (require 'go-flycheck)))
-
-  ;; ;; NOTE: I do not know whether gocode actually ever does anything...
-  ;; ;; go-autocomplete
-  ;; (require-package/with-requirements '(go-autocomplete)
-  ;;   ;; gocode -- autocompletion daemon for the Go programming language (requires go-autocomplete)
-  ;;   (let ((dir (path-concat (getenv "GOPATH") "src/github.com/nsf/gocode/emacs")))
-  ;;     (if (file-directory-p dir)
-  ;;         (progn
-  ;;           (add-to-list 'load-path dir)
-  ;;           (ac-config-default)
-  ;;           (add-hook 'go-mode-hook #'(lambda () (auto-complete-mode 1))))
-  ;;       (message "Cannot find gocode: 'go install github.com/nsf/gocode@latest'"))))
 
   ;; This block sets up buffer scoped configuration and is invoked
   ;; every time a new go-mode buffer is created.

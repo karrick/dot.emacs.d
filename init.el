@@ -28,6 +28,10 @@
   (dolist (dir directories)
     (path-prepend dir)))
 
+(let ((dir (file-name-as-directory (expand-file-name ".history" "~"))))
+  (when (file-directory-p dir)
+    (setenv "HISTFILE" (concat dir "emacs"))))
+
 (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 

@@ -73,7 +73,7 @@ Prevents every `ensure-require' from triggering invocation of
 `package-refresh-contents'."
   (unless require-package/package-contents-refreshed
     (package-refresh-contents)
-    (setq require-package/package-contents-refreshed (current-time-string))))
+    (setq require-package/package-contents-refreshed (format-time-string "%FT%T%z"))))
 
 (defun require-package/merge-alists (a b)
   "Return alist resulting from merging A and B.

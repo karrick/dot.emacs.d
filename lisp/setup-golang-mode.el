@@ -57,13 +57,14 @@
 
   ;; This block sets up buffer scoped configuration and is invoked
   ;; every time a new go-mode buffer is created.
-  (add-hook 'go-mode-hook #'eglot-ensure)
   (add-hook 'go-mode-hook #'(lambda ()
                               (add-hook 'before-save-hook #'gofmt-before-save nil t)
                               ;; (set (make-local-variable 'compile-command) "go test")
                               ;; (local-set-key (kbd "C-c C-d") #'godoc-at-point)
                               ;; (local-set-key (kbd "M-.") #'godef-jump-other-window)
                               ))
+  (when (executable-find "gopls")
+    (add-hook 'go-mode-hook #'eglot-ensure))
 
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
 

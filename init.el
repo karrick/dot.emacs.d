@@ -149,30 +149,21 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;
 ;;; http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html
 
-(cond
- ((executable-find "aspell")
-  ;; you may also need `ispell-extra-args`
-  (setq ispell-program-name "aspell"))
-
- ((executable-find "hunspell")
-  (setq ispell-program-name "hunspell")
-
-  ;; Please note that `ispell-local-dictionary` itself will be passed to
-  ;; hunspell cli with "-d".  It is also used as the key to lookup
-  ;; ispell-local-dictionary-alist if we use a different dictionary.
-  (setq ispell-local-dictionary "en_US")
-  (setq ispell-local-dictionary-alist
-        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8))))
-
- (t (setq ispell-program-name nil)))
+(let ((path (executable-find "aspell")))
+  (if (not (stringp path))
+      (message "Cannot find spelling program: consider installing aspell and en-aspell packages.")
+    (setq ispell-program-name path)
+    ;; Please note ispell-extra-args contains ACTUAL parameters passed to aspell
+    (setq ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
+    (add-hook 'prog-mode-hook #'(lambda () (flyspell-prog-mode)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROGRAMMING LANGUAGE SPECIFIC
 
-(add-hook 'prog-mode-hook #'(lambda ()
-                              (setq fill-column 70)
-                              (flyspell-prog-mode)
-                              (hl-line-mode 1)))
+(add-hook 'prog-mode-hook
+          #'(lambda ()
+              (setq fill-column 70)
+              (hl-line-mode 1)))
 
 ;; tabs and indenting
 (defvaralias 'c-basic-offset 'tab-width)

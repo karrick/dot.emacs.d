@@ -42,22 +42,36 @@
 ;;;
 ;;; Code:
 
-(defun ksm/window-delete-above ()
+(defun ksm/delete-other-windows (&optional all)
+  "Delete other windows vertically.  With optional ALL, delete other windows."
+  (interactive "P")
+  (if all
+      (delete-other-windows)
+    (delete-other-windows-vertically)))
+
+(defun ksm/delete-window (&optional kill)
+  "Delete the current window.  With optional KILL, kill buffer in current window then delete it."
+  (interactive "P")
+  (if kill
+      (kill-buffer-and-window)
+    (delete-window)))
+
+(defun ksm/delete-window-above ()
   "Delete the window above the current window."
   (interactive)
   (delete-window (window-in-direction 'above)))
 
-(defun ksm/window-delete-below ()
+(defun ksm/delete-window-below ()
   "Delete the window below the current window."
   (interactive)
   (delete-window (window-in-direction 'below)))
 
-(defun ksm/window-delete-left ()
+(defun ksm/delete-window-left ()
   "Delete the window to the left of the current window."
   (interactive)
   (delete-window (window-in-direction 'left)))
 
-(defun ksm/window-delete-right ()
+(defun ksm/delete-window-right ()
   "Delete the window to the right of the current window."
   (interactive)
   (delete-window (window-in-direction 'right)))

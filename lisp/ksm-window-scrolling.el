@@ -30,20 +30,6 @@
   (or n (setq n 1))
   (ksm/forward-line-scroll-up (- n)))
 
-(defun ksm/see-more-down (&optional n)
-  "Scroll window down N lines, keeping point at same relative position from top of buffer."
-  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
-  (or n (setq n 1))
-  (scroll-up n))
-
-(defun ksm/see-more-up (&optional n)
-  "Scroll window up N lines, keeping point at same relative position from top of buffer."
-  (declare (interactive-only
-            "use `ksm/forward-line-scroll-up' with negative argument instead."))
-  (interactive "^p")                    ; number, if no prefix argument, defaults to 1
-  (or n (setq n 1))
-  (ksm/see-more-down (- n)))
-
 (provide 'ksm-window-scrolling)
 
 ;;; ksm-window-scrolling.el ends here

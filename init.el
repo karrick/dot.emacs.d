@@ -67,6 +67,9 @@
 ;; (require 'setup-codesearch)
 (require 'uniquify)                     ; uniquify buffer names
 
+(require-package/with-requirements '(which-key)
+  (which-key-mode))
+
 (require-package/with-requirements '(eglot)
   ;; (define-key eglot-mode-map (kbd "<f6>") 'xref-find-definitions)
   ;; (define-key eglot-mode-map (kbd "C-c j") 'xref-find-definitions)
@@ -214,87 +217,103 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "<f4>") #'recompile)
 (global-set-key (kbd "<f5>") #'compile)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
-;; to keep ability to use emacs in a tmux frame, you need to use a
-;; different key prefix in emacs than tmux.
+(require-package/with-requirements '(which-key)
+  (which-key-mode))
 
-(global-set-key (kbd "C-x C-b") #'ibuffer)
-(global-unset-key (kbd "s-z"))         ; disable abrupt Emacs minimize
-;; (global-set-key (kbd "C-x &") #'kill-buffer-and-window) ; similar key-binding to tmux
-;; (global-set-key (kbd "C-x c") #'shell)                         ; create shell
-;; (global-set-key (kbd "C-z") #'delete-other-windows-vertically) ; does not work inside tmux
+(require 'ksm-window-scrolling)
+(global-set-key (kbd "M-N") #'ksm/forward-line-scroll-up)
+(global-set-key (kbd "M-P") #'ksm/previous-line-scroll-down)
+(global-set-key (kbd "M-p") #'scroll-down-line)
+(global-set-key (kbd "M-n") #'scroll-up-line)
 
 (when (eq system-type 'darwin)
   (progn ; using progn here to merely group the following two items as a chunk
-    (setq ls-lisp-use-insert-directory-program nil)
-    (require 'ls-lisp))
+    (require 'ls-lisp)
+    (setq ls-lisp-use-insert-directory-program nil))
   (progn ; the following prefixes begin with Super modifier, which is the Command key on Apple devices.
     (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer
     (global-unset-key (kbd "s-q"))   ; disable abrupt Emacs exit
     (global-unset-key (kbd "s-t")))  ; disable ns-popup-font-panel
   (global-unset-key (kbd "C-z")))    ; disable suspend-frame
 
-;; (require 'windmove)                                ; built-in
-;; (global-set-key (kbd "C-x <up>")    #'windmove-up)    ; move point to buffer above it
-;; (global-set-key (kbd "C-x <down>")  #'windmove-down)  ; move point to buffer below it
-;; (global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
-;; (global-set-key (kbd "C-x <left>")  #'windmove-left)  ; move point to buffer on its left
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
+;; to keep ability to use emacs in a tmux frame, you need to use a
+;; different key prefix in emacs than tmux.
 
-;; ;; The following do not always bind, maybe because tmux.
-;; (global-set-key (kbd "C-S-i") #'windmove-up)    ; move point to buffer above it
-;; (global-set-key (kbd "C-S-j") #'windmove-left)  ; move point to buffer on its left
-;; (global-set-key (kbd "C-S-k") #'windmove-down)  ; move point to buffer below it
-;; (global-set-key (kbd "C-S-l") #'windmove-right) ; move point to buffer on its right
+;; REQUIREMENTS:
 
-;; ;; The following do not always bind, maybe because tmux.
-;; (global-set-key (kbd "C-S-<up>")    #'enlarge-window)
-;; (global-set-key (kbd "C-S-<down>")  #'shrink-window)
-;; (global-set-key (kbd "C-S-<left>")  #'shrink-window-horizontally)
-;; (global-set-key (kbd "C-S-<right>") #'enlarge-window-horizontally)
+;;   1. Fluidly change which window is current. Preferably hold down
+;;   one or more modifier keys and press cursor direction.
+;;
+;;   2. Fluidly swap current buffer with an adjacent buffer, keeping
+;;   the active buffer active. Preferably hold down one or more
+;;   modifier keys and press cursor direction.
+;;
+;;   3. Temporarily work on one buffer, then restore balanced buffer
+;;   configuration. (Bind #'maximize-window)
+
+(global-set-key (kbd "C-x C-b") #'ibuffer)
+(global-unset-key (kbd "s-z"))         ; disable abrupt Emacs minimize
+
+;; As an alternative to ksm/window-*, consider M-x winner-mode, then
+;; "C-c left" to undo most recent window arrangement change; or, "C-c
+;; right" to redo an undone window arrangement change.
+(require 'ksm-window)
+(global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
+(global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
+
+(require 'windmove)                                ; built-in
+(global-set-key (kbd "C-x <up>")    #'windmove-up) ; move point to buffer above it
+(global-set-key (kbd "C-x <down>")  #'windmove-down) ; move point to buffer below it
+(global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
+(global-set-key (kbd "C-x <left>")  #'windmove-left) ; move point to buffer on its left
+
+(global-set-key (kbd "C-x 0")  #'ksm/delete-window)
+(global-set-key (kbd "C-x 1")  #'ksm/delete-other-windows)
+;; (global-set-key (kbd "C-x 2")  #'split-window-below) ; default key binding
+;; (global-set-key (kbd "C-x 3")  #'split-window-right) ; default key binding
+(global-set-key (kbd "C-x -")  #'ksm/window-zoom-out) ; pop and restore window configuration from stack
+(global-set-key (kbd "C-x +")  #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows
+(global-set-key (kbd "C-x =")  #'balance-windows)
+
 
 ;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
 (require-package/with-requirements '(switch-window)
   (global-set-key (kbd "C-x q") 'switch-window) ; like tmux C-z q, but only shows numbers to select when more than two windows
-  (global-set-key (kbd "C-x 1") 'switch-window-then-maximize) ; like tmux C-z 1, but without the ability to toggle
-  (global-set-key (kbd "C-x \"") 'switch-window-then-split-below) ; like tmux C-z "
-  (global-set-key (kbd "C-x %") 'switch-window-then-split-right) ; like tmux C-z %
-  (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
+  ;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize) ; like tmux C-z 1, but without the ability to toggle
+  ;; (global-set-key (kbd "C-x \"") 'switch-window-then-split-below) ; like tmux C-z "
+  ;; (global-set-key (kbd "C-x %") 'switch-window-then-split-right) ; like tmux C-z %
+  ;; (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
 
-  (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
-  (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
-  (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
+  ;; (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+  ;; (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
+  ;; (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
   ;; (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
   ;; (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
-  (global-set-key (kbd "C-x 4 s") 'switch-window-then-swap-buffer)
+  ;; (global-set-key (kbd "C-x 4 s") 'switch-window-then-swap-buffer)
 
-  (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
-  (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer))
+  ;; (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
+  ;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+  )
 
 (when nil
+  ;; FIXME: The key bindings do not work through tmux.
+  (global-set-key (kbd "C-S-<up>")    #'enlarge-window)
+  (global-set-key (kbd "C-S-<down>")  #'shrink-window)
+  (global-set-key (kbd "C-S-<left>")  #'shrink-window-horizontally)
+  (global-set-key (kbd "C-S-<right>") #'enlarge-window-horizontally)
+
   ;; buffer-move allows user to swap the positions of two buffers, the
   ;; current one, and the one specified by a direction relative to the
   ;; current buffer.
   ;;
-  ;; NOTE: might not need because switch-window provides this basic
-  ;; feature, and with key bindings that work through tmux.
+  ;; FIXME: The below key bindings do not work through tmux.
   (require-package/with-requirements '(buffer-move)
     (global-set-key (kbd "<C-M-up>")     #'buf-move-up) ; swap buffer that has point with buffer above it
     (global-set-key (kbd "<C-M-down>")   #'buf-move-down) ; swap buffer that has point with buffer below it
     (global-set-key (kbd "<C-M-left>")   #'buf-move-left) ; swap buffer that has point with buffer on its left
     (global-set-key (kbd "<C-M-right>")  #'buf-move-right))) ; swap buffer that has point with buffer on its right
-
-(require 'ksm-window-scrolling)
-(global-set-key (kbd "M-N") #'ksm/forward-line-scroll-up)
-(global-set-key (kbd "M-P") #'ksm/previous-line-scroll-down)
-(global-set-key (kbd "M-p") #'ksm/see-more-up)
-(global-set-key (kbd "M-n") #'ksm/see-more-down)
-
-(require 'ksm-window)
-(global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
-(global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
-(global-set-key (kbd "C-x w") #'ksm/window-zoom-out) ; pop and restore window configuration from stack
-(global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows; similar key-binding to tmux
 
 (when (or (display-graphic-p) (daemonp))
   (require-package/with-requirements '(default-text-scale)
@@ -387,7 +406,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(vc-fossil go-mode auto-complete nix-mode deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck js2-mode json-mode lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
+   '(which-key buffer-move vc-fossil go-mode auto-complete nix-mode deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck js2-mode json-mode lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

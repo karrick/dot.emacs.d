@@ -226,10 +226,10 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "M-p") #'scroll-down-line)
 (global-set-key (kbd "M-n") #'scroll-up-line)
 
-(when (eq system-type 'darwin)
+(when (eq system-type 'darwin) ; TODO: should also be anything without GNU...
   (progn ; using progn here to merely group the following two items as a chunk
-    (require 'ls-lisp)
-    (setq ls-lisp-use-insert-directory-program nil))
+    (setq ls-lisp-use-insert-directory-program nil)
+    (require 'ls-lisp))
   (progn ; the following prefixes begin with Super modifier, which is the Command key on Apple devices.
     (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer
     (global-unset-key (kbd "s-q"))   ; disable abrupt Emacs exit
@@ -242,7 +242,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;; different key prefix in emacs than tmux.
 
 ;; REQUIREMENTS:
-
+;;
 ;;   1. Fluidly change which window is current. Preferably hold down
 ;;   one or more modifier keys and press cursor direction.
 ;;
@@ -277,10 +277,7 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x +")  #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows
 (global-set-key (kbd "C-x =")  #'balance-windows)
 
-
-;; (global-set-key (kbd "C-x o") #'(lambda() (interactive) (message "Use C-x <arrow>")))
 (require-package/with-requirements '(switch-window)
-  (global-set-key (kbd "C-x q") 'switch-window) ; like tmux C-z q, but only shows numbers to select when more than two windows
   ;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize) ; like tmux C-z 1, but without the ability to toggle
   ;; (global-set-key (kbd "C-x \"") 'switch-window-then-split-below) ; like tmux C-z "
   ;; (global-set-key (kbd "C-x %") 'switch-window-then-split-right) ; like tmux C-z %
@@ -295,7 +292,7 @@ If there is no .svn directory, examine if there is CVS and run
 
   ;; (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
   ;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
-  )
+  (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q, but only shows numbers to select when more than two windows
 
 (when nil
   ;; FIXME: The key bindings do not work through tmux.

@@ -2,40 +2,44 @@
 ;;;
 ;;; Commentary:
 ;;;
-;;; I frequently find myself in a situation where I have half a dozen Emacs
-;;; windows in a frame, and I want to focus on just one of those windows for a
-;;; few moments, and then later return my window state to its present
-;;; configuration.  Emacs already has facilities for accomplishing such tasks,
-;;; but I wanted a quick toggle function like tmux' "C-b z" pane toggling
-;;; feature.
+;;; I frequently find myself in a situation where I have half a dozen
+;;; Emacs windows in a frame, and I want to focus on just one of those
+;;; windows for a few moments, and then later return my window state
+;;; to its present configuration.  Emacs already has facilities for
+;;; accomplishing such tasks, but I wanted a quick toggle function
+;;; like tmux' "C-b z" pane toggling feature.
 ;;;
 ;;; Use:
 ;;;
-;;; I put this file somewhere Emacs will find it, then added the below to my
-;;; ~/.emacs/init.el file.
+;;; I put this file somewhere Emacs will find it, then added the below
+;;; to my ~/.emacs/init.el file.
 ;;;
 ;;;    (require 'ksm-window)
-;;;    (global-set-key (kbd "C-x w") #'ksm/window-zoom-out)
 ;;;
-;;; Some people might like to override the default key-binding for the
-;;; 'delete-other-windows' function, as it has a similar purpose to this
-;;; library's zoom-in function:
+;;;    ;; Deletes the current window. With universal prefix it kills a
+;;;    ;; buffer and deletes the window.
+;;;    (global-set-key (kbd "C-x 0") #'ksm/delete-window)
 ;;;
-;;;    (global-set-key (kbd "C-x 1") #'ksm/window-zoom-in)
+;;;    ;; Deletes other windows vertically. With universal prefix it
+;;;    ;; deletes all other windows.
+;;;    (global-set-key (kbd "C-x 1") #'ksm/delete-other-windows)
 ;;;
-;;; However, to force myself to learn learn tmux like key-bindings, I bind the
-;;; zoom-in function to "C-x z" and rebind "C-x 1" to print a friendly reminder
-;;; message.
+;;;    ;; Pops and restores window configuration from stack.
+;;;    (global-set-key (kbd "C-x -") #'ksm/window-zoom-out)
 ;;;
-;;;    (global-set-key (kbd "C-x 1") #'(lambda() (interactive) (message "Use C-x z")))
-;;;    (global-set-key (kbd "C-x z") #'ksm/window-zoom-in) ; similar key-binding to tmux
+;;;    ;; Pushes window configuration to stack and deletes other
+;;;    ;; windows.
+;;;    (global-set-key (kbd "C-x +") #'ksm/window-zoom-in)
 ;;;
-;;; Sometimes I want to name a particular window configuration and quickly
-;;; return to it. Perhaps I'm working on Project A and a colleague asks me to
-;;; clarify how something in Project B works.  I save my window configuration
-;;; with a string name, such as "a", open up other files to answer the question,
-;;; then can restore my window configuration as it was before I loaded other
-;;; files.
+;;;    ;; Balances all windows.
+;;;    (global-set-key (kbd "C-x =") #'balance-windows)
+;;;
+;;; Sometimes I want to name a particular window configuration and
+;;; quickly return to it. Perhaps I'm working on Project A and a
+;;; colleague asks me to clarify how something in Project B works.  I
+;;; save my window configuration with a string name, such as "a", open
+;;; up other files to answer the question, then can restore my window
+;;; configuration as it was before I loaded other files.
 ;;;
 ;;;    (global-set-key (kbd "C-x p") #'ksm/window-config-save)
 ;;;    (global-set-key (kbd "C-x j") #'ksm/window-config-restore)

@@ -1,3 +1,7 @@
+;;; ksm-list --- provides a few list functions
+;;;
+;;; Code:
+
 (defun ksm/drop (n list)
   "Drop the first N items from LIST and return the rest."
   (if (and (> n 0) list)

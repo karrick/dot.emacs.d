@@ -4,15 +4,15 @@
 
 ;; Minimalistic.
 
-;; Uses built-in Emacs package manager to specify which optional packages to
-;; install.
+;; Uses built-in Emacs package manager to specify which optional
+;; packages to install.
 
 ;;; Code:
 
-;; Added by Package.el. This must come before configurations of installed
-;; packages. Don't delete this line. If you don't want it, just comment it out
-;; by adding a semicolon to the start of the line. You may delete these
-;; explanatory comments.
+;; Added by Package.el. This must come before configurations of
+;; installed packages. Don't delete this line. If you don't want it,
+;; just comment it out by adding a semicolon to the start of the
+;; line. You may delete these explanatory comments.
 
 (add-to-list 'load-path (directory-file-name (convert-standard-filename (expand-file-name (concat user-emacs-directory "/lisp")))))
 (require 'require-package)
@@ -36,14 +36,14 @@
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 
 (when (daemonp)
-  ;; While this process is running, make certain any sub process knows
-  ;; to use emacsclient as editor and can route file editing requests
-  ;; to this process.
+  ;; When Emacs is running as a daemon, make certain any sub process
+  ;; knows to use emacsclient as editor and can route file editing
+  ;; requests to this process.
+  (cd (expand-file-name "~"))
   (let ((cmd (executable-find "emacsclient")))
     (when cmd
       (setenv "EDITOR" cmd)
-      (setenv "VISUAL" cmd)))
-  (cd (expand-file-name "~")))
+      (setenv "VISUAL" cmd))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CONFIGURATION
@@ -70,13 +70,6 @@
 (require-package/with-requirements '(which-key)
   (which-key-mode))
 
-(require-package/with-requirements '(eglot)
-  ;; (define-key eglot-mode-map (kbd "<f6>") 'xref-find-definitions)
-  ;; (define-key eglot-mode-map (kbd "C-c j") 'xref-find-definitions)
-  (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
-  (define-key eglot-mode-map (kbd "C-c o") 'eglot-code-action-organize-imports)
-  (define-key eglot-mode-map (kbd "C-c h") 'eldoc))
-
 ;; flycheck is the successor to flymake
 (require-package/with-requirements '(flycheck)
   (add-hook 'after-init-hook #'global-flycheck-mode))
@@ -85,9 +78,9 @@
 (require-package/with-requirements '(wgrep wgrep-ack)
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
 
-(setq ediff-diff-options "-w"
-      ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands, keep it all in one frame
-      ediff-split-window-function 'split-window-horizontally) ; have ediff buffers show in a side-by-side view
+(setq ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands; keep it all in one frame
+      ediff-split-window-function 'split-window-horizontally ; have ediff buffers show in a side-by-side view
+      ediff-diff-options "-w")
 
 (require 'clean-and-indent)
 (global-set-key (kbd "<f2>") #'clean-and-indent)
@@ -117,17 +110,8 @@
     (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
     (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)))
 
-(when t
-  ;; (setq org-todo-keywords
-  ;;       '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c c") 'org-capture))
-
+(require 'setup-gtd)
 (require 'sort-commas)
-
-(when t
-  (require 'setup-gtd))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VCS
@@ -160,25 +144,38 @@ If there is no .svn directory, examine if there is CVS and run
   (if (not (stringp cmd))
       (message "Cannot find spelling program: consider installing aspell and en-aspell packages.")
     (setq ispell-program-name cmd)
-    ;; Please note ispell-extra-args contains ACTUAL parameters passed to aspell
+    ;; NOTE: ispell-extra-args contains actual parameters that will be
+    ;; passed to aspell.
     (setq ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
-    (add-hook 'prog-mode-hook #'(lambda () (flyspell-prog-mode)))))
+    (add-hook 'prog-mode-hook #'flyspell-prog-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROGRAMMING LANGUAGE SPECIFIC
-
-(add-hook 'prog-mode-hook
-          #'(lambda ()
-              (setq fill-column 70)
-              (hl-line-mode 1)))
 
 ;; tabs and indenting
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
 (defvaralias 'perl-indent-level 'tab-width)
 
+(add-hook 'prog-mode-hook
+          #'(lambda ()
+              (setq fill-column 70)
+              (hl-line-mode 1)))
+
+(require-package/with-requirements '(eglot)
+  ;; (define-key eglot-mode-map (kbd "<f6>") 'xref-find-definitions)
+  ;; (define-key eglot-mode-map (kbd "C-c j") 'xref-find-definitions)
+  (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
+  (define-key eglot-mode-map (kbd "C-c o") 'eglot-code-action-organize-imports)
+  (define-key eglot-mode-map (kbd "C-c h") 'eldoc))
+
 (require-package/with-requirements '(json-mode)
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
+
+(require-package/with-requirements '(markdown-mode)
+  (add-hook 'markdown-mode-hook #'visual-line-mode))
+
+;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
 (require-package/ensure-require '(
                                   fic-mode
@@ -193,13 +190,11 @@ If there is no .svn directory, examine if there is CVS and run
 (require 'setup-rust-mode)
 (require 'setup-zig-mode)
 
-(require-package/with-requirements '(markdown-mode)
-  (add-hook 'markdown-mode-hook #'visual-line-mode))
-
-;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS
+
+(require-package/with-requirements '(which-key)
+  (which-key-mode))
 
 ;; (global-unset-key (kbd "C-x C-c"))      ; disable save-buffers-kill-terminal
 (setq confirm-kill-emacs 'yes-or-no-p)
@@ -217,24 +212,21 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "<f4>") #'recompile)
 (global-set-key (kbd "<f5>") #'compile)
 
-(require-package/with-requirements '(which-key)
-  (which-key-mode))
-
 (require 'ksm-window-scrolling)
 (global-set-key (kbd "M-N") #'ksm/forward-line-scroll-up)
 (global-set-key (kbd "M-P") #'ksm/previous-line-scroll-down)
 (global-set-key (kbd "M-p") #'scroll-down-line)
 (global-set-key (kbd "M-n") #'scroll-up-line)
 
-(when (eq system-type 'darwin) ; TODO: should also be anything without GNU...
-  (progn ; using progn here to merely group the following two items as a chunk
-    (setq ls-lisp-use-insert-directory-program nil)
-    (require 'ls-lisp))
-  (progn ; the following prefixes begin with Super modifier, which is the Command key on Apple devices.
-    (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer
-    (global-unset-key (kbd "s-q"))   ; disable abrupt Emacs exit
-    (global-unset-key (kbd "s-t")))  ; disable ns-popup-font-panel
-  (global-unset-key (kbd "C-z")))    ; disable suspend-frame
+(global-unset-key (kbd "C-z"))         ; disable suspend-frame
+(global-unset-key (kbd "s-z"))         ; disable minimize
+
+(when (eq system-type 'darwin)
+  ;; The following prefixes begin with Super modifier, which is the
+  ;; Command key on Apple devices.
+  (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer
+  (global-unset-key (kbd "s-q"))   ; disable abrupt Emacs exit
+  (global-unset-key (kbd "s-t")))  ; disable ns-popup-font-panel
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
@@ -254,7 +246,6 @@ If there is no .svn directory, examine if there is CVS and run
 ;;   configuration. (Bind #'maximize-window)
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
-(global-unset-key (kbd "s-z"))         ; disable abrupt Emacs minimize
 
 ;; As an alternative to ksm/window-*, consider M-x winner-mode, then
 ;; "C-c left" to undo most recent window arrangement change; or, "C-c
@@ -263,11 +254,22 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
 (global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
 
-(require 'windmove)                                ; built-in
-(global-set-key (kbd "C-x <up>")    #'windmove-up) ; move point to buffer above it
-(global-set-key (kbd "C-x <down>")  #'windmove-down) ; move point to buffer below it
-(global-set-key (kbd "C-x <right>") #'windmove-right) ; move point to buffer on its right
-(global-set-key (kbd "C-x <left>")  #'windmove-left) ; move point to buffer on its left
+(require 'windmove)
+(global-set-key (kbd "C-<up>")    #'windmove-up) ; move point to buffer above it
+(global-set-key (kbd "C-<down>")  #'windmove-down) ; move point to buffer below it
+(global-set-key (kbd "C-<right>") #'windmove-right) ; move point to buffer on its right
+(global-set-key (kbd "C-<left>")  #'windmove-left) ; move point to buffer on its left
+
+(global-set-key (kbd "C-x 4 i")    #'windmove-up) ; move point to buffer above it
+(global-set-key (kbd "C-x 4 k")  #'windmove-down) ; move point to buffer below it
+(global-set-key (kbd "C-x 4 l") #'windmove-right) ; move point to buffer on its right
+(global-set-key (kbd "C-x 4 j")  #'windmove-left) ; move point to buffer on its left
+
+(require-package/with-requirements '(buffer-move)
+  (global-set-key (kbd "C-x <up>")     #'buf-move-up) ; swap buffer that has point with buffer above it
+  (global-set-key (kbd "C-x <down>")   #'buf-move-down) ; swap buffer that has point with buffer below it
+  (global-set-key (kbd "C-x <left>")   #'buf-move-left) ; swap buffer that has point with buffer on its left
+  (global-set-key (kbd "C-x <right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
 
 (global-set-key (kbd "C-x 0")  #'ksm/delete-window)
 (global-set-key (kbd "C-x 1")  #'ksm/delete-other-windows)
@@ -293,24 +295,6 @@ If there is no .svn directory, examine if there is CVS and run
   ;; (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
   ;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q, but only shows numbers to select when more than two windows
-
-(when nil
-  ;; FIXME: The key bindings do not work through tmux.
-  (global-set-key (kbd "C-S-<up>")    #'enlarge-window)
-  (global-set-key (kbd "C-S-<down>")  #'shrink-window)
-  (global-set-key (kbd "C-S-<left>")  #'shrink-window-horizontally)
-  (global-set-key (kbd "C-S-<right>") #'enlarge-window-horizontally)
-
-  ;; buffer-move allows user to swap the positions of two buffers, the
-  ;; current one, and the one specified by a direction relative to the
-  ;; current buffer.
-  ;;
-  ;; FIXME: The below key bindings do not work through tmux.
-  (require-package/with-requirements '(buffer-move)
-    (global-set-key (kbd "<C-M-up>")     #'buf-move-up) ; swap buffer that has point with buffer above it
-    (global-set-key (kbd "<C-M-down>")   #'buf-move-down) ; swap buffer that has point with buffer below it
-    (global-set-key (kbd "<C-M-left>")   #'buf-move-left) ; swap buffer that has point with buffer on its left
-    (global-set-key (kbd "<C-M-right>")  #'buf-move-right))) ; swap buffer that has point with buffer on its right
 
 (when (or (display-graphic-p) (daemonp))
   (require-package/with-requirements '(default-text-scale)

@@ -4,6 +4,8 @@
 
 ;;; Code:
 
+;; (setq org-todo-keywords
+;;       '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
 (setq org-agenda-files '("~/gtd/inbox.org"
                          "~/gtd/projects.org"
                          "~/gtd/tickler.org"))
@@ -27,6 +29,12 @@
 
 (setq org-todo-keywords
       '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+
+(add-hook 'org-mode-hook #'(lambda ()
+                             (local-set-key (kbd "C-c l") 'org-store-link)))
+
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
 
 (provide 'setup-gtd)
 

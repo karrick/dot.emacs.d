@@ -5,6 +5,7 @@
 ;;; Code:
 
 (defun sort-commas (start end)
+  "Sort a list of comma delimited strings between START and END."
   (interactive "*r")
   (if (use-region-p)
       (let ((selection (buffer-substring-no-properties start end)))

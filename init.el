@@ -163,8 +163,13 @@ If there is no .svn directory, examine if there is CVS and run
               (hl-line-mode 1)))
 
 (require-package/with-requirements '(eglot)
-  ;; (define-key eglot-mode-map (kbd "<f6>") 'xref-find-definitions)
-  ;; (define-key eglot-mode-map (kbd "C-c j") 'xref-find-definitions)
+  ;; TODO: change this group of key bindings to a different mode map
+  ;; other than eglot-mode-map.
+  ;;
+  (define-key eglot-mode-map (kbd "<f6>") 'xref-find-definitions)
+  (define-key eglot-mode-map (kbd "C-c j") 'xref-find-definitions)
+  (define-key eglot-mode-map (kbd "C-x 4 M-.") 'xref-find-definitions-other-window)
+
   (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
   (define-key eglot-mode-map (kbd "C-c o") 'eglot-code-action-organize-imports)
   (define-key eglot-mode-map (kbd "C-c h") 'eldoc))
@@ -221,12 +226,16 @@ If there is no .svn directory, examine if there is CVS and run
 (global-unset-key (kbd "C-z"))         ; disable suspend-frame
 (global-unset-key (kbd "s-z"))         ; disable minimize
 
-(when (eq system-type 'darwin)
-  ;; The following prefixes begin with Super modifier, which is the
-  ;; Command key on Apple devices.
-  (global-unset-key (kbd "s-p"))   ; disable prompt to print a buffer
-  (global-unset-key (kbd "s-q"))   ; disable abrupt Emacs exit
-  (global-unset-key (kbd "s-t")))  ; disable ns-popup-font-panel
+(when (eq system-type 'darwin) ; TODO: should also be anything without GNU...
+  (progn ; using progn here to merely group the following two items as a chunk
+    (setq ls-lisp-use-insert-directory-program nil)
+    (require 'ls-lisp))
+  (progn ; the following prefixes begin with Super modifier, which is the Command key on Apple devices.
+    (global-unset-key (kbd "s-p"))  ; disable prompt to print a buffer
+    (global-unset-key (kbd "s-q"))  ; disable abrupt Emacs exit
+    (global-unset-key (kbd "s-t"))))    ; disable ns-popup-font-panel
+
+(global-unset-key (kbd "C-z"))          ; disable suspend-frame
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
@@ -350,6 +359,10 @@ If there is no .svn directory, examine if there is CVS and run
   (setq mouse-sel-mode t))
 
 ;; (require 'nice-font)                ; nice-font guards with display-multi-font-p
+
+;; Use plain text rather than using figlet to render text in
+;; artist-mode.
+(setq artist-text-renderer-function #'(lambda (someText) someText))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LOCALHOST CONFIGURATION

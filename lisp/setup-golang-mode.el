@@ -64,6 +64,7 @@
                               ;; (local-set-key (kbd "C-c C-d") #'godoc-at-point)
                               ;; (local-set-key (kbd "M-.") #'godef-jump-other-window)
                               ))
+
   (when (executable-find "gopls")
     (add-hook 'go-mode-hook #'eglot-ensure))
 

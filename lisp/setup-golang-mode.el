@@ -40,20 +40,21 @@
         (message "Cannot find gogetdoc: 'go install github.com/zmb3/gogetdoc@latest'")
       (setq godoc-at-point-function #'godoc-gogetdoc)))
 
-  ;; goflymake -- not sure whether this was causing problems in the
-  ;; past
-  (let ((cmd (executable-find "goflymake"))
-        (dir (path-concat (getenv "GOPATH") "src/github.com/dougm/goflymake")))
-    (if (or (equal cmd nil)
-            (not (file-directory-p dir)))
-        ;; mkdir -p ~/go/src/github.com/dougm
-        ;; cd ~/go/src/github.com/dougm
-        ;; git clone https://github.com/dougm/goflymake
-        ;; cd goflymake
-        ;; go install
-        (message "Cannot find: 'goflymake'. See setup-golang-mode for recommended fix.")
-      (add-to-list 'load-path dir)
-      (require 'go-flycheck)))
+  (when nil
+    ;; goflymake -- not sure whether this was causing problems in the
+    ;; past
+    (let ((cmd (executable-find "goflymake"))
+          (dir (path-concat (getenv "GOPATH") "src/github.com/dougm/goflymake")))
+      (if (or (equal cmd nil)
+              (not (file-directory-p dir)))
+          ;; mkdir -p ~/go/src/github.com/dougm
+          ;; cd ~/go/src/github.com/dougm
+          ;; git clone https://github.com/dougm/goflymake
+          ;; cd goflymake
+          ;; go install
+          (message "Cannot find: 'goflymake'. See setup-golang-mode for recommended fix.")
+        (add-to-list 'load-path dir)
+        (require 'go-flycheck))))
 
   ;; This block sets up buffer scoped configuration and is invoked
   ;; every time a new go-mode buffer is created.

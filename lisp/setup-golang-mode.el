@@ -21,6 +21,21 @@
   (when (executable-find "gogetdoc")
     (setq godoc-at-point-function #'godoc-gogetdoc))
 
+  (when nil
+    ;; Fix parsing of error and warning lines in compiler output.
+    (setq compilation-error-regexp-alist-alist ; first remove the standard conf; it's not good.
+          (remove 'go-panic
+                  (remove 'go-test compilation-error-regexp-alist-alist)))
+    ;; Make another one that works better and strips more space at the beginning.
+    (add-to-list 'compilation-error-regexp-alist-alist
+                 '(go-test . ("^[[:space:]]*\\([_a-zA-Z./][_a-zA-Z0-9./]*\\):\\([0-9]+\\):.*$" 1 2)))
+    (add-to-list 'compilation-error-regexp-alist-alist
+                 '(go-panic . ("^[[:space:]]*\\([_a-zA-Z./][_a-zA-Z0-9./]*\\):\\([0-9]+\\)[[:space:]].*$" 1 2)))
+    ;; override.
+    (add-to-list 'compilation-error-regexp-alist 'go-test t)
+    (add-to-list 'compilation-error-regexp-alist 'go-panic t)
+    )
+
   (let ((cmd (executable-find "gopls")))
     (if (stringp cmd)
         (progn

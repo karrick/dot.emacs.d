@@ -20,6 +20,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROCESS ENVIRONMENT
 
+(when (daemonp)
+  (cd (expand-file-name "~")))
+
 (require 'path)
 (let ((directories (list
                     "/usr/local/bin"
@@ -35,36 +38,43 @@
 (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 
-(when (daemonp)
-  ;; When Emacs is running as a daemon, make certain any sub process
-  ;; knows to use emacsclient as editor and can route file editing
-  ;; requests to this process.
-  (cd (expand-file-name "~"))
-  (let ((cmd (executable-find "emacsclient")))
-    (when cmd
-      (setenv "EDITOR" cmd)
-      (setenv "VISUAL" cmd))))
+;; Make certain any sub process knows to use emacsclient as editor and
+;; can route file editing requests to this process.
+(let ((cmd (executable-find "emacsclient")))
+  (when cmd
+    (setenv "EDITOR" cmd)
+    (setenv "VISUAL" cmd)))
+
+(when (not (or
+            (eq system-type 'gnu)
+            (eq system-type 'gnu/linux)
+            (eq system-type 'gnu/kfreebsd)))
+  (setq ls-lisp-use-insert-directory-program nil)
+  (require 'ls-lisp))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; CONFIGURATION
 
-(when (fboundp #'desktop-save-mode) (desktop-save-mode 0)) ; don't save desktop sessions
-(when (fboundp #'menu-bar-mode) (menu-bar-mode -1))
-(when (fboundp #'scroll-bar-mode) (scroll-bar-mode -1))
-(when (fboundp #'tool-bar-mode) (tool-bar-mode -1))
-
-(column-number-mode 1)
-(line-number-mode 1)
+(column-number-mode)
+(desktop-save-mode 0)
+(line-number-mode)
+(menu-bar-mode 0)
 (prefer-coding-system 'utf-8)
 (put 'narrow-to-region 'disabled nil)   ; this is such a useful feature
 (show-paren-mode t)                     ; parentheses matching
+(tool-bar-mode 0)
+(tooltip-mode 0)
+
+(setq confirm-kill-emacs 'yes-or-no-p)
+
+(require 'scroll-bar)
+(set-scroll-bar-mode nil)               ; nil, left, or right
 
 (require 'browser-open)
 (require 'eshell)
 (require 'find-file-dynamic)
 (require 'make-shebang-executable)
 (require 'setup-autocomplete)
-;; (require 'setup-codesearch)
 (require 'uniquify)                     ; uniquify buffer names
 
 (require-package/with-requirements '(which-key)
@@ -74,7 +84,8 @@
 (require-package/with-requirements '(flycheck)
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
-;; Writable grep buffers via toggling off read-only (similar to wdired mode for dired buffers)
+;; Writable grep buffers via toggling off read-only (similar to
+;; wdired-mode for dired buffers)
 (require-package/with-requirements '(wgrep wgrep-ack)
   (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
 
@@ -112,6 +123,10 @@
 
 (require 'setup-gtd)
 (require 'sort-commas)
+
+;; Use plain text rather than using figlet to render text in
+;; artist-mode.
+(setq artist-text-renderer-function #'(lambda (someText) someText))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VCS
@@ -157,11 +172,12 @@ If there is no .svn directory, examine if there is CVS and run
 (defvaralias 'cperl-indent-level 'tab-width)
 (defvaralias 'perl-indent-level 'tab-width)
 
-(add-hook 'prog-mode-hook
-          #'(lambda ()
-              (setq fill-column 70)
-              (hl-line-mode 1)))
+(add-hook 'prog-mode-hook #'(lambda ()
+                              (setq fill-column 70)
+                              (hl-line-mode 1)))
 
+;; Empirically discovered that lsp-keymap-prefix must be set before
+;; loading lsp-mode.
 (setq lsp-keymap-prefix "C-c l")
 (require-package/with-requirements '(lsp-mode)
   (lsp-enable-which-key-integration t))
@@ -185,25 +201,19 @@ If there is no .svn directory, examine if there is CVS and run
 (require 'setup-rust-mode)
 (require 'setup-zig-mode)
 
-;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS
 
 (require-package/with-requirements '(which-key)
   (which-key-mode))
 
-;; (global-unset-key (kbd "C-x C-c"))      ; disable save-buffers-kill-terminal
-(setq confirm-kill-emacs 'yes-or-no-p)
-
-(global-set-key (kbd "C-c H") #'hl-line-mode)
-
-;; By default bind "C-x C-r" to rgrep, but when ripgrep and deadgrep
-;; are available, rebind to that...
-(if (executable-find "rg")
-    (require-package/with-requirements '(deadgrep)
-      (global-set-key (kbd "C-x C-r") #'deadgrep))
-  (global-set-key (kbd "C-x C-r") #'rgrep))
+;; (global-set-key (kbd "C-c H") #'hl-line-mode)
+;; (global-unset-key (kbd "C-x C-c")) ; disable save-buffers-kill-terminal
+(global-unset-key (kbd "C-z"))      ; disable suspend-frame
+(global-unset-key (kbd "s-p"))      ; disable prompt to print a buffer
+(global-unset-key (kbd "s-q"))      ; disable abrupt Emacs exit
+(global-unset-key (kbd "s-t"))      ; disable ns-popup-font-panel
+(global-unset-key (kbd "s-z"))      ; disable minimize
 
 (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
 (global-set-key (kbd "<f4>") #'recompile)
@@ -215,19 +225,12 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "M-p") #'scroll-down-line)
 (global-set-key (kbd "M-n") #'scroll-up-line)
 
-(global-unset-key (kbd "C-z"))         ; disable suspend-frame
-(global-unset-key (kbd "s-z"))         ; disable minimize
-
-(when (eq system-type 'darwin) ; TODO: should also be anything without GNU...
-  (progn ; using progn here to merely group the following two items as a chunk
-    (setq ls-lisp-use-insert-directory-program nil)
-    (require 'ls-lisp))
-  (progn ; the following prefixes begin with Super modifier, which is the Command key on Apple devices.
-    (global-unset-key (kbd "s-p"))  ; disable prompt to print a buffer
-    (global-unset-key (kbd "s-q"))  ; disable abrupt Emacs exit
-    (global-unset-key (kbd "s-t"))))    ; disable ns-popup-font-panel
-
-(global-unset-key (kbd "C-z"))          ; disable suspend-frame
+;; By default bind "C-x C-r" to rgrep, but when ripgrep and deadgrep
+;; are available, rebind to that...
+(if (executable-find "rg")
+    (require-package/with-requirements '(deadgrep)
+      (global-set-key (kbd "C-x C-r") #'deadgrep))
+  (global-set-key (kbd "C-x C-r") #'rgrep))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
@@ -256,10 +259,10 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
 
 (require 'windmove)
-(global-set-key (kbd "C-<up>")    #'windmove-up) ; move point to buffer above it
-(global-set-key (kbd "C-<down>")  #'windmove-down) ; move point to buffer below it
+(global-set-key (kbd "C-<up>")       #'windmove-up) ; move point to buffer above it
+(global-set-key (kbd "C-<down>")   #'windmove-down) ; move point to buffer below it
 (global-set-key (kbd "C-<right>") #'windmove-right) ; move point to buffer on its right
-(global-set-key (kbd "C-<left>")  #'windmove-left) ; move point to buffer on its left
+(global-set-key (kbd "C-<left>")   #'windmove-left) ; move point to buffer on its left
 
 (global-set-key (kbd "C-x 4 i")    #'windmove-up) ; move point to buffer above it
 (global-set-key (kbd "C-x 4 k")  #'windmove-down) ; move point to buffer below it
@@ -274,8 +277,8 @@ If there is no .svn directory, examine if there is CVS and run
 
 (global-set-key (kbd "C-x 0")  #'ksm/delete-window)
 (global-set-key (kbd "C-x 1")  #'ksm/delete-other-windows)
-;; (global-set-key (kbd "C-x 2")  #'split-window-below) ; default key binding
-;; (global-set-key (kbd "C-x 3")  #'split-window-right) ; default key binding
+;; (global-set-key (kbd "C-x 2")  #'split-window-below) ; this is the default key binding
+;; (global-set-key (kbd "C-x 3")  #'split-window-right) ; this is the default key binding
 (global-set-key (kbd "C-x -")  #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x +")  #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows
 (global-set-key (kbd "C-x =")  #'balance-windows)
@@ -320,7 +323,7 @@ If there is no .svn directory, examine if there is CVS and run
       (add-hook 'shell-mode-hook
                 #'(lambda ()
                     ;; Disable font-locking in this buffer to improve performance
-                    (font-lock-mode -1)
+                    (font-lock-mode 0)
                     ;; Prevent font-locking from being re-enabled in this buffer
                     (make-local-variable 'font-lock-function)
                     (setq font-lock-function (lambda (_) nil))
@@ -352,10 +355,6 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;; (require 'nice-font)                ; nice-font guards with display-multi-font-p
 
-;; Use plain text rather than using figlet to render text in
-;; artist-mode.
-(setq artist-text-renderer-function #'(lambda (someText) someText))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LOCALHOST CONFIGURATION
 
@@ -374,7 +373,7 @@ If there is no .svn directory, examine if there is CVS and run
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
  '(compilation-scroll-output 'first-error)
  '(custom-safe-themes
-   '("84890723510d225c45aaff941a7e201606a48b973f0121cb9bcb0b9399be8cba" "cd4d1a0656fee24dc062b997f54d6f9b7da8f6dc8053ac858f15820f9a04a679" "bfdcbf0d33f3376a956707e746d10f3ef2d8d9caa1c214361c9c08f00a1c8409" default))
+   '("78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
  '(diff-switches "-u")
  '(dired-listing-switches "-Bhlo")
  '(edit-server-new-frame nil)
@@ -392,7 +391,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(lsp-ui lsp-mode vterm vterm-toggle sql-indent which-key buffer-move vc-fossil go-mode auto-complete nix-mode deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck js2-mode json-mode markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
+   '(auto-complete buffer-move deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck go-mode js2-mode json-mode lsp-mode lsp-ui markdown-mode nix-mode protobuf-mode rust-mode sql-indent switch-window vc-fossil vterm vterm-toggle wgrep wgrep-ack which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

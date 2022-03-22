@@ -34,10 +34,6 @@
   ;; every time a new go-mode buffer is created.
   (add-hook 'go-mode-hook #'(lambda ()
                               ;; (set (make-local-variable 'compile-command) "go test")
-                              ;; (when cmd
-                              ;;   ;; (local-set-key (kbd "C-c C-d") #'godoc-at-point)
-                              ;;   (local-set-key (kbd "C-c C-j") #'lsp-find-definition))
-                              ;; (local-set-key (kbd "M-.") #'godef-jump-other-window)
                               (add-hook 'before-save-hook #'gofmt-before-save nil t))))
 
 (provide 'setup-golang-mode)

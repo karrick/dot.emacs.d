@@ -162,25 +162,15 @@ If there is no .svn directory, examine if there is CVS and run
               (setq fill-column 70)
               (hl-line-mode 1)))
 
-(require-package/with-requirements '(eglot)
-  ;; TODO: change this group of key bindings to a different mode map
-  ;; other than eglot-mode-map.
-  ;;
-  (define-key eglot-mode-map (kbd "<f6>") 'xref-find-definitions)
-  (define-key eglot-mode-map (kbd "C-c j") 'xref-find-definitions)
-  (define-key eglot-mode-map (kbd "C-x 4 M-.") 'xref-find-definitions-other-window)
-
-  (define-key eglot-mode-map (kbd "C-c r") 'eglot-rename)
-  (define-key eglot-mode-map (kbd "C-c o") 'eglot-code-action-organize-imports)
-  (define-key eglot-mode-map (kbd "C-c h") 'eldoc))
+(setq lsp-keymap-prefix "C-c l")
+(require-package/with-requirements '(lsp-mode)
+  (lsp-enable-which-key-integration t))
 
 (require-package/with-requirements '(json-mode)
   (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
 
 (require-package/with-requirements '(markdown-mode)
   (add-hook 'markdown-mode-hook #'visual-line-mode))
-
-;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
 (require-package/ensure-require '(
                                   fic-mode
@@ -194,6 +184,8 @@ If there is no .svn directory, examine if there is CVS and run
 (require 'setup-ruby-mode)
 (require 'setup-rust-mode)
 (require 'setup-zig-mode)
+
+;; (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS
@@ -400,7 +392,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(sql-indent which-key buffer-move vc-fossil go-mode auto-complete nix-mode deadgrep default-text-scale edit-server eglot fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck js2-mode json-mode lsp-mode lsp-ui markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
+   '(lsp-ui lsp-mode vterm vterm-toggle sql-indent which-key buffer-move vc-fossil go-mode auto-complete nix-mode deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck js2-mode json-mode markdown-mode protobuf-mode rust-mode switch-window wgrep wgrep-ack xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

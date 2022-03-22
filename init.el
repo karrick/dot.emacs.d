@@ -71,7 +71,6 @@
 (set-scroll-bar-mode nil)               ; nil, left, or right
 
 (require 'browser-open)
-(require 'eshell)
 (require 'find-file-dynamic)
 (require 'make-shebang-executable)
 (require 'setup-autocomplete)
@@ -309,6 +308,7 @@ If there is no .svn directory, examine if there is CVS and run
     (load-theme 'zenburn t))
 
   (require-package/with-requirements '(xterm-color) ;; xterm-color is superior to ansi-color
+
     ;; compilation buffers
     (progn
       (setq compilation-environment '("TERM=xterm-256color"))
@@ -330,21 +330,14 @@ If there is no .svn directory, examine if there is CVS and run
                     (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t))))
 
     ;; eshell mode
-    (when nil
-      (require 'eshell) ; or use with-eval-after-load
-      (require 'esh-mode)
-
+    (with-eval-after-load 'esh-mode
+      ;; (require 'eshell) ; or use with-eval-after-load
       (add-hook 'eshell-before-prompt-hook
                 #'(lambda ()
                     (setq xterm-color-preserve-properties t)))
-      ;; (add-hook 'eshell-mode-hook
-      ;;           #'(lambda ()
-      ;;               (setq xterm-color-preserve-properties t)))
-
-      (add-to-list 'eshell-preoutput-filter-functions #'xterm-color-filter)
-      (setq eshell-output-filter-functions (remove #'eshell-handle-ansi-color eshell-output-filter-functions)))
-    (setenv "TERM" "xterm-256color")) ;; other color display stuff?
-  )
+      (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+      (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+      (setenv "TERM" "xterm-256color"))))
 
 (when (display-mouse-p)
   ;; iTerm2 mouse support

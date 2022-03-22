@@ -391,7 +391,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(auto-complete buffer-move company deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-autocomplete go-errcheck go-mode js2-mode json-mode lsp-mode lsp-ui markdown-mode nix-mode protobuf-mode rust-mode sql-indent switch-window vc-fossil vterm vterm-toggle wgrep wgrep-ack which-key xterm-color yaml-mode zenburn-theme zig-mode))
+   '(auto-complete buffer-move company deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck go-mode js2-mode json-mode lsp-mode lsp-ui markdown-mode nix-mode protobuf-mode rust-mode sql-indent switch-window vc-fossil vterm vterm-toggle wgrep wgrep-ack which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

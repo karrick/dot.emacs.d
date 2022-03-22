@@ -15,16 +15,6 @@
     (require-package/with-requirements '(lsp-mode)
       (add-hook 'zig-mode-hook #'lsp-deferred)))
 
-  (when nil
-    (let ((cmd (executable-find "zls")))
-      (if (equal cmd nil)
-          (message "Cannot find zls: https://github.com/zigtools/zls/")
-        (lsp-register-client
-         (make-lsp-client
-          :new-connection (lsp-stdio-connection cmd)
-          :major-modes '(zig-mode)
-          :server-id 'zls)))))
-
   ;; This block sets up buffer scoped configuration and is invoked
   ;; every time a new zig-mode buffer is created.
   (add-hook 'zig-mode-hook #'(lambda ()

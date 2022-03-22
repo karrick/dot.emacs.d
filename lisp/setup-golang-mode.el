@@ -26,11 +26,9 @@
   (when (executable-find "gogetdoc")
     (setq godoc-at-point-function #'godoc-gogetdoc))
 
-  (let ((cmd (executable-find "gopls")))
-    (when cmd
-      (require-package/with-requirements '(lsp-mode)
-        (add-hook 'go-mode-hook #'lsp-deferred))))
-
+  (when (executable-find "gopls")
+    (require-package/with-requirements '(lsp-mode)
+      (add-hook 'go-mode-hook #'lsp-deferred)))
 
   ;; This block sets up buffer scoped configuration and is invoked
   ;; every time a new go-mode buffer is created.

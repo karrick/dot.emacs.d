@@ -30,15 +30,7 @@
 (when (daemonp)
   (cd (expand-file-name "~")))
 
-(require 'path)
-(let ((directories (list
-                    "/usr/local/bin"
-                    "~/bin"
-                    )))
-  (dolist (dir directories)
-    (path-prepend dir)))
-
-(let ((dir (file-name-as-directory (expand-file-name ".history" "~"))))
+(let ((dir (file-name-as-directory (expand-file-name ".history.d" "~"))))
   (when (file-directory-p dir)
     (setenv "HISTFILE" (concat dir "emacs"))))
 
@@ -233,10 +225,12 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;; By default bind "C-x C-r" to rgrep, but when ripgrep and deadgrep
 ;; are available, rebind to that...
-(if (executable-find "rg")
+(let ((cmd (executable-find "rg")))
+  (if (not (stringp cmd))
+      (global-set-key (kbd "C-x C-r") #'rgrep)
     (require-package/with-requirements '(deadgrep)
-      (global-set-key (kbd "C-x C-r") #'deadgrep))
-  (global-set-key (kbd "C-x C-r") #'rgrep))
+      (setq deadgrep-executable cmd)
+      (global-set-key (kbd "C-x C-r") #'deadgrep))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,

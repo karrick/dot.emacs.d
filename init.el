@@ -14,6 +14,13 @@
 ;; just comment it out by adding a semicolon to the start of the
 ;; line. You may delete these explanatory comments.
 
+;; The following stanza can be temporarily activated to install all of
+;; the packages defined in this init file that are not yet installed.
+(when nil
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (package-install-selected-packages))
+
 (add-to-list 'load-path (directory-file-name (convert-standard-filename (expand-file-name (concat user-emacs-directory "/lisp")))))
 (require 'require-package)
 
@@ -355,6 +362,21 @@ If there is no .svn directory, examine if there is CVS and run
     (require 'localhost)
   (message "no localhost file found"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; TO ORGANIZE
+
+(require-package/with-requirements '(default-text-scale)
+  (setq default-text-scale-amount 20))
+
+(when (eq window-system 'w32)
+  (when (executable-find "plink")
+    (setq tramp-default-method "plink")))
+
+(defun align-non-space (BEG END)
+  "Align non-space columns in region BEG END."
+  (interactive "r")
+  (align-regexp BEG END "\\(\\s-*\\)\\S-+" 1 1 t))
+
 ;;; init.el ends here
 
 (custom-set-variables
@@ -384,7 +406,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
-   '(auto-complete buffer-move company deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck go-mode js2-mode json-mode lsp-mode lsp-ui markdown-mode nix-mode protobuf-mode rust-mode sql-indent switch-window vc-fossil vterm vterm-toggle wgrep wgrep-ack which-key xterm-color yaml-mode zenburn-theme zig-mode))
+   '(auto-complete buffer-move company deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck go-mode js2-mode json-mode lsp-mode lsp-ui markdown-mode nix-mode protobuf-mode rust-mode sql-indent switch-window vc-fossil wgrep wgrep-ack which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-style 'expression)

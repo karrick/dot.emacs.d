@@ -384,7 +384,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(custom-safe-themes
    '("78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
  '(diff-switches "-u")
- '(dired-listing-switches "-Bhlo")
+ '(dired-listing-switches "-AbFhl")
  '(edit-server-new-frame nil)
  '(eshell-output-filter-functions
    '(eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt))

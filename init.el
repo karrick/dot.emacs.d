@@ -316,6 +316,8 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TO ORGANIZE
 
+(default-text-scale-mode)
+
 (when (eq window-system 'w32)
   (when (executable-find "plink")
 	(setq tramp-default-method "plink")))

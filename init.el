@@ -430,7 +430,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(show-paren-mode t)
  '(show-paren-style 'expression)
  '(tab-width 4)
- '(tool-bar-mode t)
+ '(tool-bar-mode nil)
  '(tooltip-mode nil)
  '(uniquify-buffer-name-style 'post-forward nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\*")

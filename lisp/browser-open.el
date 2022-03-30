@@ -11,7 +11,7 @@ When URL is empty, and region is selected, open URL enclosed by
 region.  Otherwise, prompt user for URL to open."
   (interactive "P")
   (browse-url
-   (cond ((not (eq url nil)) url)
+   (cond ((stringp url) url)
          ((use-region-p) (buffer-substring (region-beginning) (region-end)))
          (t (read-string "URL: ")))))
 

@@ -9,7 +9,7 @@
 (require-package/with-requirements '(auto-complete)
   (require 'auto-complete-config)
   (add-to-list 'ac-dictionary-directories
-               (concat user-emacs-directory (convert-standard-filename ".ac-dict")))
+			   (locate-user-emacs-file ".ac-dict"))
   (add-to-list 'ac-modes 'html-mode)
   (add-to-list 'ac-modes 'nxml-mode)
   (ac-config-default) ;; ac-common-setup is called by ac-config-default

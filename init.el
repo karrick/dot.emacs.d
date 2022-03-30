@@ -1,38 +1,43 @@
-;;;; -*- mode: emacs-lisp -*-
+;;; package --- Summary: Emacs Initialization -*- mode: emacs-lisp -*-
 
 ;;; Commentary:
-
-;; Minimalistic.
 
 ;; Uses built-in Emacs package manager to specify which optional
 ;; packages to install.
 
 ;;; Code:
 
-;; Added by Package.el. This must come before configurations of
-;; installed packages. Don't delete this line. If you don't want it,
-;; just comment it out by adding a semicolon to the start of the
-;; line. You may delete these explanatory comments.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; When "cert" file in user-emacs-directory, presumably placed there
+;; as a symbolic link to a host-specific yet non-standard system cert
+;; file, then configure gnutls to trust it, before we attempt to
+;; contact package-archives from which packages would be downloaded.
+(if (not (gnutls-available-p))
+	(message "GNU TLS is not available.")
+  (with-eval-after-load 'gnutls
+	(let ((cert (file-truename (locate-user-emacs-file "cert"))))
+	  (when (file-readable-p cert)
+		(add-to-list 'gnutls-trustfiles cert)))))
 
-;; The following stanza can be temporarily activated to install all of
+;; The following block can be temporarily activated to install all of
 ;; the packages defined in this init file that are not yet installed.
 (when nil
   (unless package-archive-contents
-    (package-refresh-contents))
+	(package-refresh-contents))
   (package-install-selected-packages))
 
-(add-to-list 'load-path (directory-file-name (convert-standard-filename (expand-file-name (concat user-emacs-directory "/lisp")))))
-(require 'require-package)
+;; Make Elisp files in ~/.emacs.d/lisp directory available.
+(add-to-list 'load-path (directory-file-name (locate-user-emacs-file "lisp")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROCESS ENVIRONMENT
 
-(when (daemonp)
-  (cd (expand-file-name "~")))
+(if (daemonp)
+	(cd (expand-file-name "~")))
 
 (let ((dir (file-name-as-directory (expand-file-name ".history.d" "~"))))
   (when (file-directory-p dir)
-    (setenv "HISTFILE" (concat dir "emacs"))))
+	(setenv "HISTFILE" (concat dir "emacs"))))
 
 (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
@@ -41,95 +46,50 @@
 ;; can route file editing requests to this process.
 (let ((cmd (executable-find "emacsclient")))
   (when cmd
-    (setenv "EDITOR" cmd)
-    (setenv "VISUAL" cmd)))
+	(setenv "EDITOR" cmd)
+	(setenv "VISUAL" cmd)))
 
-(when (not (or
-            (eq system-type 'gnu)
-            (eq system-type 'gnu/linux)
-            (eq system-type 'gnu/kfreebsd)))
-  (setq ls-lisp-use-insert-directory-program nil)
-  (require 'ls-lisp))
+(unless (memq system-type '(gnu gnu/linux gnu/kfreebsd))
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; CONFIGURATION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; xterm-color is superior to ansi-color
 
-(column-number-mode)
-(desktop-save-mode 0)
-(line-number-mode)
-(menu-bar-mode 0)
-(prefer-coding-system 'utf-8)
-(put 'narrow-to-region 'disabled nil)   ; this is such a useful feature
-(show-paren-mode t)                     ; parentheses matching
-(tool-bar-mode 0)
-(tooltip-mode 0)
+;; compilation buffers
+(defun my/advice-compilation-filter (f proc string)
+  "Transform ANSI sequences in string to Emacs face."
+  (funcall f proc (xterm-color-filter string)))
+(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
 
-(setq confirm-kill-emacs 'yes-or-no-p)
+;; shell mode
+(when t
+  (setq comint-output-filter-functions
+		(remove 'ansi-color-process-output comint-output-filter-functions))
+  (add-hook 'shell-mode-hook
+			#'(lambda ()
+				;; Disable font-locking in this buffer to improve performance
+				(font-lock-mode 0)
+				;; Prevent font-locking from being re-enabled in this buffer
+				(make-local-variable 'font-lock-function)
+				(setq font-lock-function (lambda (_) nil))
+				;; Add xterm-color hook
+				(add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t))))
 
-(require 'scroll-bar)
-(set-scroll-bar-mode nil)               ; nil, left, or right
-
-(require 'browser-open)
-(require 'find-file-dynamic)
-(require 'make-shebang-executable)
-(require 'setup-autocomplete)
-(require 'uniquify)                     ; uniquify buffer names
-
-(require-package/with-requirements '(which-key)
-  (which-key-mode))
-
-;; flycheck is the successor to flymake
-(require-package/with-requirements '(flycheck)
-  (add-hook 'after-init-hook #'global-flycheck-mode))
-
-;; Writable grep buffers via toggling off read-only (similar to
-;; wdired-mode for dired buffers)
-(require-package/with-requirements '(wgrep wgrep-ack)
-  (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode))
-
-(setq ediff-window-setup-function 'ediff-setup-windows-plain ; don't spawn a new frame for the ediff commands; keep it all in one frame
-      ediff-split-window-function 'split-window-horizontally ; have ediff buffers show in a side-by-side view
-      ediff-diff-options "-w")
-
-(require 'clean-and-indent)
-(global-set-key (kbd "<f2>") #'clean-and-indent)
-(dolist (h '(sh-mode-hook css-mode-hook))
-  (add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
-
-(require 'copy-and-comment)
-(global-set-key (kbd "<f3>") #'copy-and-comment)
-
-(require 'async-shell-command-wrapper)
-(global-set-key (kbd "M-&") #'ksm/async-shell-command)
-(global-set-key (kbd "ESC &") #'ksm/async-shell-command)
-
-(when nil
-  (require-package/with-requirements '(expand-region)
-    (global-set-key (kbd "M-=") #'er/expand-region)
-    (global-set-key (kbd "ESC =") #'er/expand-region)
-    (global-set-key (kbd "M--") #'er/contract-region)
-    (global-set-key (kbd "ESC -") #'er/contract-region)))
-
-(when nil
-  (require-package/with-requirements '(multiple-cursors)
-    (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
-    (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
-    (global-set-key (kbd "C->") #'mc/mark-next-like-this)
-    (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
-    (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
-    (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)))
-
-(require 'setup-gtd)
-(require 'sort-commas)
-
-;; Use plain text rather than using figlet to render text in
-;; artist-mode.
-(setq artist-text-renderer-function #'(lambda (someText) someText))
+;; eshell mode
+(with-eval-after-load 'esh-mode
+  (add-hook 'eshell-before-prompt-hook
+			#'(lambda ()
+				(setq xterm-color-preserve-properties t)))
+  (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+  (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+  (setenv "TERM" "xterm-256color"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; VCS
 
-(eval-after-load "vc-hooks" '(define-key vc-prefix-map "=" #'vc-ediff))
+(with-eval-after-load 'vc-hooks
+  (define-key vc-prefix-map "=" #'vc-ediff))
 
 ;; fossil vc mode
 (autoload 'vc-fossil-registered "vc-fossil")
@@ -155,12 +115,12 @@ If there is no .svn directory, examine if there is CVS and run
 
 (let ((cmd (executable-find "aspell")))
   (if (not (stringp cmd))
-      (message "Cannot find spelling program: consider installing aspell and en-aspell packages.")
-    (setq ispell-program-name cmd)
-    ;; NOTE: ispell-extra-args contains actual parameters that will be
-    ;; passed to aspell.
-    (setq ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))
-    (add-hook 'prog-mode-hook #'flyspell-prog-mode)))
+	  (message "Cannot find spelling program: consider installing aspell and en-aspell packages.")
+	(add-hook 'prog-mode-hook #'flyspell-prog-mode)
+	(setq ispell-program-name cmd
+		  ;; NOTE: ispell-extra-args contains actual parameters that
+		  ;; will be passed to aspell.
+		  ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROGRAMMING LANGUAGE SPECIFIC
@@ -171,25 +131,17 @@ If there is no .svn directory, examine if there is CVS and run
 (defvaralias 'perl-indent-level 'tab-width)
 
 (add-hook 'prog-mode-hook #'(lambda ()
-                              (setq fill-column 70)
-                              (hl-line-mode 1)))
+							  (setq fill-column 70)
+							  (hl-line-mode 1)))
 
 ;; Empirically discovered that lsp-keymap-prefix must be set before
 ;; loading lsp-mode.
 (setq lsp-keymap-prefix "C-c l")
-(require-package/with-requirements '(lsp-mode)
+(with-eval-after-load 'lsp-mode
   (lsp-enable-which-key-integration t))
 
-(require-package/with-requirements '(json-mode)
-  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
-
-(require-package/with-requirements '(markdown-mode)
-  (add-hook 'markdown-mode-hook #'visual-line-mode))
-
-(require-package/ensure-require '(
-                                  fic-mode
-                                  yaml-mode
-                                  ))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
+(add-hook 'markdown-mode-hook #'visual-line-mode)
 
 (require 'setup-elisp-mode)
 (require 'setup-golang-mode)
@@ -202,11 +154,6 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS
 
-(require-package/with-requirements '(which-key)
-  (which-key-mode))
-
-;; (global-set-key (kbd "C-c H") #'hl-line-mode)
-;; (global-unset-key (kbd "C-x C-c")) ; disable save-buffers-kill-terminal
 (global-unset-key (kbd "C-z"))      ; disable suspend-frame
 (global-unset-key (kbd "s-p"))      ; disable prompt to print a buffer
 (global-unset-key (kbd "s-q"))      ; disable abrupt Emacs exit
@@ -227,10 +174,10 @@ If there is no .svn directory, examine if there is CVS and run
 ;; are available, rebind to that...
 (let ((cmd (executable-find "rg")))
   (if (not (stringp cmd))
-      (global-set-key (kbd "C-x C-r") #'rgrep)
-    (require-package/with-requirements '(deadgrep)
-      (setq deadgrep-executable cmd)
-      (global-set-key (kbd "C-x C-r") #'deadgrep))))
+	  (global-set-key (kbd "C-x C-r") #'rgrep)
+	(require-package/with-requirements '(deadgrep)
+	  (setq deadgrep-executable cmd)
+	  (global-set-key (kbd "C-x C-r") #'deadgrep))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
@@ -251,29 +198,9 @@ If there is no .svn directory, examine if there is CVS and run
 
 (global-set-key (kbd "C-x C-b") #'ibuffer)
 
-;; As an alternative to ksm/window-*, consider M-x winner-mode, then
-;; "C-c left" to undo most recent window arrangement change; or, "C-c
-;; right" to redo an undone window arrangement change.
 (require 'ksm-window)
 (global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
 (global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
-
-(require 'windmove)
-(global-set-key (kbd "C-<up>")       #'windmove-up) ; move point to buffer above it
-(global-set-key (kbd "C-<down>")   #'windmove-down) ; move point to buffer below it
-(global-set-key (kbd "C-<right>") #'windmove-right) ; move point to buffer on its right
-(global-set-key (kbd "C-<left>")   #'windmove-left) ; move point to buffer on its left
-
-(global-set-key (kbd "C-x 4 i")    #'windmove-up) ; move point to buffer above it
-(global-set-key (kbd "C-x 4 k")  #'windmove-down) ; move point to buffer below it
-(global-set-key (kbd "C-x 4 l") #'windmove-right) ; move point to buffer on its right
-(global-set-key (kbd "C-x 4 j")  #'windmove-left) ; move point to buffer on its left
-
-(require-package/with-requirements '(buffer-move)
-  (global-set-key (kbd "C-x <up>")     #'buf-move-up) ; swap buffer that has point with buffer above it
-  (global-set-key (kbd "C-x <down>")   #'buf-move-down) ; swap buffer that has point with buffer below it
-  (global-set-key (kbd "C-x <left>")   #'buf-move-left) ; swap buffer that has point with buffer on its left
-  (global-set-key (kbd "C-x <right>")  #'buf-move-right)) ; swap buffer that has point with buffer on its right
 
 (global-set-key (kbd "C-x 0")  #'ksm/delete-window)
 (global-set-key (kbd "C-x 1")  #'ksm/delete-other-windows)
@@ -282,6 +209,92 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x -")  #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x +")  #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows
 (global-set-key (kbd "C-x =")  #'balance-windows)
+
+
+;; (require 'windmove)
+(global-set-key (kbd "C-x 4 i")    #'windmove-up) ; move point to buffer above it
+(global-set-key (kbd "C-x 4 k")  #'windmove-down) ; move point to buffer below it
+(global-set-key (kbd "C-x 4 l") #'windmove-right) ; move point to buffer on its right
+(global-set-key (kbd "C-x 4 j")  #'windmove-left) ; move point to buffer on its left
+
+;; (require 'buffer-move)
+;; (global-set-key (kbd "C-x <up>")     #'buf-move-up) ; swap buffer that has point with buffer above it
+;; (global-set-key (kbd "C-x <down>")   #'buf-move-down) ; swap buffer that has point with buffer below it
+;; (global-set-key (kbd "C-x <left>")   #'buf-move-left) ; swap buffer that has point with buffer on its left
+;; (global-set-key (kbd "C-x <right>")  #'buf-move-right) ; swap buffer that has point with buffer on its right
+
+(defun other-window-backward (&optional n)
+  "Select the Nth previous window."
+  (interactive "P")
+  (other-window (- (prefix-numeric-value n))))
+
+(global-set-key "\C-x\C-n" 'other-window)
+(global-set-key "\C-x\C-p" 'other-window-backward)
+
+(defalias 'scroll-forward 'scroll-up)
+(defalias 'scroll-backward 'scroll-down)
+
+(defun scroll-n-lines-forward (&optional n)
+  "Scroll forward N lines (1 by default)."
+  (interactive "P")
+  (scroll-forward (prefix-numeric-value n)))
+
+(defun scroll-n-lines-backward (&optional n)
+  "Scroll backward N lines (1 by default)."
+  (interactive "P")
+  (scroll-forward (- (prefix-numeric-value n))))
+
+;; (global-set-key (kbd "M-n") 'scroll-n-lines-forward)
+(global-set-key "\M-n" 'scroll-n-lines-forward)
+(global-set-key "\M-p" 'scroll-n-lines-backward)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(put 'scroll-up 'unscrollable t)
+(put 'scroll-right 'unscrollable t)
+(put 'scroll-down 'unscrollable t)
+(put 'scroll-left 'unscrollable t)
+
+(defvar unscroll-point (make-marker)
+  "Cursor position for next call to `unscroll'.")
+(defvar unscroll-window-start (make-marker)
+  "Window start for next call to `unscroll'.")
+(defvar unscroll-hscroll nil
+  "Horizontal position for next call to `unscroll'.")
+
+(defun unscroll-maybe-remember ()
+  (unless (get last-command 'unscrollable)
+	(message "remembering position for unscroll...") ; TODO
+	(set-marker unscroll-point (point))
+	(set-marker unscroll-window-start (window-start))
+	(setq unscroll-hscroll (window-hscroll))))
+
+(defun unscroll ()
+  "Revert to `unscroll-point' and `unscroll-window-start'."
+  (interactive)
+  (goto-char unscroll-point)
+  (set-window-start nil unscroll-window-start)
+  (set-window-hscroll nil unscroll-hscroll))
+
+(defadvice scroll-up (before remember-for-unscroll
+							 activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
+
+(defadvice scroll-right (before remember-for-unscroll
+								activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
+
+(defadvice scroll-down (before remember-for-unscroll
+							   activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
+
+(defadvice scroll-left (before remember-for-unscroll
+							   activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
 
 (require-package/with-requirements '(switch-window)
   ;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize) ; like tmux C-z 1, but without the ability to toggle
@@ -300,135 +313,146 @@ If there is no .svn directory, examine if there is CVS and run
   ;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
   (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q, but only shows numbers to select when more than two windows
 
-(when (or (display-graphic-p) (daemonp))
-  (require-package/with-requirements '(default-text-scale)
-    (default-text-scale-mode)))
-
-(when (or (display-color-p) (daemonp))
-  (require-package/with-requirements '(zenburn-theme)
-    (load-theme 'zenburn t))
-
-  (require-package/with-requirements '(xterm-color) ;; xterm-color is superior to ansi-color
-
-    ;; compilation buffers
-    (progn
-      (setq compilation-environment '("TERM=xterm-256color"))
-      (defun my/advice-compilation-filter (f proc string)
-        (funcall f proc (xterm-color-filter string)))
-      (advice-add 'compilation-filter :around #'my/advice-compilation-filter))
-
-    ;; shell mode
-    (progn
-      (setq comint-output-filter-functions
-            (remove 'ansi-color-process-output comint-output-filter-functions))
-      (add-hook 'shell-mode-hook
-                #'(lambda ()
-                    ;; Disable font-locking in this buffer to improve performance
-                    (font-lock-mode 0)
-                    ;; Prevent font-locking from being re-enabled in this buffer
-                    (make-local-variable 'font-lock-function)
-                    (setq font-lock-function (lambda (_) nil))
-                    (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t))))
-
-    ;; eshell mode
-    (with-eval-after-load 'esh-mode
-      ;; (require 'eshell) ; or use with-eval-after-load
-      (add-hook 'eshell-before-prompt-hook
-                #'(lambda ()
-                    (setq xterm-color-preserve-properties t)))
-      (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
-      (setq eshell-output-filter-functions (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
-      (setenv "TERM" "xterm-256color"))))
-
-(when (display-mouse-p)
-  ;; iTerm2 mouse support
-  (require 'mouse)
-  (xterm-mouse-mode t)
-  (defun track-mouse (e))
-  (setq mouse-sel-mode t))
-
-;; (require 'nice-font)                ; nice-font guards with display-multi-font-p
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; LOCALHOST CONFIGURATION
-
-(if (locate-library "localhost")
-    (require 'localhost)
-  (message "no localhost file found"))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TO ORGANIZE
 
-(require-package/with-requirements '(default-text-scale)
-  (setq default-text-scale-amount 20))
-
 (when (eq window-system 'w32)
   (when (executable-find "plink")
-    (setq tramp-default-method "plink")))
+	(setq tramp-default-method "plink")))
 
 (defun align-non-space (BEG END)
   "Align non-space columns in region BEG END."
   (interactive "r")
   (align-regexp BEG END "\\(\\s-*\\)\\S-+" 1 1 t))
 
-;;; init.el ends here
+;; (desktop-save-mode 0)
+(fido-mode 1)
+;; (fido-vertical-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p)
+(prefer-coding-system 'utf-8)
+(put 'narrow-to-region 'disabled nil)
+(setq redisplay-dont-pause t)
+(which-key-mode)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+;; (require 'scroll-bar)
+;; (set-scroll-bar-mode nil)               ; nil, left, or right
+
+;; (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
+
+(when nil
+  (require-package/with-requirements '(expand-region)
+	(global-set-key (kbd "M-=") #'er/expand-region)
+	(global-set-key (kbd "ESC =") #'er/expand-region)
+	(global-set-key (kbd "M--") #'er/contract-region)
+	(global-set-key (kbd "ESC -") #'er/contract-region)))
+
+(when nil
+  (require-package/with-requirements '(multiple-cursors)
+	(global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
+	(global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
+	(global-set-key (kbd "C->") #'mc/mark-next-like-this)
+	(global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
+	(global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
+	(global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)))
+
+(require 'browser-open)
+(require 'find-file-dynamic)
+(require 'make-shebang-executable)
+(require 'setup-autocomplete)
+
+(require 'clean-and-indent)
+(global-set-key (kbd "<f2>") #'clean-and-indent)
+(dolist (h '(sh-mode-hook css-mode-hook))
+  (add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
+
+(require 'copy-and-comment)
+(global-set-key (kbd "<f3>") #'copy-and-comment)
+
+(require 'async-shell-command-wrapper)
+(global-set-key (kbd "M-&") #'ksm/async-shell-command)
+(global-set-key (kbd "ESC &") #'ksm/async-shell-command)
+
+(require 'setup-gtd)
+(require 'sort-commas)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LOCALHOST CONFIGURATION
+
+(if (locate-library "localhost")
+	(require 'localhost)
+  (message "no localhost file found"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(artist-text-renderer-function #'(lambda (someText) someText))
+ '(column-number-mode t)
+ '(compilation-environment '("TERM=xterm-256color"))
  '(compilation-scroll-output 'first-error)
+ '(confirm-kill-emacs 'yes-or-no-p)
+ '(custom-enabled-themes '(zenburn))
  '(custom-safe-themes
-   '("78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
+   '("b77a00d5be78f21e46c80ce450e5821bdc4368abf4ffe2b77c5a66de1b648f10" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
+ '(default-text-scale-amount 20)
  '(diff-switches "-u")
+ '(dired-auto-revert-buffer t)
  '(dired-listing-switches "-AbFhl")
- '(edit-server-new-frame nil)
- '(eshell-output-filter-functions
-   '(eshell-handle-control-codes eshell-watch-for-password-prompt eshell-postoutput-scroll-to-bottom eshell-handle-control-codes eshell-watch-for-password-prompt))
- '(fci-rule-color "#383838")
- '(flycheck-emacs-lisp-load-path 'inherit)
- '(indent-tabs-mode nil)
+ '(ediff-diff-options "-w")
+ '(ediff-split-window-function 'split-window-horizontally)
+ '(ediff-window-setup-function 'ediff-setup-windows-plain)
+ '(fancy-splash-image "")
  '(inhibit-startup-screen t)
+ '(line-number-mode t)
  '(make-backup-files nil)
+ '(menu-bar-mode nil)
  '(minibuffer-prompt-properties
    '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
+ '(package-archive-priorities '(("melpa-stable" . 2) ("melpa" . 1) ("gnu" . 0)))
+ '(package-archives
+   '(("gnu" . "https://elpa.gnu.org/packages/")
+	 ("melpa-stable" . "https://stable.melpa.org/packages/")
+	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(auto-complete buffer-move company deadgrep default-text-scale edit-server fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-errcheck go-mode js2-mode json-mode lsp-mode lsp-ui markdown-mode nix-mode protobuf-mode rust-mode sql-indent switch-window vc-fossil wgrep wgrep-ack which-key xterm-color yaml-mode zenburn-theme zig-mode))
+   '(lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
+ '(show-paren-mode t)
  '(show-paren-style 'expression)
  '(tab-width 4)
+ '(tool-bar-mode t)
+ '(tooltip-mode nil)
  '(uniquify-buffer-name-style 'post-forward nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\*")
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    '((20 . "#BC8383")
-     (40 . "#CC9393")
-     (60 . "#DFAF8F")
-     (80 . "#D0BF8F")
-     (100 . "#E0CF9F")
-     (120 . "#F0DFAF")
-     (140 . "#5F7F5F")
-     (160 . "#7F9F7F")
-     (180 . "#8FB28F")
-     (200 . "#9FC59F")
-     (220 . "#AFD8AF")
-     (240 . "#BFEBBF")
-     (260 . "#93E0E3")
-     (280 . "#6CA0A3")
-     (300 . "#7CB8BB")
-     (320 . "#8CD0D3")
-     (340 . "#94BFF3")
-     (360 . "#DC8CC3")))
+	 (40 . "#CC9393")
+	 (60 . "#DFAF8F")
+	 (80 . "#D0BF8F")
+	 (100 . "#E0CF9F")
+	 (120 . "#F0DFAF")
+	 (140 . "#5F7F5F")
+	 (160 . "#7F9F7F")
+	 (180 . "#8FB28F")
+	 (200 . "#9FC59F")
+	 (220 . "#AFD8AF")
+	 (240 . "#BFEBBF")
+	 (260 . "#93E0E3")
+	 (280 . "#6CA0A3")
+	 (300 . "#7CB8BB")
+	 (320 . "#8CD0D3")
+	 (340 . "#94BFF3")
+	 (360 . "#DC8CC3")))
  '(vc-annotate-very-old-color "#DC8CC3")
- '(visible-bell t)
  '(wgrep-auto-save-buffer t))
 
 (custom-set-faces

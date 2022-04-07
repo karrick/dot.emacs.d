@@ -173,7 +173,7 @@ If there is no .svn directory, examine if there is CVS and run
 ;; By default bind "C-x C-r" to rgrep, but when ripgrep and deadgrep
 ;; are available, rebind to that...
 (let ((cmd (executable-find "rg")))
-  (if (not (stringp cmd))
+  (if (not cmd)
 	  (global-set-key (kbd "C-x C-r") #'rgrep)
 	(require-package/with-requirements '(deadgrep)
 	  (setq deadgrep-executable cmd)
@@ -202,20 +202,27 @@ If there is no .svn directory, examine if there is CVS and run
 (global-set-key (kbd "C-x j") #'ksm/window-config-restore) ; jump to window configuration from hash
 (global-set-key (kbd "C-x p") #'ksm/window-config-save) ; save window configuration to hash
 
-(global-set-key (kbd "C-x 0")  #'ksm/delete-window)
-(global-set-key (kbd "C-x 1")  #'ksm/delete-other-windows)
+(global-set-key (kbd "C-x 0")  #'ksm/delete-window) ; extension to existing behavior
+(global-set-key (kbd "C-x 1")  #'ksm/delete-other-windows) ; extension to existing behavior
 ;; (global-set-key (kbd "C-x 2")  #'split-window-below) ; this is the default key binding
 ;; (global-set-key (kbd "C-x 3")  #'split-window-right) ; this is the default key binding
 (global-set-key (kbd "C-x -")  #'ksm/window-zoom-out) ; pop and restore window configuration from stack
 (global-set-key (kbd "C-x +")  #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows
 (global-set-key (kbd "C-x =")  #'balance-windows)
 
-
 ;; (require 'windmove)
 (global-set-key (kbd "C-x 4 i")    #'windmove-up) ; move point to buffer above it
 (global-set-key (kbd "C-x 4 k")  #'windmove-down) ; move point to buffer below it
 (global-set-key (kbd "C-x 4 l") #'windmove-right) ; move point to buffer on its right
 (global-set-key (kbd "C-x 4 j")  #'windmove-left) ; move point to buffer on its left
+
+;; Test out shorter keystroke equivalents of moving point between
+;; windows.
+(when t
+  (global-set-key (kbd "M-I")    #'windmove-up) ; move point to buffer above it
+  (global-set-key (kbd "M-K")  #'windmove-down) ; move point to buffer below it
+  (global-set-key (kbd "M-L") #'windmove-right) ; move point to buffer on its right
+  (global-set-key (kbd "M-J")  #'windmove-left)) ; move point to buffer on its left
 
 ;; (require 'buffer-move)
 ;; (global-set-key (kbd "C-x <up>")     #'buf-move-up) ; swap buffer that has point with buffer above it
@@ -263,8 +270,9 @@ If there is no .svn directory, examine if there is CVS and run
   "Horizontal position for next call to `unscroll'.")
 
 (defun unscroll-maybe-remember ()
+  "Store point before scrolling unless `last-command' was also scroll."
   (unless (get last-command 'unscrollable)
-	(message "remembering position for unscroll...") ; TODO
+	;; (message "remembering position for unscroll...")
 	(set-marker unscroll-point (point))
 	(set-marker unscroll-window-start (window-start))
 	(setq unscroll-hscroll (window-hscroll))))
@@ -329,7 +337,6 @@ If there is no .svn directory, examine if there is CVS and run
 
 ;; (desktop-save-mode 0)
 (fido-mode 1)
-;; (fido-vertical-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (prefer-coding-system 'utf-8)
 (put 'narrow-to-region 'disabled nil)
@@ -424,7 +431,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
+   '(zig-mode lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-conservatively 5)
  '(show-paren-mode t)

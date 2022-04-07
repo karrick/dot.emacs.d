@@ -27,7 +27,7 @@
   (package-install-selected-packages))
 
 ;; Make Elisp files in ~/.emacs.d/lisp directory available.
-(add-to-list 'load-path (directory-file-name (locate-user-emacs-file "lisp")))
+(add-to-list 'load-path (directory-file-name (expand-file-name (locate-user-emacs-file "lisp"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PROCESS ENVIRONMENT
@@ -175,9 +175,8 @@ If there is no .svn directory, examine if there is CVS and run
 (let ((cmd (executable-find "rg")))
   (if (not cmd)
 	  (global-set-key (kbd "C-x C-r") #'rgrep)
-	(require-package/with-requirements '(deadgrep)
-	  (setq deadgrep-executable cmd)
-	  (global-set-key (kbd "C-x C-r") #'deadgrep))))
+	(setq deadgrep-executable cmd)
+	(global-set-key (kbd "C-x C-r") #'deadgrep)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but importantly,
@@ -304,22 +303,21 @@ If there is no .svn directory, examine if there is CVS and run
   "Remember where we started from, for `unscroll'."
   (unscroll-maybe-remember))
 
-(require-package/with-requirements '(switch-window)
-  ;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize) ; like tmux C-z 1, but without the ability to toggle
-  ;; (global-set-key (kbd "C-x \"") 'switch-window-then-split-below) ; like tmux C-z "
-  ;; (global-set-key (kbd "C-x %") 'switch-window-then-split-right) ; like tmux C-z %
-  ;; (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
+;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize) ; like tmux C-z 1, but without the ability to toggle
+;; (global-set-key (kbd "C-x \"") 'switch-window-then-split-below) ; like tmux C-z "
+;; (global-set-key (kbd "C-x %") 'switch-window-then-split-right) ; like tmux C-z %
+;; (global-set-key (kbd "C-x 0") 'switch-window-then-delete)
 
-  ;; (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
-  ;; (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
-  ;; (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
-  ;; (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
-  ;; (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
-  ;; (global-set-key (kbd "C-x 4 s") 'switch-window-then-swap-buffer)
+;; (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer)
+;; (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
+;; (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
+;; (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
+;; (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
+;; (global-set-key (kbd "C-x 4 s") 'switch-window-then-swap-buffer)
 
-  ;; (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
-  ;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
-  (global-set-key (kbd "C-x q") 'switch-window)) ; like tmux C-z q, but only shows numbers to select when more than two windows
+;; (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
+;; (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+(global-set-key (kbd "C-x q") 'switch-window) ; like tmux C-z q, but only shows numbers to select when more than two windows
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TO ORGANIZE
@@ -350,25 +348,25 @@ If there is no .svn directory, examine if there is CVS and run
 ;; (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
 
 (when nil
-  (require-package/with-requirements '(expand-region)
-	(global-set-key (kbd "M-=") #'er/expand-region)
-	(global-set-key (kbd "ESC =") #'er/expand-region)
-	(global-set-key (kbd "M--") #'er/contract-region)
-	(global-set-key (kbd "ESC -") #'er/contract-region)))
+  (require 'expand-region)
+  (global-set-key (kbd "M-=") #'er/expand-region)
+  (global-set-key (kbd "ESC =") #'er/expand-region)
+  (global-set-key (kbd "M--") #'er/contract-region)
+  (global-set-key (kbd "ESC -") #'er/contract-region))
 
 (when nil
-  (require-package/with-requirements '(multiple-cursors)
-	(global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
-	(global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
-	(global-set-key (kbd "C->") #'mc/mark-next-like-this)
-	(global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
-	(global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
-	(global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended)))
+  (require 'multiple-cursors)
+  (global-set-key (kbd "C-S-c C-S-c") #'mc/edit-lines)
+  (global-set-key (kbd "C-c C-S-c") #'mc/edit-lines)
+  (global-set-key (kbd "C->") #'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") #'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
+  (global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
 
 (require 'browser-open)
 (require 'find-file-dynamic)
 (require 'make-shebang-executable)
-(require 'setup-autocomplete)
+;; (require 'setup-autocomplete)
 
 (require 'clean-and-indent)
 (global-set-key (kbd "<f2>") #'clean-and-indent)

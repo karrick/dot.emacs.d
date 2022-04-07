@@ -19,15 +19,10 @@
 	  (when (file-readable-p cert)
 		(add-to-list 'gnutls-trustfiles cert)))))
 
-;; The following block can be temporarily activated to install all of
-;; the packages defined in this init file that are not yet installed.
-(when nil
-  (unless package-archive-contents
-	(package-refresh-contents))
-  (package-install-selected-packages))
-
 (add-hook 'after-init-hook
 		  #'(lambda ()
+			  (package-install-selected-packages)
+
 			  ;;
 			  ;; PROCESS ENVIRONMENT
 			  ;;

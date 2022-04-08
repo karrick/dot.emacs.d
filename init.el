@@ -439,6 +439,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(package-selected-packages
    '(zig-mode lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+ '(scroll-bar-mode nil)
  '(scroll-conservatively 5)
  '(show-paren-mode t)
  '(show-paren-style 'expression)

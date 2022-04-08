@@ -2,8 +2,12 @@
 
 ;;; Commentary:
 
-;; Uses built-in Emacs package manager to specify which optional
-;; packages to install.
+;; To resolve what might be considered a chicken-and-egg situation in
+;; terms of settings variables in `custom-set-variables', which
+;; include setting `package-selected-packages' and themes, this
+;; registers a single callback to be invoked by `after-init-hook' to
+;; run all of the Lisp customization needed after the various
+;; variables have been configured.
 
 ;;; Code:
 
@@ -26,8 +30,13 @@
 			  ;;
 			  ;; PROCESS ENVIRONMENT
 			  ;;
-			  (if (daemonp)
-				  (cd (expand-file-name "~")))
+			  (if (daemonp) (cd (expand-file-name "~")))
+
+			  (unless (memq system-type '(gnu gnu/linux gnu/kfreebsd))
+				(require 'ls-lisp)
+				(setq ls-lisp-use-insert-directory-program nil))
+			  (when (and (eq window-system 'w32) (executable-find "plink"))
+				(setq tramp-default-method "plink"))
 
 			  (let ((dir (file-name-as-directory (expand-file-name ".history.d" "~"))))
 				(when (file-directory-p dir)
@@ -44,9 +53,13 @@
 				  (setenv "EDITOR" cmd)
 				  (setenv "VISUAL" cmd)))
 
-			  (unless (memq system-type '(gnu gnu/linux gnu/kfreebsd))
-				(require 'ls-lisp)
-				(setq ls-lisp-use-insert-directory-program nil))
+			  ;; (desktop-save-mode 0)
+			  (fido-mode 1)
+			  (fset 'yes-or-no-p 'y-or-n-p)
+			  (prefer-coding-system 'utf-8)
+			  (put 'narrow-to-region 'disabled nil)
+			  (setq redisplay-dont-pause t)
+			  (which-key-mode)
 
 			  ;;
 			  ;; xterm-color is superior to ansi-color
@@ -118,6 +131,30 @@ If there is no .svn directory, examine if there is CVS and run
 						;; parameters that will be passed to aspell.
 						ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))))
 
+
+			  ;;
+			  ;; Miscellaneous
+			  ;;
+
+			  ;; Make Elisp files in ~/.emacs.d/lisp directory
+			  ;; available before we reference anything in the lisp
+			  ;; directory.
+			  (add-to-list 'load-path (directory-file-name (expand-file-name (locate-user-emacs-file "lisp"))))
+
+			  (require 'async-shell-command-wrapper)
+			  (global-set-key (kbd "M-&") #'ksm/async-shell-command)
+			  (global-set-key (kbd "ESC &") #'ksm/async-shell-command)
+
+			  (require 'align)
+			  (require 'browser-open)
+			  (require 'clean-and-indent)
+			  (require 'copy-and-comment)
+			  (require 'find-file-dynamic)
+			  (require 'make-shebang-executable)
+			  ;; (require 'setup-autocomplete) ;; some libraries not available on FreeBSD.
+			  (require 'setup-gtd)
+			  (require 'sort-commas)
+
 			  ;;
 			  ;; PROGRAMMING
 			  ;;
@@ -140,11 +177,6 @@ If there is no .svn directory, examine if there is CVS and run
 			  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 			  (add-hook 'markdown-mode-hook #'visual-line-mode)
 
-			  ;; Make Elisp files in ~/.emacs.d/lisp directory
-			  ;; available before we reference anything in the lisp
-			  ;; directory.
-			  (add-to-list 'load-path (directory-file-name (expand-file-name (locate-user-emacs-file "lisp"))))
-
 			  (require 'setup-elisp-mode)
 			  (require 'setup-golang-mode)
 			  (require 'setup-javascript-mode)
@@ -163,7 +195,9 @@ If there is no .svn directory, examine if there is CVS and run
 			  (global-unset-key (kbd "s-t")) ; disable ns-popup-font-panel
 			  (global-unset-key (kbd "s-z")) ; disable minimize
 
-			  (global-set-key (kbd "<f1>") #'(lambda () (interactive) (revert-buffer nil t nil)))
+			  (global-set-key (kbd "<f1>") #'revert-buffer)
+			  (global-set-key (kbd "<f2>") #'clean-and-indent)
+			  (global-set-key (kbd "<f3>") #'copy-and-comment)
 			  (global-set-key (kbd "<f4>") #'recompile)
 			  (global-set-key (kbd "<f5>") #'compile)
 
@@ -181,7 +215,8 @@ If there is no .svn directory, examine if there is CVS and run
 				  (setq deadgrep-executable cmd)
 				  (global-set-key (kbd "C-x C-r") #'deadgrep)))
 
-			  ;;
+			  ;; (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
+
 			  ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity,
 			  ;; but importantly, to keep ability to use emacs in a
 			  ;; tmux frame, you need to use a different key prefix in
@@ -202,6 +237,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;;   balanced buffer configuration. (Bind
 			  ;;   #'maximize-window)
 
+			  (default-text-scale-mode)
 			  (global-set-key (kbd "C-x C-b") #'ibuffer)
 
 			  (require 'ksm-window)
@@ -216,99 +252,22 @@ If there is no .svn directory, examine if there is CVS and run
 			  (global-set-key (kbd "C-x +")  #'ksm/window-zoom-in) ; push window configuration to stack and delete other windows
 			  (global-set-key (kbd "C-x =")  #'balance-windows)
 
-			  ;; (require 'windmove)
-			  (global-set-key (kbd "C-x 4 i")    #'windmove-up) ; move point to buffer above it
-			  (global-set-key (kbd "C-x 4 k")  #'windmove-down) ; move point to buffer below it
-			  (global-set-key (kbd "C-x 4 l") #'windmove-right) ; move point to buffer on its right
-			  (global-set-key (kbd "C-x 4 j")  #'windmove-left) ; move point to buffer on its left
+			  (global-set-key (kbd "M-I")    #'windmove-up) ; move point to buffer above it
+			  (global-set-key (kbd "M-K")  #'windmove-down) ; move point to buffer below it
+			  (global-set-key (kbd "M-L") #'windmove-right) ; move point to buffer on its right
+			  (global-set-key (kbd "M-J")  #'windmove-left) ; move point to buffer on its left
 
-			  ;; Test out shorter keystroke equivalents of moving point between
-			  ;; windows.
-			  (when t
-				(global-set-key (kbd "M-I")    #'windmove-up) ; move point to buffer above it
-				(global-set-key (kbd "M-K")  #'windmove-down) ; move point to buffer below it
-				(global-set-key (kbd "M-L") #'windmove-right) ; move point to buffer on its right
-				(global-set-key (kbd "M-J")  #'windmove-left)) ; move point to buffer on its left
-
-			  ;; (require 'buffer-move)
-			  ;; (global-set-key (kbd "C-x <up>")     #'buf-move-up) ; swap buffer that has point with buffer above it
-			  ;; (global-set-key (kbd "C-x <down>")   #'buf-move-down) ; swap buffer that has point with buffer below it
-			  ;; (global-set-key (kbd "C-x <left>")   #'buf-move-left) ; swap buffer that has point with buffer on its left
-			  ;; (global-set-key (kbd "C-x <right>")  #'buf-move-right) ; swap buffer that has point with buffer on its right
-
-			  (defun other-window-backward (&optional n)
-				"Select the Nth previous window."
-				(interactive "P")
-				(other-window (- (prefix-numeric-value n))))
+			  (global-set-key (kbd "C-x 4 i")     #'buf-move-up) ; swap buffer that has point with buffer above it
+			  (global-set-key (kbd "C-x 4 k")   #'buf-move-down) ; swap buffer that has point with buffer below it
+			  (global-set-key (kbd "C-x 4 j")   #'buf-move-left) ; swap buffer that has point with buffer on its left
+			  (global-set-key (kbd "C-x 4 l")  #'buf-move-right) ; swap buffer that has point with buffer on its right
 
 			  (global-set-key "\C-x\C-n" 'other-window)
 			  (global-set-key "\C-x\C-p" 'other-window-backward)
 
-			  (defalias 'scroll-forward 'scroll-up)
-			  (defalias 'scroll-backward 'scroll-down)
-
-			  (defun scroll-n-lines-forward (&optional n)
-				"Scroll forward N lines (1 by default)."
-				(interactive "P")
-				(scroll-forward (prefix-numeric-value n)))
-
-			  (defun scroll-n-lines-backward (&optional n)
-				"Scroll backward N lines (1 by default)."
-				(interactive "P")
-				(scroll-forward (- (prefix-numeric-value n))))
-
 			  ;; (global-set-key (kbd "M-n") 'scroll-n-lines-forward)
 			  (global-set-key "\M-n" 'scroll-n-lines-forward)
 			  (global-set-key "\M-p" 'scroll-n-lines-backward)
-
-			  ;;
-
-			  (put 'scroll-up 'unscrollable t)
-			  (put 'scroll-right 'unscrollable t)
-			  (put 'scroll-down 'unscrollable t)
-			  (put 'scroll-left 'unscrollable t)
-
-			  (defvar unscroll-point (make-marker)
-				"Cursor position for next call to `unscroll'.")
-			  (defvar unscroll-window-start (make-marker)
-				"Window start for next call to `unscroll'.")
-			  (defvar unscroll-hscroll nil
-				"Horizontal position for next call to `unscroll'.")
-
-			  (defun unscroll-maybe-remember ()
-				"Store point before scrolling unless `last-command' was also scroll."
-				(unless (get last-command 'unscrollable)
-				  ;; (message "remembering position for unscroll...")
-				  (set-marker unscroll-point (point))
-				  (set-marker unscroll-window-start (window-start))
-				  (setq unscroll-hscroll (window-hscroll))))
-
-			  (defun unscroll ()
-				"Revert to `unscroll-point' and `unscroll-window-start'."
-				(interactive)
-				(goto-char unscroll-point)
-				(set-window-start nil unscroll-window-start)
-				(set-window-hscroll nil unscroll-hscroll))
-
-			  (defadvice scroll-up (before remember-for-unscroll
-										   activate compile)
-				"Remember where we started from, for `unscroll'."
-				(unscroll-maybe-remember))
-
-			  (defadvice scroll-right (before remember-for-unscroll
-											  activate compile)
-				"Remember where we started from, for `unscroll'."
-				(unscroll-maybe-remember))
-
-			  (defadvice scroll-down (before remember-for-unscroll
-											 activate compile)
-				"Remember where we started from, for `unscroll'."
-				(unscroll-maybe-remember))
-
-			  (defadvice scroll-left (before remember-for-unscroll
-											 activate compile)
-				"Remember where we started from, for `unscroll'."
-				(unscroll-maybe-remember))
 
 			  ;; (global-set-key (kbd "C-x 1") 'switch-window-then-maximize) ; like tmux C-z 1, but without the ability to toggle
 			  ;; (global-set-key (kbd "C-x \"") 'switch-window-then-split-below) ; like tmux C-z "
@@ -330,31 +289,6 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;; TO ORGANIZE
 			  ;;
 
-			  (default-text-scale-mode)
-
-			  (when (eq window-system 'w32)
-				(when (executable-find "plink")
-				  (setq tramp-default-method "plink")))
-
-			  (defun align-non-space (BEG END)
-				"Align non-space columns in region BEG END."
-				(interactive "r")
-				(align-regexp BEG END "\\(\\s-*\\)\\S-+" 1 1 t))
-
-			  ;; (desktop-save-mode 0)
-			  (fido-mode 1)
-			  (fset 'yes-or-no-p 'y-or-n-p)
-			  (prefer-coding-system 'utf-8)
-			  (put 'narrow-to-region 'disabled nil)
-			  (setq redisplay-dont-pause t)
-			  (which-key-mode)
-			  (add-hook 'after-init-hook #'global-flycheck-mode)
-
-			  ;; (require 'scroll-bar)
-			  ;; (set-scroll-bar-mode nil)	; nil, left, or right
-
-			  ;; (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
-
 			  (when nil
 				(require 'expand-region)
 				(global-set-key (kbd "M-=") #'er/expand-region)
@@ -371,32 +305,13 @@ If there is no .svn directory, examine if there is CVS and run
 				(global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
 				(global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
 
-			  (require 'browser-open)
-			  (require 'find-file-dynamic)
-			  (require 'make-shebang-executable)
-			  ;; (require 'setup-autocomplete)
-
-			  (require 'clean-and-indent)
-			  (global-set-key (kbd "<f2>") #'clean-and-indent)
-			  (dolist (h '(sh-mode-hook css-mode-hook))
-				(add-hook h #'(lambda () (add-hook 'before-save-hook #'clean-and-indent nil t))))
-
-			  (require 'copy-and-comment)
-			  (global-set-key (kbd "<f3>") #'copy-and-comment)
-
-			  (require 'async-shell-command-wrapper)
-			  (global-set-key (kbd "M-&") #'ksm/async-shell-command)
-			  (global-set-key (kbd "ESC &") #'ksm/async-shell-command)
-
-			  (require 'setup-gtd)
-			  (require 'sort-commas)
-
+			  ;;
 			  ;; LOCALHOST CONFIGURATION
+			  ;;
 
 			  (if (locate-library "localhost")
 				  (require 'localhost)
-				(message "no localhost file found"))
-			  ))
+				(message "no localhost file found"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -421,9 +336,9 @@ If there is no .svn directory, examine if there is CVS and run
  '(ediff-split-window-function 'split-window-horizontally)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(fancy-splash-image "")
+ '(global-flycheck-mode t)
  '(inhibit-startup-screen t)
  '(line-number-mode t)
- '(make-backup-files nil)
  '(menu-bar-mode nil)
  '(minibuffer-prompt-properties
    '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
@@ -469,6 +384,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 (340 . "#94BFF3")
 	 (360 . "#DC8CC3")))
  '(vc-annotate-very-old-color "#DC8CC3")
+ '(visible-bell t)
  '(wgrep-auto-save-buffer t))
 
 (custom-set-faces

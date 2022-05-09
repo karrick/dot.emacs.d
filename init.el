@@ -30,6 +30,7 @@
               ;;
               ;; PROCESS ENVIRONMENT
               ;;
+              ;; (when (fboundp 'server-running-p) (unless (server-running-p) (server-start)))
               (if (daemonp) (cd (expand-file-name "~")))
 
               (unless (memq system-type '(gnu gnu/linux gnu/kfreebsd))
@@ -130,7 +131,6 @@ If there is no .svn directory, examine if there is CVS and run
                         ;; NOTE: ispell-extra-args contains actual
                         ;; parameters that will be passed to aspell.
                         ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))))
-
 
               ;;
               ;; Miscellaneous
@@ -344,6 +344,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(menu-bar-mode nil)
  '(minibuffer-prompt-properties
    '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
+ '(native-comp-async-report-warnings-errors 'silent)
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(ns-function-modifier 'hyper)
@@ -351,8 +352,9 @@ If there is no .svn directory, examine if there is CVS and run
  '(package-archive-priorities '(("melpa-stable" . 2) ("melpa" . 1) ("gnu" . 0)))
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
-     ("melpa-stable" . "https://stable.melpa.org/packages/")
-     ("melpa" . "https://melpa.org/packages/")))
+	 ("melpa-stable" . "https://stable.melpa.org/packages/")
+	 ("melpa" . "https://melpa.org/packages/")))
+ ;; '(package-native-compile t)
  '(package-selected-packages
    '(company puppet-mode nginx-mode zig-mode lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
@@ -368,23 +370,23 @@ If there is no .svn directory, examine if there is CVS and run
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    '((20 . "#BC8383")
-     (40 . "#CC9393")
-     (60 . "#DFAF8F")
-     (80 . "#D0BF8F")
-     (100 . "#E0CF9F")
-     (120 . "#F0DFAF")
-     (140 . "#5F7F5F")
-     (160 . "#7F9F7F")
-     (180 . "#8FB28F")
-     (200 . "#9FC59F")
-     (220 . "#AFD8AF")
-     (240 . "#BFEBBF")
-     (260 . "#93E0E3")
-     (280 . "#6CA0A3")
-     (300 . "#7CB8BB")
-     (320 . "#8CD0D3")
-     (340 . "#94BFF3")
-     (360 . "#DC8CC3")))
+	 (40 . "#CC9393")
+	 (60 . "#DFAF8F")
+	 (80 . "#D0BF8F")
+	 (100 . "#E0CF9F")
+	 (120 . "#F0DFAF")
+	 (140 . "#5F7F5F")
+	 (160 . "#7F9F7F")
+	 (180 . "#8FB28F")
+	 (200 . "#9FC59F")
+	 (220 . "#AFD8AF")
+	 (240 . "#BFEBBF")
+	 (260 . "#93E0E3")
+	 (280 . "#6CA0A3")
+	 (300 . "#7CB8BB")
+	 (320 . "#8CD0D3")
+	 (340 . "#94BFF3")
+	 (360 . "#DC8CC3")))
  '(vc-annotate-very-old-color "#DC8CC3")
  '(visible-bell t)
  '(wgrep-auto-save-buffer t))

@@ -45,12 +45,12 @@ function determine_os_type_from_file () {
 
 case $(determine_os_type) in
     rhel)
-		sudo yum install giflib-devel gtk2 gtk2-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel ncurses ncurses-devel openjpeg2-devel
+		sudo yum install giflib-devel gtk2 gtk2-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel jansson jansson-devel ncurses ncurses-devel openjpeg2-devel
 		# NOTE: needed for lucid
 		# sudo yum install libXaw libXaw-devel
     ;;
     debian)
-        sudo apt-get install build-essential
+        sudo apt-get install build-essential libjansson-dev
         sudo apt-get build-dep emacs
         ;;
     *)

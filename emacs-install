@@ -123,7 +123,7 @@ cd $build_dir
 # ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
 # ./configure --without-all --without-x
 
-./configure --prefix=$HOME/emacs-${release}
+./configure --with-json --prefix=$HOME/emacs-${release}
 make
 make install
 

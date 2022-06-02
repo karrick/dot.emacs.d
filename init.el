@@ -333,7 +333,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(confirm-kill-emacs 'yes-or-no-p)
  '(custom-enabled-themes '(zenburn))
  '(custom-safe-themes
-   '("b77a00d5be78f21e46c80ce450e5821bdc4368abf4ffe2b77c5a66de1b648f10" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
+   '("9040edb21d65cef8a4a4763944304c1a6655e85aabb6e164db6d5ba4fc494a04" "b77a00d5be78f21e46c80ce450e5821bdc4368abf4ffe2b77c5a66de1b648f10" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
  '(default-text-scale-amount 20)
  '(diff-switches "-u")
  '(dired-auto-revert-buffer t)
@@ -360,7 +360,6 @@ If there is no .svn directory, examine if there is CVS and run
    '(("gnu" . "https://elpa.gnu.org/packages/")
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
- ;; '(package-native-compile t)
  '(package-selected-packages
    '(rust-mode company puppet-mode nginx-mode zig-mode lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))

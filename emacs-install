@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 
 set -eE
 
@@ -6,108 +6,125 @@ defaultRelease=28.1
 release=$1
 
 if [ -z $release ] ; then
-    read -e -p "Which release? [$defaultRelease] " release
-    if [ -z "$release" ] ; then
-        release=$defaultRelease
-    fi
+	read -e -p "Which release? [$defaultRelease] " release
+	if [ -z "$release" ] ; then
+		release=$defaultRelease
+	fi
 fi
 
 downloads=~/Downloads
 
 ################
 
-function determine_os_type () {
-    if [ -f /etc/redhat-release ] ; then
-        echo rhel
-    elif [ -f /etc/debian-release ] ; then
-        echo debian
-    elif [ -f /etc/system-release ] ; then
-        echo $(determine_os_type_from_file /etc/system-release)
-    elif [ -f /etc/os-release ] ; then
-        echo $(determine_os_type_from_file /etc/os-release)
-    else
-        echo "ERROR: cannot determine os type. install dependencies manually" >&2
-        exit 1
-    fi
+determine_os_type () {
+	if [ -f /etc/redhat-release ] ; then
+		echo rhel
+	elif [ -f /etc/debian-release ] ; then
+		echo debian
+	elif [ -f /etc/freebsd-update.conf ] ; then
+		echo freebsd
+	elif [ -f /etc/system-release ] ; then
+		echo $(determine_os_type_from_file /etc/system-release)
+	elif [ -f /etc/os-release ] ; then
+		echo $(determine_os_type_from_file /etc/os-release)
+	else
+		echo "ERROR: cannot determine os type. install dependencies manually" >&2
+		exit 1
+	fi
 }
 
-function determine_os_type_from_file () {
-    local type=$(awk '{$0 = tolower($0); if ($0 ~ /debian/) {print "debian";exit} ; if ($0 ~ /red hat/) {print "red hat";exit}}' $1)
-    if [ -z $type ] ; then
-        echo "unknown os type: $contents" >&2
-        exit 1
-    fi
-    echo $type
+determine_os_type_from_file () {
+	local type=$(awk '{$0 = tolower($0); if ($0 ~ /debian/) {print "debian";exit} ; if ($0 ~ /red hat/) {print "red hat";exit} ; if ($0 ~ /freebsd/) {print "freebsd";exit} }' $1)
+	if [ -z $type ] ; then
+		echo "unknown os type: $contents" >&2
+		exit 1
+	fi
+	echo $type
 }
 
 ################
 # dependencies
 
 case $(determine_os_type) in
-    rhel)
+	rhel)
+		sudo dnf builddep emacs
 		sudo yum install giflib-devel gtk2 gtk2-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel jansson jansson-devel ncurses ncurses-devel openjpeg2-devel
 		# NOTE: needed for lucid
 		# sudo yum install libXaw libXaw-devel
-    ;;
-    debian)
-        sudo apt-get install build-essential libjansson-dev
-        sudo apt-get build-dep emacs
-        ;;
-    *)
-        echo "ERROR: cannot determine os type. install dependencies manually or fix this script" >&2
-        exit 1
-        ;;
+		;;
+	debian)
+		sudo apt-get install build-essential libjansson-dev
+		sudo apt-get build-dep emacs
+		;;
+	freebsd)
+		echo "NOTE: On FreeBSD, install required packages using:"
+		echo '        pkg install -y jansson $(pkg rquery %dn emacs-devel)'
+		;;
+	*)
+		echo "ERROR: cannot determine os type. install dependencies manually or fix this script" >&2
+		exit 1
+		;;
 esac
 
 ################
 
-# The supposition here is that when the file is not there, it has yet to be
-# imported, but once imported, it tends to just stick around and take up space.
-keyring=gnu-keyring.gpg
-keyring_local=$downloads/$keyring
-if [ ! -f $keyring_local ] ; then
-    curl -L --create-dirs --output $keyring_local curl -L --createhttps://ftp.gnu.org/gnu/gnu-keyring.gpg
-    gpg --import $keyring_local
-fi
-
-# Download signature and bundle file if they do not exist
 bundle=emacs-${release}.tar.xz
 bundle_local=$downloads/$bundle
-
-sig=${bundle}.sig
-sig_local=$downloads/$sig
-
 if [ ! -f $bundle_local ] ; then
-    echo "Downloading bundle file..."
-    curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+	echo "Downloading ${bundle}..."
+	curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
 fi
 
-if [ ! -f $sig_local ] ; then
-    echo "Downloading signature file..."
-    curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+if $(which gpg >/dev/null 2>&1) ; then
+	keyring=gnu-keyring.gpg
+	keyring_local=$downloads/$keyring
+	if [ ! -f $keyring_local ] ; then
+		echo "Downloading ${keyring}..."
+		curl -L --create-dirs --output $keyring_local curl -L --create https://ftp.gnu.org/gnu/$keyring
+		gpg --import $keyring_local
+	fi
+
+	sig=${bundle}.sig
+	sig_local=$downloads/$sig
+	if [ ! -f $sig_local ] ; then
+		echo "Downloading ${sig}..."
+		curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+	fi
+
+	while ! gpg --verify --keyring $keyring_local $sig_local $bundle_local ; do
+		echo "WARNING: bundle file doesn't match its signature." >&2
+		echo "bundle:    $bundle_local" >&2
+		echo "signature: $sig_local" >&2
+		read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
+		case $yn in
+			N|n)
+				echo "Exiting because bundle does not match signature."
+				exit 1
+				;;
+			*)
+				rm -fv $sig_local $bundle_local
+				echo "Re-downloading ${bundle}..."
+				curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+				echo "Re-downloading ${sig}..."
+				curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+				;;
+		esac
+	done
+	echo "Bundle file matches its signature"
+else
+	echo "WARNING: gpg program not found to verify bundle signature." >&2
+	read -e -p "Proceed anyway? [y/N] " yn
+	case $yn in
+		Y|y)
+			echo "Skipping bundle signature check..."
+			;;
+		*)
+			echo "Exiting because cannot verify bundle integrity."
+			exit 1
+			;;
+	esac
 fi
 
-while ! gpg --verify --keyring $keyring_local $sig_local $bundle_local ; do
-    echo "WARNING: bundle file doesn't match its signature." >&2
-    echo "bundle:    $bundle_local" >&2
-    echo "signature: $sig_local" >&2
-    read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
-    case $yn in
-        Y|y)
-            rm -fv $sig_local $bundle_local
-            echo "Re-downloading bundle file..."
-            curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
-            echo "Re-downloading signature file..."
-            curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
-            ;;
-        N|n)
-            echo "Exiting because bundle does not match signature."
-            exit 1
-            ;;
-    esac
-done
-
-echo "Bundle file matches its signature"
 
 ################
 
@@ -123,7 +140,7 @@ cd $build_dir
 # ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
 # ./configure --without-all --without-x
 
-./configure --with-json --prefix=$HOME/emacs-${release}
+./configure --prefix=$HOME/emacs-${release}
 make
 make install
 

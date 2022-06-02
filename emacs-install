@@ -140,7 +140,7 @@ cd $build_dir
 # ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
 # ./configure --without-all --without-x
 
-./configure --prefix=$HOME/emacs-${release}
+./configure --prefix=$HOME/.local/$(uname -s)-$(uname -r)
 make
 make install
 

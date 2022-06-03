@@ -1,76 +1,54 @@
 #! /bin/sh
 
-set -eE
+set -e
 
 defaultRelease=28.1
 release=$1
+downloads=~/Downloads
+
+################
+# Install build and runtime dependencies.
+
+if [ -f /etc/redhat-release ] ; then
+	sudo dnf builddep emacs
+	sudo yum install giflib-devel gtk2 gtk2-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel jansson jansson-devel ncurses ncurses-devel openjpeg2-devel
+	# NOTE: needed for lucid
+	# sudo yum install libXaw libXaw-devel
+elif [ -f /etc/debian-release ] ; then
+	sudo apt-get install build-essential libjansson-dev
+	sudo apt-get build-dep emacs
+else
+	case $(uname -s) in
+		FreeBSD) 
+			echo "NOTE: On FreeBSD, install required packages using:"
+			echo '        pkg install -y jansson $(pkg rquery %dn emacs-devel)'
+			;;
+		OpenBSD)
+			echo "NOTE: On OpenBSD, install required packages using:"
+			echo '        pkg_add install gmake'
+			config="--with-jpeg=ifavailable --with-png=ifavailable --with-gif=ifavailable --with-tiff=ifavailable"
+			;;
+		*)
+			echo >&2 "ERROR: cannot determine os type. Install dependencies manually."
+			exit 1
+			;;
+	esac
+fi
+
+################
+# Identify desired release version and download bundle.
 
 if [ -z $release ] ; then
-	read -e -p "Which release? [$defaultRelease] " release
+	echo -n "Which release? [$defaultRelease] "
+	read release
 	if [ -z "$release" ] ; then
 		release=$defaultRelease
 	fi
 fi
 
-downloads=~/Downloads
-
-################
-
-determine_os_type () {
-	if [ -f /etc/redhat-release ] ; then
-		echo rhel
-	elif [ -f /etc/debian-release ] ; then
-		echo debian
-	elif [ -f /etc/freebsd-update.conf ] ; then
-		echo freebsd
-	elif [ -f /etc/system-release ] ; then
-		echo $(determine_os_type_from_file /etc/system-release)
-	elif [ -f /etc/os-release ] ; then
-		echo $(determine_os_type_from_file /etc/os-release)
-	else
-		echo "ERROR: cannot determine os type. install dependencies manually" >&2
-		exit 1
-	fi
-}
-
-determine_os_type_from_file () {
-	local type=$(awk '{$0 = tolower($0); if ($0 ~ /debian/) {print "debian";exit} ; if ($0 ~ /red hat/) {print "red hat";exit} ; if ($0 ~ /freebsd/) {print "freebsd";exit} }' $1)
-	if [ -z $type ] ; then
-		echo "unknown os type: $contents" >&2
-		exit 1
-	fi
-	echo $type
-}
-
-################
-# dependencies
-
-case $(determine_os_type) in
-	rhel)
-		sudo dnf builddep emacs
-		sudo yum install giflib-devel gtk2 gtk2-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel jansson jansson-devel ncurses ncurses-devel openjpeg2-devel
-		# NOTE: needed for lucid
-		# sudo yum install libXaw libXaw-devel
-		;;
-	debian)
-		sudo apt-get install build-essential libjansson-dev
-		sudo apt-get build-dep emacs
-		;;
-	freebsd)
-		echo "NOTE: On FreeBSD, install required packages using:"
-		echo '        pkg install -y jansson $(pkg rquery %dn emacs-devel)'
-		;;
-	*)
-		echo "ERROR: cannot determine os type. install dependencies manually or fix this script" >&2
-		exit 1
-		;;
-esac
-
-################
-
 bundle=emacs-${release}.tar.xz
 bundle_local=$downloads/$bundle
-if [ ! -f $bundle_local ] ; then
+if [ ! -f "$bundle_local" ] ; then
 	echo "Downloading ${bundle}..."
 	curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
 fi
@@ -78,7 +56,7 @@ fi
 if $(which gpg >/dev/null 2>&1) ; then
 	keyring=gnu-keyring.gpg
 	keyring_local=$downloads/$keyring
-	if [ ! -f $keyring_local ] ; then
+	if [ ! -f "$keyring_local" ] ; then
 		echo "Downloading ${keyring}..."
 		curl -L --create-dirs --output $keyring_local curl -L --create https://ftp.gnu.org/gnu/$keyring
 		gpg --import $keyring_local
@@ -86,7 +64,7 @@ if $(which gpg >/dev/null 2>&1) ; then
 
 	sig=${bundle}.sig
 	sig_local=$downloads/$sig
-	if [ ! -f $sig_local ] ; then
+	if [ ! -f "$sig_local" ] ; then
 		echo "Downloading ${sig}..."
 		curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
 	fi
@@ -95,7 +73,8 @@ if $(which gpg >/dev/null 2>&1) ; then
 		echo "WARNING: bundle file doesn't match its signature." >&2
 		echo "bundle:    $bundle_local" >&2
 		echo "signature: $sig_local" >&2
-		read -e -p "Remove bundle and signature, and retry? [Y/n] " yn
+		echo -n "Remove bundle and signature, and retry? [Y/n] "
+		read yn
 		case $yn in
 			N|n)
 				echo "Exiting because bundle does not match signature."
@@ -113,7 +92,8 @@ if $(which gpg >/dev/null 2>&1) ; then
 	echo "Bundle file matches its signature"
 else
 	echo "WARNING: gpg program not found to verify bundle signature." >&2
-	read -e -p "Proceed anyway? [y/N] " yn
+	echo -n "Proceed anyway? [y/N] "
+	read yn
 	case $yn in
 		Y|y)
 			echo "Skipping bundle signature check..."
@@ -125,25 +105,18 @@ else
 	esac
 fi
 
-
 ################
 
 build_dir=$downloads/emacs-${release}
 rm -rf $build_dir
-tar -Jx -C $downloads -f $bundle_local
+xz --decompress --stdout $bundle_local | tar -x -C $downloads -f -
 ls -dlF $build_dir
-
-################
 
 cd $build_dir
 # ./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
 # ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
 # ./configure --without-all --without-x
 
-./configure --prefix=$HOME/.local/$(uname -s)-$(uname -r)
+./configure --prefix=$HOME/.local/$(uname -s)-$(uname -r) $config
 make
 make install
-
-# sudo make install
-# sudo alternatives --install /usr/bin/emacs emacs /usr/local/bin/emacs 20000
-# sudo alternatives --install /usr/bin/emacsclient emacsclient /usr/local/bin/emacsclient 20000

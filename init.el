@@ -333,7 +333,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(confirm-kill-emacs 'yes-or-no-p)
  '(custom-enabled-themes '(zenburn))
  '(custom-safe-themes
-   '("9040edb21d65cef8a4a4763944304c1a6655e85aabb6e164db6d5ba4fc494a04" "b77a00d5be78f21e46c80ce450e5821bdc4368abf4ffe2b77c5a66de1b648f10" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
+   '("70cfdd2e7beaf492d84dfd5f1955ca358afb0a279df6bd03240c2ce74a578e9e" "9040edb21d65cef8a4a4763944304c1a6655e85aabb6e164db6d5ba4fc494a04" "b77a00d5be78f21e46c80ce450e5821bdc4368abf4ffe2b77c5a66de1b648f10" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
  '(default-text-scale-amount 20)
  '(diff-switches "-u")
  '(dired-auto-revert-buffer t)
@@ -351,8 +351,6 @@ If there is no .svn directory, examine if there is CVS and run
  '(minibuffer-prompt-properties
    '(read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt))
  '(native-comp-async-report-warnings-errors 'silent)
- '(nrepl-message-colors
-   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
  '(package-archive-priorities '(("melpa-stable" . 2) ("melpa" . 1) ("gnu" . 0)))
@@ -372,27 +370,6 @@ If there is no .svn directory, examine if there is CVS and run
  '(tooltip-mode nil)
  '(uniquify-buffer-name-style 'post-forward nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\*")
- '(vc-annotate-background "#2B2B2B")
- '(vc-annotate-color-map
-   '((20 . "#BC8383")
-	 (40 . "#CC9393")
-	 (60 . "#DFAF8F")
-	 (80 . "#D0BF8F")
-	 (100 . "#E0CF9F")
-	 (120 . "#F0DFAF")
-	 (140 . "#5F7F5F")
-	 (160 . "#7F9F7F")
-	 (180 . "#8FB28F")
-	 (200 . "#9FC59F")
-	 (220 . "#AFD8AF")
-	 (240 . "#BFEBBF")
-	 (260 . "#93E0E3")
-	 (280 . "#6CA0A3")
-	 (300 . "#7CB8BB")
-	 (320 . "#8CD0D3")
-	 (340 . "#94BFF3")
-	 (360 . "#DC8CC3")))
- '(vc-annotate-very-old-color "#DC8CC3")
  '(visible-bell t)
  '(wgrep-auto-save-buffer t))
 
@@ -401,7 +378,4 @@ If there is no .svn directory, examine if there is CVS and run
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F"))))
- '(hl-line ((((type x ns) (class color) (background dark)) (:background "firebrick4"))))
- '(markdown-code-face ((t (:inherit fixed-pitch :background "DarkOliveGreen" :foreground "gray75"))))
- '(show-paren-match ((((type x ns) (class color) (background light)) (:background "PaleTurquoise1")))))
+ '(markdown-code-face ((t (:inherit fixed-pitch :background "DarkOliveGreen" :foreground "gray75")))))

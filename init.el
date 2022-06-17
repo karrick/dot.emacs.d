@@ -61,7 +61,7 @@
 			  (prefer-coding-system 'utf-8)
 			  (put 'narrow-to-region 'disabled nil)
 			  (setq redisplay-dont-pause t)
-			  (which-key-mode)
+			  (when (fboundp 'which-key-mode) (which-key-mode))
 
 			  ;;
 			  ;; xterm-color is superior to ansi-color

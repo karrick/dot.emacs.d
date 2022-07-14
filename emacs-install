@@ -36,7 +36,7 @@ os=$(uname -s | tr A-Z a-z)
 if [ "$os" = "linux" ] ; then
     if [ -f /etc/redhat-release ] ; then
 	# Different el major releases have different commands to use.
-	os=el$(cut -d\  -f6 /etc/redhat-release | cut -d. -f1)
+	os=el$(awk '{for(i=0;i<NF;i++) if($i == "release"){print $(i+1);exit}}' /etc/redhat-release | cut -d. -f1)
     elif [ -f /etc/debian-release ] ; then
 	os=debian
     fi

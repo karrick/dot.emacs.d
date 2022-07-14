@@ -3,106 +3,226 @@
 set -e
 
 defaultRelease=28.1
-release=$1
 downloads=~/Downloads
 
-################
-# Install build and runtime dependencies.
+usage() {
+    local code=0
+    basename=$(basename $0)
+    [ $# -gt 0 ] && echo >&2 "$basename: $@" && code=2
+    echo >&2 "USAGE: $basename [--deps] [--help] [--kit athena|gtk|lucid] [--release X.Y]"
+    exit $code
+}
 
-if [ -f /etc/redhat-release ] ; then
-	sudo dnf builddep emacs
-	sudo yum install giflib-devel gtk2 gtk2-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel jansson jansson-devel ncurses ncurses-devel openjpeg2-devel
-	# NOTE: needed for lucid
-	# sudo yum install libXaw libXaw-devel
-elif [ -f /etc/debian-release ] ; then
-	sudo apt-get install build-essential libjansson-dev
-	sudo apt-get build-dep emacs
+validate() {
+    [ $# -ge 2 ] || usage "missing option argument: $1"
+}
+
+while [ $# -ne 0 ] ; do
+    case $1 in
+	--deps)    deps=1                                     ; shift   ;;
+	--help)    usage                                                ;;
+	--noop)    noop=1                                     ; shift   ;;
+	--kit)     validate "$@" ; kit=$2                     ; shift 2 ;;
+	--release) validate "$@" ; release=$2                 ; shift 2 ;;
+	*)         usage "illegal argument: $1"                         ;;
+    esac
+done
+
+# Determine OS and specify the installation location.
+os=$(uname -s | tr A-Z a-z)
+
+# Linux has a few variants that change the packages one must install, and the
+# command used to install those packages.
+if [ "$os" = "linux" ] ; then
+    if [ -f /etc/redhat-release ] ; then
+	# Different el major releases have different commands to use.
+	os=el$(cut -d\  -f6 /etc/redhat-release | cut -d. -f1)
+    elif [ -f /etc/debian-release ] ; then
+	os=debian
+    fi
+fi
+
+config="--prefix=$HOME/.local/${os} --without-dbus --without-gconf --without-gsettings --without-sound"
+
+if [ -n "$deps" ] ; then
+    case $os in
+	darwin)  packages+=" xz" ;;
+	debian)  : ;; # do not error when no base packages required
+	el?)     : ;; # do not error when no base packages required
+	freebsd) packages+=" $(pkg rquery %dn emacs-devel)" ;;
+	openbsd) packages+=" gmake" ;;
+	*)       echo >&2 "WARNING: no base packages defined: $os" ;;
+    esac
+
+    # gnutls: GNU Transport Layer Security Library
+    case $os in
+	darwin)  packages+=" gnutls-devel" ;;
+	*)       echo >&2 "WARNING: no gnutls packages defined: $os" ;;
+    esac
+
+    # jansson: Small library for parsing and writing JSON documents.
+    case $os in
+	darwin)  packages+=" jansson" ;;
+	debian)  packages+=" libjansson-dev" ;;
+	el?)     packages+=" jansson jansson-devel" ;;
+	freebsd) packages+=" jansson" ;;
+	openbsd) packages+=" jansson" ;;
+	*)       echo >&2 "WARNING: no jansson packages defined: $os" ;;
+    esac
+
+    # ncurses: terminal independent library
+    case $os in
+	darwin) packages+=" ncurses" ;;
+	el?)    packages+=" ncurses ncurses-devel" ;;
+	*) echo >&2 "WARNING: no ncurses packages defined: $os" ;;
+    esac
+fi
+
+# ./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
+# ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
+
+# graphics
+if [ -n "$kit" ] ; then
+    # If using graphics, specify libraries not related to which graphics
+    # framework to be used.
+    case $os in
+	el?) packages+=" giflib-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel openjpeg2-devel" ;;
+	openbsd) config+=" --with-jpeg=ifavailable --with-png=ifavailable --with-gif=ifavailable --with-tiff=ifavailable" ;;
+	*) echo >&2 "WARNING: no graphics packages defined for: $os" ;;
+    esac
+
+    # Different graphics framework libraries have different package
+    # requirements.
+    case $kit in
+	gtk)
+	    case $os in
+		el?) packages+=" gtk2 gtk2-devel" ;;
+		*) echo >&2 "WARNING: no gtk packages defined for: $os" ;;
+	    esac
+	    ;;
+	athena|lucid)
+	    case $os in
+		el?) packages+=" libXaw libXaw-devel" ;;
+		*) echo >&2 "WARNING: no lucid packages defined for: $os" ;;
+	    esac
+	    config+=" --without-toolkit-scroll-bars"
+	    ;;
+	motif) # standard file system dialogs, but valid
+	    config+=" --without-toolkit-scroll-bars"
+	    ;;
+	*) echo >&2 "ERROR: graphics kit not recognized: $kit" ; exit 1 ;;
+    esac
+
+    config+=" --with-x-toolkit=$kit"
 else
-	case $(uname -s) in
-		FreeBSD) 
-			echo "NOTE: On FreeBSD, install required packages using:"
-			echo '        pkg install -y jansson $(pkg rquery %dn emacs-devel)'
-			;;
-		OpenBSD)
-			echo "NOTE: On OpenBSD, install required packages using:"
-			echo '        pkg_add install gmake'
-			config="--with-jpeg=ifavailable --with-png=ifavailable --with-gif=ifavailable --with-tiff=ifavailable"
-			;;
-		*)
-			echo >&2 "ERROR: cannot determine os type. Install dependencies manually."
-			exit 1
-			;;
+    config+=" --with-x=no --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg"
+fi
+
+# If dependency installation is requested, need to consider which graphical
+# kit to configure and which OS running on.
+if [ -n "$deps" -a -n "$packages" ] ; then
+    echo >&2 "PACKAGES: $packages"
+
+    # Install build and runtime dependencies.
+    if [ -n "$packages" -a -z "$noop" ] ; then
+	case $os in
+	    darwin)
+		sudo port install $packages
+		;;
+	    debian)
+		sudo apt-get install build-essential
+		sudo apt-get build-dep emacs
+		sudo apt-get install $packages
+		;;
+	    el7)
+		sudo yum-builddep emacs
+		sudo yum install $packages
+		;;
+	    el8)
+		sudo dnf builddep emacs
+		sudo dnf install $packages
+		;;
+	    freebsd)
+		doas pkg install -y $packages
+		;;
+	    openbsd)
+		doas pkg_add install $packages
+		;;
+	    *)
+		echo >&2 "ERROR: no support for installing packages: $os"
+		exit 1
+		;;
 	esac
+    fi
+fi
+
+if [ -n "$noop" ] ; then
+    echo "CONFIGURE: $config"
+    echo "PACKAGES:  $packages"
+    exit 0
 fi
 
 ################
 # Identify desired release version and download bundle.
 
 if [ -z $release ] ; then
-	echo -n "Which release? [$defaultRelease] "
-	read release
-	if [ -z "$release" ] ; then
-		release=$defaultRelease
-	fi
+    printf "Which release? [%s] " "$defaultRelease"
+    read release
+    [ -z "$release" ] && release=$defaultRelease
 fi
 
 bundle=emacs-${release}.tar.xz
 bundle_local=$downloads/$bundle
 if [ ! -f "$bundle_local" ] ; then
-	echo "Downloading ${bundle}..."
-	curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+    echo >&2 "Downloading ${bundle}..."
+    curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
 fi
 
 if $(which gpg >/dev/null 2>&1) ; then
-	keyring=gnu-keyring.gpg
-	keyring_local=$downloads/$keyring
-	if [ ! -f "$keyring_local" ] ; then
-		echo "Downloading ${keyring}..."
-		curl -L --create-dirs --output $keyring_local curl -L --create https://ftp.gnu.org/gnu/$keyring
-		gpg --import $keyring_local
-	fi
+    keyring=gnu-keyring.gpg
+    keyring_local=$downloads/$keyring
+    if [ ! -f "$keyring_local" ] ; then
+	echo "Downloading ${keyring}..."
+	curl -L --create-dirs --output $keyring_local curl -L --create https://ftp.gnu.org/gnu/$keyring
+	gpg --import $keyring_local
+    fi
 
-	sig=${bundle}.sig
-	sig_local=$downloads/$sig
-	if [ ! -f "$sig_local" ] ; then
-		echo "Downloading ${sig}..."
-		curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
-	fi
+    sig=${bundle}.sig
+    sig_local=$downloads/$sig
+    if [ ! -f "$sig_local" ] ; then
+	echo "Downloading ${sig}..."
+	curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+    fi
 
-	while ! gpg --verify --keyring $keyring_local $sig_local $bundle_local ; do
-		echo "WARNING: bundle file doesn't match its signature." >&2
-		echo "bundle:    $bundle_local" >&2
-		echo "signature: $sig_local" >&2
-		echo -n "Remove bundle and signature, and retry? [Y/n] "
-		read yn
-		case $yn in
-			N|n)
-				echo "Exiting because bundle does not match signature."
-				exit 1
-				;;
-			*)
-				rm -fv $sig_local $bundle_local
-				echo "Re-downloading ${bundle}..."
-				curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
-				echo "Re-downloading ${sig}..."
-				curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
-				;;
-		esac
-	done
-	echo "Bundle file matches its signature"
-else
-	echo "WARNING: gpg program not found to verify bundle signature." >&2
-	echo -n "Proceed anyway? [y/N] "
+    while ! gpg --verify --keyring $keyring_local $sig_local $bundle_local ; do
+	echo "WARNING: bundle file doesn't match its signature." >&2
+	echo "bundle:    $bundle_local" >&2
+	echo "signature: $sig_local" >&2
+	printf "Remove bundle and signature, and retry? [Y/n] "
 	read yn
 	case $yn in
-		Y|y)
-			echo "Skipping bundle signature check..."
-			;;
-		*)
-			echo "Exiting because cannot verify bundle integrity."
-			exit 1
-			;;
+	    N|n)
+		echo "Exiting because bundle does not match signature."
+		exit 1
+		;;
+	    *)
+		rm -fv $sig_local $bundle_local
+		echo "Re-downloading ${bundle}..."
+		curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+		echo "Re-downloading ${sig}..."
+		curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+		;;
 	esac
+    done
+    echo "Bundle file matches its signature"
+else
+    echo "WARNING: gpg program not found to verify bundle signature." >&2
+    printf "Proceed anyway? [y/N] "
+    read yn
+    case $yn in
+	Y|y) echo "Skipping bundle signature check..." ;;
+	*)   echo "Exiting because cannot verify bundle integrity." ; exit 1 ;;
+    esac
 fi
 
 ################
@@ -110,13 +230,14 @@ fi
 build_dir=$downloads/emacs-${release}
 rm -rf $build_dir
 xz --decompress --stdout $bundle_local | tar -x -C $downloads -f -
-ls -dlF $build_dir
 
 cd $build_dir
-# ./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
-# ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
-# ./configure --without-all --without-x
 
-./configure --prefix=$HOME/.local/$(uname -s)-$(uname -r) $config
+echo >&2 "################ Configuring... $config"
+./configure $config
+
+echo >&2 "################ Compiling..."
 make
+
+echo >&2 "################ Installing..."
 make install

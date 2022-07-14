@@ -4,10 +4,11 @@
 .mc-lists.el
 ac-comphist.dat
 auto-save-list
+eln-cache
 elpa
 eshell
+ido.last
 localhost.el
 session.*
 tramp
 url
-ido.last

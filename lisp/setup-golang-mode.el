@@ -13,8 +13,13 @@
 
 (when (null (getenv "GOCACHE"))
   (setenv "GOCACHE" (concat (file-name-as-directory (or (getenv "XDG_CACHE_HOME")
-														(expand-file-name ".cache" "~")))
-							"go-build")))
+							(expand-file-name ".cache" "~")))
+			    "go-build")))
+
+(when (null (getenv "GOTMPDIR"))
+  (setenv "GOTMPDIR" (concat (file-name-as-directory (or (getenv "XDG_CACHE_HOME")
+							 (expand-file-name ".cache" "~")))
+			     "go-tmp")))
 
 ;; Use gogetdoc as it provides better documentation.
 (when (executable-find "gogetdoc")
@@ -36,7 +41,7 @@
   )
 
 (let ((cmd (executable-find "gopls")))
-  (if cmd
+  (if (and cmd nil)
 	  (progn
 		;; When gopls language server is found, install hooks for
 		;; go-mode to use it.

@@ -166,17 +166,17 @@ If there is no .svn directory, examine if there is CVS and run
 			  (defvaralias 'perl-indent-level 'tab-width)
 
 			  (add-hook 'prog-mode-hook #'(lambda ()
-											(setq fill-column 70)
+											(setq fill-column 78)
 											(hl-line-mode 1)))
 
 			  ;; Empirically discovered that lsp-keymap-prefix must be
 			  ;; set before loading lsp-mode.
 			  (setq lsp-keymap-prefix "C-c l")
 			  (with-eval-after-load 'lsp-mode
-				;; (global-set-key (kbd "C-x 4 M-.") #'xref-find-definitions-other-window)
-				(setq read-process-output-max (* 1024 1024) ;; 1 MiB to handle larger payloads from LISP.
-					  gc-cons-threshold 1000000) ;; 1 million
-				(lsp-enable-which-key-integration t))
+			    ;; (global-set-key (kbd "C-x 4 M-.") #'xref-find-definitions-other-window)
+			    (setq read-process-output-max (* 4 1024 1024) ;; 4 MiB to handle larger payloads from LISP.
+				  gc-cons-threshold 1000000) ;; 1 million
+			    (lsp-enable-which-key-integration t))
 
 			  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 			  (add-hook 'markdown-mode-hook #'visual-line-mode)

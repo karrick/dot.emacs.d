@@ -1,0 +1,13 @@
+FreeBSD:
+
+pkg install cmake libtool gmake
+
+Could also install libvterm, but if not already installed, the Emacs
+vterm package will install libvterm from VCS.
+
+OpenBSD:
+
+pkg_add cmake libtool gmake
+
+Could also install libvterm, but if not already installed, the Emacs
+vterm package will install libvterm from VCS. 

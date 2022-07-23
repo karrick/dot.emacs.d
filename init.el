@@ -359,7 +359,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(jenkinsfile-mode rust-mode company puppet-mode nginx-mode zig-mode lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
+   '(vterm jenkinsfile-mode rust-mode company puppet-mode nginx-mode zig-mode lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 5)
@@ -371,6 +371,8 @@ If there is no .svn directory, examine if there is CVS and run
  '(uniquify-buffer-name-style 'post-forward nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\*")
  '(visible-bell t)
+ '(vterm-buffer-name-string "*vterm*|%s")
+ '(vterm-copy-exclude-prompt nil)
  '(wgrep-auto-save-buffer t))
 
 (custom-set-faces

@@ -10,8 +10,8 @@ Returns nil if predicate is nil for all items in list."
   (catch 'break
     (dolist (item list)
       (let ((result (funcall predicate item)))
-        (if result
-            (throw 'break result))))))
+	(if result
+	    (throw 'break result))))))
 
 (provide 'find-first)
 

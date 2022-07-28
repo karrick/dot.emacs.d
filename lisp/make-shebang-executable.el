@@ -9,14 +9,14 @@
   (when
       (and
        (save-excursion
-         (save-restriction
-           (widen)
-           (goto-char (point-min))
-           (save-match-data
-             (looking-at "^#!"))))
+	 (save-restriction
+	   (widen)
+	   (goto-char (point-min))
+	   (save-match-data
+	     (looking-at "^#!"))))
        (not (file-executable-p buffer-file-name)))
     (set-file-modes buffer-file-name
-                    (logior (file-modes buffer-file-name) #o100))
+		    (logior (file-modes buffer-file-name) #o100))
     (message "Made file executable: %s" buffer-file-name)))
 
 (add-hook 'after-save-hook #'make-shebang-executable)

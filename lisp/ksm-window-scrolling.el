@@ -25,7 +25,7 @@
 (defun ksm/previous-line-scroll-down (&optional n)
   "Scroll window up N lines, keeping point at same relative position from top of window."
   (declare (interactive-only
-			"use `ksm/forward-line-scroll-up' with negative argument instead."))
+	    "use `ksm/forward-line-scroll-up' with negative argument instead."))
   (interactive "^p")                    ; number, if no prefix argument, defaults to 1
   (or n (setq n 1))
   (ksm/forward-line-scroll-up (- n)))
@@ -58,10 +58,10 @@
 (defun unscroll-maybe-remember ()
   "Store point before scrolling unless `last-command' was also scroll."
   (unless (get last-command 'unscrollable)
-	;; (message "remembering position for unscroll...")
-	(set-marker unscroll-point (point))
-	(set-marker unscroll-window-start (window-start))
-	(setq unscroll-hscroll (window-hscroll))))
+    ;; (message "remembering position for unscroll...")
+    (set-marker unscroll-point (point))
+    (set-marker unscroll-window-start (window-start))
+    (setq unscroll-hscroll (window-hscroll))))
 
 (defun unscroll ()
   "Revert to `unscroll-point' and `unscroll-window-start'."
@@ -71,22 +71,22 @@
   (set-window-hscroll nil unscroll-hscroll))
 
 (defadvice scroll-up (before remember-for-unscroll
-							 activate compile)
+			     activate compile)
   "Remember where we started from, for `unscroll'."
   (unscroll-maybe-remember))
 
 (defadvice scroll-right (before remember-for-unscroll
-								activate compile)
+				activate compile)
   "Remember where we started from, for `unscroll'."
   (unscroll-maybe-remember))
 
 (defadvice scroll-down (before remember-for-unscroll
-							   activate compile)
+			       activate compile)
   "Remember where we started from, for `unscroll'."
   (unscroll-maybe-remember))
 
 (defadvice scroll-left (before remember-for-unscroll
-							   activate compile)
+			       activate compile)
   "Remember where we started from, for `unscroll'."
   (unscroll-maybe-remember))
 

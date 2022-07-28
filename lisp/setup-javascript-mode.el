@@ -13,10 +13,10 @@
 (set-default 'js2-mode-escape-quotes nil)
 
 (add-hook 'javascript-mode-hook #'(lambda ()
-                                    (add-hook 'before-save-hook #'clean-and-indent nil t)
-                                    (setq indent-tabs-mode t
-                                          ;; js-indent-level 4
-                                          )))
+				    (add-hook 'before-save-hook #'clean-and-indent nil t)
+				    (setq indent-tabs-mode t
+					  ;; js-indent-level 4
+					  )))
 
 (provide 'setup-javascript-mode)
 

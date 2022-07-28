@@ -16,9 +16,9 @@
 (defun ksm/list-insert-at-index (element list i)
   "Insert ELEMENT into LIST at (zero-based) index I."
   (let* ((length (length list))
-         (left (min length (max 0 i))))
+	 (left (min length (max 0 i))))
     (append (ksm/take left list)
-            (cons element (ksm/drop left list)))))
+	    (cons element (ksm/drop left list)))))
 
 (defun ksm/list-remove-at-index (i list)
   "Remove the element at (zero-based) index I from LIST."

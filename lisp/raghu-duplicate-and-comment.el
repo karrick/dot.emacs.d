@@ -16,39 +16,39 @@ prog-mode.  The concept of comments may not be well-defined for
 non-programming modes, so err on the side of caution."
   (interactive "*r")
   (when (and (derived-mode-p 'prog-mode)
-             (integerp beginning)
-             (integerp end)
-             (>= beginning 1)
-             (>= end 1))
+	     (integerp beginning)
+	     (integerp end)
+	     (>= beginning 1)
+	     (>= end 1))
     ;; Ensure beginning <= end for ease of implementation.
     ;; (interactive "*r") guarantees that this requirement is
     ;; satisfied when this function is called interactively.  When
     ;; called in lisp, there are no such guarantees, so let us do it
     ;; ourselves.
     (let* ((start (if (< beginning end) beginning end))
-           (finish (if (= start beginning) end beginning))
-           (start-bol nil)
-           (finish-eol nil)
-           (copied-lines nil))
+	   (finish (if (= start beginning) end beginning))
+	   (start-bol nil)
+	   (finish-eol nil)
+	   (copied-lines nil))
       (save-excursion
-        (setq start-bol (progn (goto-char start)
-                               (beginning-of-line)
-                               (point)))
-        (setq finish-eol (progn (goto-char finish)
-                                (end-of-line)
-                                (point)))
-        ;; Use buffer-substring instead of kill-ring-save because we
-        ;; do not want the copied text to end up on the kill-ring.
-        ;; The idea is to duplicate the lines, not to save them
-        ;; anywhere for yanking later.
-        (setq copied-lines (buffer-substring start-bol finish-eol))
-        (goto-char start-bol)
-        (open-line 1)
-        (insert copied-lines)
-        (ignore-errors (comment-region start-bol finish-eol)))
+	(setq start-bol (progn (goto-char start)
+			       (beginning-of-line)
+			       (point)))
+	(setq finish-eol (progn (goto-char finish)
+				(end-of-line)
+				(point)))
+	;; Use buffer-substring instead of kill-ring-save because we
+	;; do not want the copied text to end up on the kill-ring.
+	;; The idea is to duplicate the lines, not to save them
+	;; anywhere for yanking later.
+	(setq copied-lines (buffer-substring start-bol finish-eol))
+	(goto-char start-bol)
+	(open-line 1)
+	(insert copied-lines)
+	(ignore-errors (comment-region start-bol finish-eol)))
       ;; Account for save-excursion behavior at beginning of line.
       (when (and (bolp) (= start (point)))
-        (forward-line (count-lines start-bol finish-eol))))))
+	(forward-line (count-lines start-bol finish-eol))))))
 
 (defun raghu/duplicate-line-comment-original (arg)
   "Duplicate current line and make the duplicate a comment.
@@ -67,33 +67,33 @@ prog-mode.  The concept of comments may not be well-defined for
 non-programming modes, so err on the side of caution."
   (interactive "*p")
   (when (and (derived-mode-p 'prog-mode)
-             (integerp arg)
-             (not (= 0 arg)))
+	     (integerp arg)
+	     (not (= 0 arg)))
     (let ((original (point))
-          (start nil)
-          (end nil)
-          (copied-lines nil))
+	  (start nil)
+	  (end nil)
+	  (copied-lines nil))
       (save-excursion
-        (if (> arg 0)
-            (progn (forward-line (1- arg))
-                   (end-of-line)
-                   (setq end (point))
-                   (goto-char original)
-                   (beginning-of-line)
-                   (setq start (point)))
-          (forward-line (1+ arg))	; arg is never zero here.
-          (setq start (point))
-          (goto-char original)
-          (end-of-line)
-          (setq end (point)))
-        (setq copied-lines (buffer-substring start end))
-        (goto-char start)
-        (open-line 1)
-        (insert copied-lines)
-        (ignore-errors (comment-region start end)))
+	(if (> arg 0)
+	    (progn (forward-line (1- arg))
+		   (end-of-line)
+		   (setq end (point))
+		   (goto-char original)
+		   (beginning-of-line)
+		   (setq start (point)))
+	  (forward-line (1+ arg))	; arg is never zero here.
+	  (setq start (point))
+	  (goto-char original)
+	  (end-of-line)
+	  (setq end (point)))
+	(setq copied-lines (buffer-substring start end))
+	(goto-char start)
+	(open-line 1)
+	(insert copied-lines)
+	(ignore-errors (comment-region start end)))
       ;; Account for save-excursion behavior at beginning of line.
       (when (and (bolp) (= start (point)))
-        (forward-line (count-lines start end))))))
+	(forward-line (count-lines start end))))))
 
 (defun raghu/duplicate-and-comment-original (arg)
   "Duplicate lines, make the originals into comments.
@@ -114,14 +114,14 @@ non-programming modes, so err on the side of caution."
   (interactive "*P")
   (when (derived-mode-p 'prog-mode)
     (cond ((use-region-p) (raghu/duplicate-region-comment-original
-                           (region-beginning)
-                           (region-end)))
-          ((integerp arg) (raghu/duplicate-line-comment-original arg))
-          ((null arg) (raghu/duplicate-line-comment-original 1))
-          ((listp arg) (let ((n (car arg)))
-                         (when (integerp n)
-                           (raghu/duplicate-line-comment-original n))))
-          (t (raghu/duplicate-line-comment-original 1)))))
+			   (region-beginning)
+			   (region-end)))
+	  ((integerp arg) (raghu/duplicate-line-comment-original arg))
+	  ((null arg) (raghu/duplicate-line-comment-original 1))
+	  ((listp arg) (let ((n (car arg)))
+			 (when (integerp n)
+			   (raghu/duplicate-line-comment-original n))))
+	  (t (raghu/duplicate-line-comment-original 1)))))
 (define-key global-map (kbd "C-c I") #'raghu/duplicate-and-comment-original)
 
 (provide 'raghu-duplicate-and-comment)

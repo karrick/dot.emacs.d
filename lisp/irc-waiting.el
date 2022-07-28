@@ -1,8 +1,8 @@
 (when nil
   (require 'erc-autoaway)
   (setq erc-auto-discard-away t
-        erc-auto-set-away t
-        erc-autoaway-idle-seconds 300)
+	erc-auto-set-away t
+	erc-autoaway-idle-seconds 300)
   (erc-autoaway-enable))
 
 (when nil
@@ -11,7 +11,7 @@
   (defun erc-log-all-but-server-buffers (buffer)
     (save-excursion
       (save-window-excursion
-        (not (erc-server-buffer-p))))))
+	(not (erc-server-buffer-p))))))
 
 (when nil
   (condition-case err
@@ -29,14 +29,14 @@
 
 (when nil            ; minimal distraction mode
   (setq erc-format-query-as-channel-p t
-        erc-track-priority-faces-only 'all
-        erc-track-faces-priority-list '(erc-error-face
-                                        erc-current-nick-face
-                                        erc-keyword-face
-                                        erc-nick-msg-face
-                                        erc-direct-msg-face
-                                        erc-dangerous-host-face
-                                        erc-notice-face
-                                        erc-prompt-face)))
+	erc-track-priority-faces-only 'all
+	erc-track-faces-priority-list '(erc-error-face
+					erc-current-nick-face
+					erc-keyword-face
+					erc-nick-msg-face
+					erc-direct-msg-face
+					erc-dangerous-host-face
+					erc-notice-face
+					erc-prompt-face)))
 
 (add-to-list 'erc-modules 'notifications)

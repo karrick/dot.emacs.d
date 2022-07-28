@@ -8,9 +8,9 @@
   (interactive "*r")
   (if mark-active
       (save-excursion
-        (copy-region-as-kill beg end)
-        (yank)
-        (comment-region beg end))
+	(copy-region-as-kill beg end)
+	(yank)
+	(comment-region beg end))
     (message "cannot copy-and-comment without region selected")))
 
 (provide 'copy-and-comment)

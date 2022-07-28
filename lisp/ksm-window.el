@@ -50,16 +50,16 @@
   "Delete all other windows.  With optional VERTICAL delete other windows vertically."
   (interactive "P")
   (if vertical
-	  (delete-other-windows-vertically)
-	(delete-other-windows)))
+      (delete-other-windows-vertically)
+    (delete-other-windows)))
 
 (defun ksm/delete-window (&optional bury)
   "Delete the current window.  With optional BURY, bury the current buffer."
   (interactive "P")
   (if (not bury)
-	  (delete-window)
-	(delete-window)
-	(bury-buffer)))
+      (delete-window)
+    (delete-window)
+    (bury-buffer)))
 
 (defun ksm/delete-window-above ()
   "Delete the window above the current window."
@@ -104,11 +104,11 @@
   "Pop a window configuration off the stack and restore it."
   (interactive)
   (let ((config (pop ksm/window-configurations-list)))
-	(cond
-	 (config (set-window-configuration (car config))
-			 (goto-char (cdr config))
-			 (message "zoomed out"))
-	 (t (message "no more window configurations on the stack")))))
+    (cond
+     (config (set-window-configuration (car config))
+	     (goto-char (cdr config))
+	     (message "zoomed out"))
+     (t (message "no more window configurations on the stack")))))
 
 (defvar ksm/window-configurations-hash (make-hash-table :test #'equal) "Hash table of saved window configurations.")
 
@@ -116,8 +116,8 @@
   "Prompt user and save window configuration identified by NAME."
   (interactive "sSave Window Config As: ")
   (puthash name
-		   (cons (current-window-configuration) (point-marker))
-		   ksm/window-configurations-hash)
+	   (cons (current-window-configuration) (point-marker))
+	   ksm/window-configurations-hash)
   (delete-other-frames)
   (message "saved window configuration: %s" name))
 
@@ -130,26 +130,26 @@
   "Return list of saved window configurations."
   (interactive)
   (let ((keys '()))
-	(maphash (lambda (k _v) (push k keys)) ksm/window-configurations-hash)
-	keys))
+    (maphash (lambda (k _v) (push k keys)) ksm/window-configurations-hash)
+    keys))
 
 (defun ksm/window-config-restore (name)
   "Prompt user and restore window configuration identified by NAME."
   (interactive "sRestore Window Config: ")
   (let ((config (gethash name ksm/window-configurations-hash)))
-	(cond
-	 (config (set-window-configuration (car config))
-			 (goto-char (cdr config))
-			 (message "restored window configuration: %s" name))
-	 (t (message "cannot restore unknown window configuration: %s" name)))))
+    (cond
+     (config (set-window-configuration (car config))
+	     (goto-char (cdr config))
+	     (message "restored window configuration: %s" name))
+     (t (message "cannot restore unknown window configuration: %s" name)))))
 
 (defun ksm/window-config-drop (name)
   "Prompt user and drop window configuration identified by NAME."
   (interactive "sDrop Window Config: ")
   (cond
    ((gethash name ksm/window-configurations-hash)
-	(remhash name ksm/window-configurations-hash)
-	(message "dropped window configuration: %s" name))
+    (remhash name ksm/window-configurations-hash)
+    (message "dropped window configuration: %s" name))
    (t (message "cannot drop unknown window configuration: %s" name))))
 
 (defun other-window-backward (&optional n)

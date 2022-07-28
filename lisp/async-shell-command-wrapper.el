@@ -11,7 +11,7 @@
      (read-shell-command "Async shell command: "))))
   (when (> (length command) 0)
     (let ((dir default-directory)       ; Grab default-directory from current buffer
-          (output-buffer (concat "*Async: " command "*")))
+	  (output-buffer (concat "*Async: " command "*")))
       (switch-to-buffer output-buffer)
       (setq default-directory dir)      ; Make default-directory buffer-local in output-buffer
       (setq list-buffers-directory dir) ; Ensure directory shows up in buffer list

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-set -e
+set -eE
 
 defaultRelease=28.1
 downloads=~/Downloads
@@ -46,34 +46,36 @@ config="--prefix=$HOME/.local/${os} --without-dbus --without-gconf --without-gse
 
 if [ -n "$deps" ] ; then
     case $os in
-	darwin)  packages+=" xz" ;;
+	darwin)  packages="$packages xz" ;;
 	debian)  : ;; # do not error when no base packages required
 	el?)     : ;; # do not error when no base packages required
-	freebsd) packages+=" $(pkg rquery %dn emacs-devel)" ;;
-	openbsd) packages+=" gmake" ;;
+	freebsd) packages="$packages $(pkg rquery %dn emacs-devel)" ;;
+	openbsd) packages="$packages gmake" ;;
 	*)       echo >&2 "WARNING: no base packages defined: $os" ;;
     esac
 
     # gnutls: GNU Transport Layer Security Library
     case $os in
-	darwin)  packages+=" gnutls-devel" ;;
+	darwin)  packages="$packages gnutls-devel" ;;
+	freebsd) packages="$packages gnutls" ;;
 	*)       echo >&2 "WARNING: no gnutls packages defined: $os" ;;
     esac
 
     # jansson: Small library for parsing and writing JSON documents.
     case $os in
-	darwin)  packages+=" jansson" ;;
-	debian)  packages+=" libjansson-dev" ;;
-	el?)     packages+=" jansson jansson-devel" ;;
-	freebsd) packages+=" jansson" ;;
-	openbsd) packages+=" jansson" ;;
+	darwin)  packages="$packages jansson" ;;
+	debian)  packages="$packages libjansson-dev" ;;
+	el?)     packages="$packages jansson jansson-devel" ;;
+	freebsd) packages="$packages jansson" ;;
+	openbsd) packages="$packages jansson" ;;
 	*)       echo >&2 "WARNING: no jansson packages defined: $os" ;;
     esac
 
     # ncurses: terminal independent library
     case $os in
-	darwin) packages+=" ncurses" ;;
-	el?)    packages+=" ncurses ncurses-devel" ;;
+	darwin)  packages="$packages ncurses" ;;
+	freebsd) packages="$packages ncurses" ;;
+	el?)     packages="$packages ncurses ncurses-devel" ;;
 	*) echo >&2 "WARNING: no ncurses packages defined: $os" ;;
     esac
 fi
@@ -86,8 +88,8 @@ if [ -n "$kit" ] ; then
     # If using graphics, specify libraries not related to which graphics
     # framework to be used.
     case $os in
-	el?) packages+=" giflib-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel openjpeg2-devel" ;;
-	openbsd) config+=" --with-jpeg=ifavailable --with-png=ifavailable --with-gif=ifavailable --with-tiff=ifavailable" ;;
+	el?) packages="$packages giflib-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel openjpeg2-devel" ;;
+	openbsd) config="$config --with-jpeg=ifavailable --with-png=ifavailable --with-gif=ifavailable --with-tiff=ifavailable" ;;
 	*) echo >&2 "WARNING: no graphics packages defined for: $os" ;;
     esac
 
@@ -96,26 +98,32 @@ if [ -n "$kit" ] ; then
     case $kit in
 	gtk)
 	    case $os in
-		el?) packages+=" gtk2 gtk2-devel" ;;
+		el?) packages="$packages gtk2 gtk2-devel" ;;
 		*) echo >&2 "WARNING: no gtk packages defined for: $os" ;;
 	    esac
 	    ;;
 	athena|lucid)
 	    case $os in
-		el?) packages+=" libXaw libXaw-devel" ;;
+		el?) packages="$packages libXaw libXaw-devel" ;;
 		*) echo >&2 "WARNING: no lucid packages defined for: $os" ;;
 	    esac
-	    config+=" --without-toolkit-scroll-bars"
+	    config="$config --without-toolkit-scroll-bars"
 	    ;;
 	motif) # standard file system dialogs, but valid
-	    config+=" --without-toolkit-scroll-bars"
+	    config="$config --without-toolkit-scroll-bars"
 	    ;;
 	*) echo >&2 "ERROR: graphics kit not recognized: $kit" ; exit 1 ;;
     esac
 
-    config+=" --with-x-toolkit=$kit"
+    config="$config --with-x-toolkit=$kit"
 else
-    config+=" --with-x=no --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg"
+    config="$config --with-x=no --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg"
+fi
+
+if [ -n "$noop" ] ; then
+    echo "CONFIGURE: $config"
+    echo "PACKAGES:  $packages"
+    exit 0
 fi
 
 # If dependency installation is requested, need to consider which graphical
@@ -125,6 +133,7 @@ if [ -n "$deps" -a -n "$packages" ] ; then
 
     # Install build and runtime dependencies.
     if [ -n "$packages" -a -z "$noop" ] ; then
+	echo "Please type your password to install packages:"
 	case $os in
 	    darwin)
 		sudo port install $packages
@@ -154,12 +163,6 @@ if [ -n "$deps" -a -n "$packages" ] ; then
 		;;
 	esac
     fi
-fi
-
-if [ -n "$noop" ] ; then
-    echo "CONFIGURE: $config"
-    echo "PACKAGES:  $packages"
-    exit 0
 fi
 
 ################

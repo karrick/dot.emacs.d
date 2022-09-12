@@ -1,6 +1,6 @@
 #! /bin/sh
 
-set -eE
+set -e
 
 defaultRelease=28.1
 downloads=~/Downloads
@@ -8,8 +8,8 @@ downloads=~/Downloads
 usage() {
 	local code=0
 	basename=$(basename $0)
-	[ $# -gt 0 ] && echo >&2 "$basename: $@" && code=2
-	echo "USAGE: $basename [--deps] [--help] [--kit athena|gtk|lucid] [--release X.Y]"
+	[ $# -eq 0 ] || echo >&2 "$basename: $@" && code=2
+	echo "USAGE: $basename [--deps] [--help] [--kit athena|gtk|lucid] [--noop] [--release X.Y]"
 	exit $code
 }
 
@@ -28,7 +28,8 @@ while [ $# -ne 0 ] ; do
 	esac
 done
 
-# Determine OS and specify the installation location.
+# The OS affects installation location and libraries that need to be
+# installed.
 os=$(uname -s | tr A-Z a-z)
 
 # Linux has a few variants that change the packages one must install, and the
@@ -57,6 +58,7 @@ esac
 case $os in
 	darwin)  packages="$packages gnutls-devel" ;;
 	freebsd) packages="$packages gnutls" ;;
+	openbsd) packages="$packages gnutls" ;;
 	*)       echo >&2 "WARNING: no gnutls packages defined: $os" ;;
 esac
 
@@ -78,13 +80,10 @@ case $os in
 	*)       echo >&2 "WARNING: no ncurses packages defined: $os" ;;
 esac
 
-# ./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
-# ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
-
 # graphics
 if [ -n "$kit" ] ; then
-	# If using graphics, specify libraries not related to which graphics
-	# framework to be used.
+	# If using graphics, first specify libraries which are not related to
+	# which graphics framework to be used.
 	case $os in
 		el?)     packages="$packages giflib-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel openjpeg2-devel" ;;
 		openbsd) config="$config --with-jpeg=ifavailable --with-png=ifavailable --with-gif=ifavailable --with-tiff=ifavailable" ;;
@@ -162,13 +161,12 @@ if [ -n "$deps" -a -n "$packages" ] ; then
 	esac
 fi
 
-################
 # Identify desired release version and download bundle.
 
 if [ -z $release ] ; then
 	printf "Which release? [%s] " "$defaultRelease"
 	read release
-	[ -z "$release" ] && release=$defaultRelease
+	[ -n "$release" ] || release=$defaultRelease
 fi
 
 bundle=emacs-${release}.tar.xz
@@ -234,6 +232,8 @@ xz --decompress --stdout $bundle_local | tar -x -C $downloads -f -
 cd $build_dir
 
 echo >&2 "################ Configuring... $config"
+# ./configure --with-modules --with-gnutls --with-gameuser=:games --with-x-toolkit=no --without-x --without-xpm --without-jpeg --without-tiff --without-gif --without-png --without-rsvg --without-imagemagick --without-xft --without-libotf --without-m17n-flt --without-toolkit-scroll-bars --without-xaw3d --without-xim --without-gconf --without-gsettings
+# ./configure --with-x-toolkit=athena --without-toolkit-scroll-bars --without-dbus --without-gconf --without-gsettings
 ./configure $config
 
 echo >&2 "################ Compiling..."

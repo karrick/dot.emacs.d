@@ -161,7 +161,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;;
 
 			  ;; tabs and indenting
-			  (defvaralias 'c-basic-offset 'tab-width)
+			  ;; (defvaralias 'c-basic-offset 'tab-width)
 			  (defvaralias 'cperl-indent-level 'tab-width)
 			  (defvaralias 'perl-indent-level 'tab-width)
 
@@ -173,10 +173,10 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;; set before loading lsp-mode.
 			  (setq lsp-keymap-prefix "C-c l")
 			  (with-eval-after-load 'lsp-mode
-			    ;; (global-set-key (kbd "C-x 4 M-.") #'xref-find-definitions-other-window)
-			    (setq read-process-output-max (* 4 1024 1024) ;; 4 MiB to handle larger payloads from LISP.
-				  gc-cons-threshold 1000000) ;; 1 million
-			    (lsp-enable-which-key-integration t))
+				;; (global-set-key (kbd "C-x 4 M-.") #'xref-find-definitions-other-window)
+				(setq read-process-output-max (* 4 1024 1024) ;; 4 MiB to handle larger payloads from LISP.
+					  gc-cons-threshold 1000000) ;; 1 million
+				(lsp-enable-which-key-integration t))
 
 			  (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 			  (add-hook 'markdown-mode-hook #'visual-line-mode)
@@ -359,7 +359,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(vterm jenkinsfile-mode rust-mode company puppet-mode nginx-mode zig-mode lsp-mode lsp-ui switch-window json-mode which-key find-file-in-repository flycheck gnu-elpa-keyring-update go-mode markdown-mode vc-fossil yaml-mode deadgrep buffer-move default-text-scale nov xterm-color zenburn-theme fic-mode wgrep wgrep-ack))
+   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode jenkinsfile-mode json-mode lsp-mode lsp-ui markdown-mode nginx-mode nov puppet-mode rust-mode switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 5)

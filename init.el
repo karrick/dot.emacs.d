@@ -2,20 +2,19 @@
 
 ;;; Commentary:
 
-;; To resolve what might be considered a chicken-and-egg situation in
-;; terms of settings variables in `custom-set-variables', which
-;; include setting `package-selected-packages' and themes, this
-;; registers a single callback to be invoked by `after-init-hook' to
-;; run all of the Lisp customization needed after the various
-;; variables have been configured.
+;; To resolve what might be considered a chicken-and-egg situation in terms of
+;; settings variables in `custom-set-variables', which include setting
+;; `package-selected-packages' and themes, this registers a single callback to
+;; be invoked by `after-init-hook' to run all of the Lisp customization needed
+;; after the various variables have been configured.
 
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; When "cert" file in user-emacs-directory, presumably placed there
-;; as a symbolic link to a host-specific yet non-standard system cert
-;; file, then configure gnutls to trust it, before we attempt to
-;; contact package-archives from which packages would be downloaded.
+;; When "cert" file in user-emacs-directory, presumably placed there as a
+;; symbolic link to a host-specific yet non-standard system cert file, then
+;; configure gnutls to trust it, before we attempt to contact package-archives
+;; from which packages would be downloaded.
 (if (not (gnutls-available-p))
 	(message "GNU TLS is not available.")
   (with-eval-after-load 'gnutls
@@ -30,25 +29,40 @@
 			  ;;
 			  ;; PROCESS ENVIRONMENT
 			  ;;
+			  (defun env-set-when-null (key default)
+				"Set environment variable KEY to DEFAULT if not already set."
+				(or (getenv key) (setenv key default)))
+
 			  ;; (when (fboundp 'server-running-p) (unless (server-running-p) (server-start)))
 			  (if (daemonp) (cd (expand-file-name "~")))
 
 			  (unless (memq system-type '(gnu gnu/linux gnu/kfreebsd))
 				(require 'ls-lisp)
 				(setq ls-lisp-use-insert-directory-program nil))
+
 			  (when (and (eq window-system 'w32) (executable-find "plink"))
 				(setq tramp-default-method "plink"))
 
-			  (let ((dir (file-name-as-directory (expand-file-name ".history.d" "~"))))
-				(when (file-directory-p dir)
-				  (setenv "HISTFILE" (concat dir "emacs"))))
+			  ;; https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+			  (env-set-when-null "XDG_CACHE_HOME" (expand-file-name "~/.cache"))
+			  (env-set-when-null "XDG_CONFIG_HOME" (expand-file-name "~/.config"))
+			  (env-set-when-null "XDG_DATA_HOME" (expand-file-name "~/.local/share"))
+			  (env-set-when-null "XDG_STATE_HOME" (expand-file-name "~/.local/state"))
+			  (env-set-when-null "GOCACHE" (file-name-concat (getenv "XDG_CACHE_HOME") "go-build"))
+			  (env-set-when-null "GOTMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "go-tmp"))
+			  (env-set-when-null "TMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "tmp"))
+
+			  (let* ((state (getenv "XDG_STATE_HOME"))
+					 (history (file-name-concat state "history"))
+					 (emacs (file-name-concat history "emacs")))
+				(when (and state (file-directory-p history))
+				  (setenv "HISTFILE" emacs)))
 
 			  (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 			  (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 
-			  ;; Make certain any sub process knows to use emacsclient
-			  ;; as editor and can route file editing requests to this
-			  ;; process.
+			  ;; Make certain any sub process knows to use emacsclient as
+			  ;; editor and can route file editing requests to this process.
 			  (let ((cmd (executable-find "emacsclient")))
 				(when cmd
 				  (setenv "EDITOR" cmd)
@@ -78,11 +92,11 @@
 					(remove 'ansi-color-process-output comint-output-filter-functions))
 			  (add-hook 'shell-mode-hook
 						#'(lambda ()
-							;; Disable font-locking in this buffer to
-							;; improve performance
+							;; Disable font-locking in this buffer to improve
+							;; performance
 							(font-lock-mode 0)
-							;; Prevent font-locking from being
-							;; re-enabled in this buffer
+							;; Prevent font-locking from being re-enabled in
+							;; this buffer
 							(make-local-variable 'font-lock-function)
 							(setq font-lock-function (lambda (_) nil))
 							;; Add xterm-color hook
@@ -111,10 +125,10 @@
 			  (autoload 'svn-status "psvn"
 				"Examine the status of Subversion working copy in directory DIR.
 If ARG is -, allow editing of the parameters. One could add -N to
-run svn status non recursively to make it faster.
-For every other non nil ARG pass the -u argument to `svn status', which
-asks svn to connect to the repository and check to see if there are updates
-there.
+run svn status non recursively to make it faster.  For every
+other non nil ARG pass the -u argument to `svn status', which
+asks svn to connect to the repository and check to see if there
+are updates there.
 
 If there is no .svn directory, examine if there is CVS and run
 `cvs-examine'. Otherwise ask if to run `dired'."
@@ -129,17 +143,16 @@ If there is no .svn directory, examine if there is CVS and run
 					(message "Cannot find spelling program: consider installing aspell and en-aspell packages.")
 				  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
 				  (setq ispell-program-name cmd
-						;; NOTE: ispell-extra-args contains actual
-						;; parameters that will be passed to aspell.
+						;; NOTE: ispell-extra-args contains actual parameters
+						;; that will be passed to aspell.
 						ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))))
 
 			  ;;
 			  ;; Miscellaneous
 			  ;;
 
-			  ;; Make Elisp files in ~/.emacs.d/lisp directory
-			  ;; available before we reference anything in the lisp
-			  ;; directory.
+			  ;; Make Elisp files in ~/.emacs.d/lisp directory available
+			  ;; before we reference anything in the lisp directory.
 			  (add-to-list 'load-path (directory-file-name (expand-file-name (locate-user-emacs-file "lisp"))))
 
 			  (require 'async-shell-command-wrapper)
@@ -169,8 +182,8 @@ If there is no .svn directory, examine if there is CVS and run
 											(setq fill-column 78)
 											(hl-line-mode 1)))
 
-			  ;; Empirically discovered that lsp-keymap-prefix must be
-			  ;; set before loading lsp-mode.
+			  ;; Empirically discovered that lsp-keymap-prefix must be set
+			  ;; before loading lsp-mode.
 			  (setq lsp-keymap-prefix "C-c l")
 			  (with-eval-after-load 'lsp-mode
 				;; (global-set-key (kbd "C-x 4 M-.") #'xref-find-definitions-other-window)
@@ -211,8 +224,8 @@ If there is no .svn directory, examine if there is CVS and run
 			  (global-set-key (kbd "M-p") #'scroll-down-line)
 			  (global-set-key (kbd "M-n") #'scroll-up-line)
 
-			  ;; By default bind "C-x C-r" to rgrep, but when ripgrep
-			  ;; and deadgrep are available, rebind to that...
+			  ;; By default bind "C-x C-r" to rgrep, but when ripgrep and
+			  ;; deadgrep are available, rebind to that...
 			  (let ((cmd (executable-find "rg")))
 				(if (not cmd)
 					(global-set-key (kbd "C-x C-r") #'rgrep)
@@ -221,25 +234,21 @@ If there is no .svn directory, examine if there is CVS and run
 
 			  ;; (define-key grep-mode-map (kbd "C-x C-q") #'wgrep-change-to-wgrep-mode)
 
-			  ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity,
-			  ;; but importantly, to keep ability to use emacs in a
-			  ;; tmux frame, you need to use a different key prefix in
-			  ;; emacs than tmux.
+			  ;; WINDOW MANAGEMENT: Mimic tmux commands for sanity, but
+			  ;; importantly, to keep ability to use emacs in a tmux frame,
+			  ;; you need to use a different key prefix in emacs than tmux.
 			  ;;
 			  ;; REQUIREMENTS:
 			  ;;
-			  ;;   1. Fluidly change which window is
-			  ;;   current. Preferably hold down one or more modifier
-			  ;;   keys and press cursor direction.
+			  ;;   1. Fluidly change which window is current. Preferably hold
+			  ;;   down one or more modifier keys and press cursor direction.
 			  ;;
-			  ;;   2. Fluidly swap current buffer with an adjacent
-			  ;;   buffer, keeping the active buffer
-			  ;;   active. Preferably hold down one or more modifier
-			  ;;   keys and press cursor direction.
+			  ;;   2. Fluidly swap current buffer with an adjacent buffer,
+			  ;;   keeping the active buffer active. Preferably hold down one
+			  ;;   or more modifier keys and press cursor direction.
 			  ;;
-			  ;;   3. Temporarily work on one buffer, then restore
-			  ;;   balanced buffer configuration. (Bind
-			  ;;   #'maximize-window)
+			  ;;   3. Temporarily work on one buffer, then restore balanced
+			  ;;   buffer configuration. (Bind #'maximize-window)
 
 			  (default-text-scale-mode)
 			  (global-set-key (kbd "C-x C-b") #'ibuffer)
@@ -322,10 +331,9 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.  If you edit it by hand, you
+ ;; could mess it up, so be careful.  Your init file should contain only one
+ ;; such instance.  If there is more than one, they won't work right.
  '(artist-text-renderer-function #'(lambda (someText) someText))
  '(column-number-mode t)
  '(compilation-environment '("TERM=xterm-256color"))
@@ -376,8 +384,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(wgrep-auto-save-buffer t))
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.  If you edit it by hand, you could
+ ;; mess it up, so be careful.  Your init file should contain only one such
+ ;; instance.  If there is more than one, they won't work right.
  '(markdown-code-face ((t (:inherit fixed-pitch :background "DarkOliveGreen" :foreground "gray75")))))

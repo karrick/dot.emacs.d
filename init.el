@@ -179,7 +179,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  (defvaralias 'perl-indent-level 'tab-width)
 
 			  (add-hook 'prog-mode-hook #'(lambda ()
-											(setq fill-column 78)
+											;; (setq fill-column 78)
 											(hl-line-mode 1)))
 
 			  ;; Empirically discovered that lsp-keymap-prefix must be set
@@ -331,9 +331,10 @@ If there is no .svn directory, examine if there is CVS and run
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.  If you edit it by hand, you
- ;; could mess it up, so be careful.  Your init file should contain only one
- ;; such instance.  If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(artist-text-renderer-function #'(lambda (someText) someText))
  '(column-number-mode t)
  '(compilation-environment '("TERM=xterm-256color"))
@@ -350,6 +351,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(ediff-split-window-function 'split-window-horizontally)
  '(ediff-window-setup-function 'ediff-setup-windows-plain)
  '(fancy-splash-image "")
+ '(fill-column 78)
  '(global-flycheck-mode t)
  '(inhibit-startup-screen t)
  '(line-number-mode t)
@@ -384,7 +386,8 @@ If there is no .svn directory, examine if there is CVS and run
  '(wgrep-auto-save-buffer t))
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.  If you edit it by hand, you could
- ;; mess it up, so be careful.  Your init file should contain only one such
- ;; instance.  If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(markdown-code-face ((t (:inherit fixed-pitch :background "DarkOliveGreen" :foreground "gray75")))))

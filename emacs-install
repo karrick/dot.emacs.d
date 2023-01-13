@@ -2,7 +2,7 @@
 
 set -e
 
-defaultRelease=28.1
+defaultRelease=28.2
 downloads=~/Downloads
 
 usage() {

@@ -45,6 +45,10 @@
 		(require 'lsp-mode)
 		(setq lsp-go-gopls-server-path cmd)
 
+		(lsp-register-custom-settings
+		 '(("gopls.completeUnimported" t t)
+		   ("gopls.staticcheck" t t)))
+
 		;; Set up before-save hooks to format buffer and add/delete
 		;; imports. Make sure there is not another gofmt or
 		;; goimports hook enabled.

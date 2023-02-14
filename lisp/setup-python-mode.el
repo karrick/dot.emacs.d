@@ -3,9 +3,12 @@
 ;;; Code:
 
 (add-hook 'python-mode-hook
-	  #'(lambda ()
-	      (setq indent-tabs-mode nil
-		    tab-width 4)))
+		  #'(lambda ()
+			  (when nil
+				(require 'lsp-pyright)
+				(lsp))
+			  (setq indent-tabs-mode nil
+					tab-width 4)))
 
 (provide 'setup-python-mode)
 

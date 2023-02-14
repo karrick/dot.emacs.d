@@ -369,7 +369,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode jenkinsfile-mode js2-mode json-mode lsp-mode lsp-ui markdown-mode nginx-mode nov protobuf-mode puppet-mode rust-mode switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
+   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode jenkinsfile-mode js2-mode json-mode lsp-mode lsp-pyright lsp-ui markdown-mode nginx-mode nov protobuf-mode puppet-mode rust-mode switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 5)

@@ -48,9 +48,9 @@
 			  (env-set-when-null "XDG_CONFIG_HOME" (expand-file-name "~/.config"))
 			  (env-set-when-null "XDG_DATA_HOME" (expand-file-name "~/.local/share"))
 			  (env-set-when-null "XDG_STATE_HOME" (expand-file-name "~/.local/state"))
+			  (env-set-when-null "TMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "tmp"))
 			  (env-set-when-null "GOCACHE" (file-name-concat (getenv "XDG_CACHE_HOME") "go-build"))
 			  (env-set-when-null "GOTMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "go-tmp"))
-			  (env-set-when-null "TMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "tmp"))
 
 			  (let* ((state (getenv "XDG_STATE_HOME"))
 					 (history (file-name-concat state "history"))
@@ -74,7 +74,6 @@
 			  (fset 'yes-or-no-p 'y-or-n-p)
 			  (prefer-coding-system 'utf-8)
 			  (put 'narrow-to-region 'disabled nil)
-			  (setq redisplay-dont-pause t)
 			  (when (fboundp 'which-key-mode) (which-key-mode))
 
 			  ;;
@@ -177,6 +176,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;; (defvaralias 'c-basic-offset 'tab-width)
 			  (defvaralias 'cperl-indent-level 'tab-width)
 			  (defvaralias 'perl-indent-level 'tab-width)
+			  (defvaralias 'yaml-indent-level 'tab-width)
 
 			  (add-hook 'prog-mode-hook #'(lambda ()
 											;; (setq fill-column 78)
@@ -212,11 +212,14 @@ If there is no .svn directory, examine if there is CVS and run
 			  (global-unset-key (kbd "s-t")) ; disable ns-popup-font-panel
 			  (global-unset-key (kbd "s-z")) ; disable minimize
 
-			  (global-set-key (kbd "<f1>") #'revert-buffer)
-			  (global-set-key (kbd "<f2>") #'clean-and-indent)
-			  (global-set-key (kbd "<f3>") #'copy-and-comment)
-			  (global-set-key (kbd "<f4>") #'recompile)
-			  (global-set-key (kbd "<f5>") #'compile)
+			  (require 'compile)
+			  (global-set-key (kbd "<f4>")  #'recompile)
+			  (global-set-key (kbd "<f5>")  #'compile)
+			  (global-set-key (kbd "<f6>")  #'delete-indentation)
+			  (global-set-key (kbd "<f7>")  #'async-shell-command)
+			  (global-set-key (kbd "<f8>")  #'copy-and-comment)
+			  (global-set-key (kbd "<f9>")  #'clean-and-indent)
+			  (global-set-key (kbd "<f10>") #'revert-buffer)
 
 			  (require 'ksm-window-scrolling)
 			  (global-set-key (kbd "M-N") #'ksm/forward-line-scroll-up)

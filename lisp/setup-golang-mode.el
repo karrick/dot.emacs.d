@@ -47,7 +47,8 @@
 
 		(lsp-register-custom-settings
 		 '(("gopls.completeUnimported" t t)
-		   ("gopls.staticcheck" t t)))
+		   ("gopls.staticcheck" t t)
+		   ("gopls.usePlaceholders" t t)))
 
 		;; Set up before-save hooks to format buffer and add/delete
 		;; imports. Make sure there is not another gofmt or

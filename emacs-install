@@ -43,7 +43,7 @@ if [ "$os" = "linux" ] ; then
 	fi
 fi
 
-config="--prefix=$HOME/.local/${os} --without-dbus --without-gconf --without-gsettings --without-sound"
+config="--prefix=$HOME/.local/share/${os} --without-dbus --without-gconf --without-gsettings --without-sound"
 
 case $os in
 	darwin)  packages="$packages xz" ;;

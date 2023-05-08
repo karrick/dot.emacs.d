@@ -58,6 +58,14 @@
 				(when (and state (file-directory-p history))
 				  (setenv "HISTFILE" emacs)))
 
+			  (defun hrg (search-term)
+				"Search command history directory for search term"
+				(interactive "sSearch term: ")
+				(let ((history (file-name-concat (or (getenv "XDG_STATE_HOME") (expand-file-name "~/.local/state")) "history")))
+				  (if (file-directory-p history)
+					  (deadgrep search-term history)
+					(message "Cannot find history directory: %s" history))))
+
 			  (setenv "GIT_PAGER" "")                  ; elide git paging capability.
 			  (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
 

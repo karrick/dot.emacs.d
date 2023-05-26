@@ -8,16 +8,16 @@
 
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 
-(when (null (getenv "GOPATH"))
-  (setenv "GOPATH" (expand-file-name "go" "~")))
+;; (when (null (getenv "GOPATH"))
+;;   (setenv "GOPATH" (expand-file-name "go" "~")))
 
-(let ((cache-dir (file-name-as-directory
-				  (or (getenv "XDG_CACHE_HOME")
-					  (expand-file-name ".cache" "~")))))
-  (when (null (getenv "GOCACHE"))
-	(setenv "GOCACHE" (concat cache-dir "go-build")))
-  (when (null (getenv "GOTMPDIR"))
-	(setenv "GOTMPDIR" (concat cache-dir "go-tmp"))))
+;; (let ((cache-dir (file-name-as-directory
+;;				  (or (getenv "XDG_CACHE_HOME")
+;;					  (expand-file-name ".cache" "~")))))
+;;   (when (null (getenv "GOCACHE"))
+;;	(setenv "GOCACHE" (concat cache-dir "go-build")))
+;;   (when (null (getenv "GOTMPDIR"))
+;;	(setenv "GOTMPDIR" (concat cache-dir "go-tmp"))))
 
 ;; Use gogetdoc as it provides better documentation.
 (when (executable-find "gogetdoc")

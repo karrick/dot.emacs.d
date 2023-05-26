@@ -29,9 +29,17 @@
 			  ;;
 			  ;; PROCESS ENVIRONMENT
 			  ;;
+
 			  (defun env-set-when-null (key default)
 				"Set environment variable KEY to DEFAULT if not already set."
 				(or (getenv key) (setenv key default)))
+
+			  (defun env-set-when-null-verbose (key default)
+				"Set environment variable KEY to DEFAULT if not already set."
+				(let ((value (getenv key)))
+				  (if (or (null value) (string-equal "" value))
+					  (message "Setting %s to %s " key (setenv key default))
+					(message "Observing %s value already set to %s" key value))))
 
 			  ;; (when (fboundp 'server-running-p) (unless (server-running-p) (server-start)))
 			  (if (daemonp) (cd (expand-file-name "~")))
@@ -43,14 +51,31 @@
 			  (when (and (eq window-system 'w32) (executable-find "plink"))
 				(setq tramp-default-method "plink"))
 
+			  ;; To prioritize access latency over availability, ensure that
+			  ;; highly ephemeral cache data is stored on local machine rather
+			  ;; than a home directory that is potentially mounted over a
+			  ;; network. However, do place all cache files in a directory
+			  ;; that makes it trivial to identify the owner and optionally
+			  ;; remove all cache data.
+			  (setenv "TMPDIR"
+					  (let* ((logname (getenv "LOGNAME"))
+							 (tmpdir (getenv "TMPDIR")))
+						(cond
+						 ((or (null tmpdir) (string-equal tmpdir ""))
+						  (file-name-concat "/" "var" "tmp" logname))
+						 ((string-suffix-p logname tmpdir)
+						  tmpdir)
+						 (t
+						  (file-name-concat tmpdir logname)))))
+
 			  ;; https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-			  (env-set-when-null "XDG_CACHE_HOME" (expand-file-name "~/.cache"))
-			  (env-set-when-null "XDG_CONFIG_HOME" (expand-file-name "~/.config"))
-			  (env-set-when-null "XDG_DATA_HOME" (expand-file-name "~/.local/share"))
-			  (env-set-when-null "XDG_STATE_HOME" (expand-file-name "~/.local/state"))
-			  (env-set-when-null "TMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "tmp"))
-			  (env-set-when-null "GOCACHE" (file-name-concat (getenv "XDG_CACHE_HOME") "go-build"))
-			  (env-set-when-null "GOTMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "go-tmp"))
+			  (env-set-when-null-verbose "XDG_CACHE_HOME" (getenv "TMPDIR"))
+			  (env-set-when-null-verbose "XDG_CONFIG_HOME" (expand-file-name "~/.config"))
+			  (env-set-when-null-verbose "XDG_DATA_HOME" (expand-file-name "~/.local/share"))
+			  (env-set-when-null-verbose "XDG_STATE_HOME" (expand-file-name "~/.local/state"))
+			  (env-set-when-null-verbose "GOCACHE" (file-name-concat (getenv "XDG_CACHE_HOME") "go-build"))
+			  (env-set-when-null-verbose "GOTMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "go-tmp"))
+			  ;; (env-set-when-null "GOBIN" (file-name-concat (getenv "XDG_DATA_HOME") os "bin"))
 
 			  (let* ((state (getenv "XDG_STATE_HOME"))
 					 (history (file-name-concat state "history"))
@@ -210,6 +235,21 @@ If there is no .svn directory, examine if there is CVS and run
 			  (require 'setup-rust-mode)
 			  (require 'setup-zig-mode)
 
+			  (defun empty-string-p (string)
+				"Return true if the STRING is empty or nil. Expects string type."
+				(or (null string)
+					(zerop (length (string-trim string)))))
+
+			  (defun begin-src (language)
+				"Insert an org-mode source block using LANGUAGE."
+				(interactive "sLanguage: ")
+				(if (empty-string-p language)
+					(insert (concat "#+BEGIN_SRC\n\n#+END_SRC\n"))
+				  (insert (concat "#+BEGIN_SRC " language "\n\n#+END_SRC\n")))
+				(previous-line 2))
+			  
+			  (global-set-key (kbd "C-c s") #'begin-src)
+
 			  ;;
 			  ;; KEY BINDINGS
 			  ;;
@@ -353,7 +393,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(confirm-kill-emacs 'yes-or-no-p)
  '(custom-enabled-themes '(zenburn))
  '(custom-safe-themes
-   '("2dc03dfb67fbcb7d9c487522c29b7582da20766c9998aaad5e5b63b5c27eec3f" "a3e99dbdaa138996bb0c9c806bc3c3c6b4fd61d6973b946d750b555af8b7555b" "fc48cc3bb3c90f7761adf65858921ba3aedba1b223755b5924398c666e78af8b" "70cfdd2e7beaf492d84dfd5f1955ca358afb0a279df6bd03240c2ce74a578e9e" "9040edb21d65cef8a4a4763944304c1a6655e85aabb6e164db6d5ba4fc494a04" "b77a00d5be78f21e46c80ce450e5821bdc4368abf4ffe2b77c5a66de1b648f10" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
+   '("5d966953e653a8583b3ad630d15f8935e9077f7fbfac456cb638eedad62f4480" "2dc03dfb67fbcb7d9c487522c29b7582da20766c9998aaad5e5b63b5c27eec3f" "a3e99dbdaa138996bb0c9c806bc3c3c6b4fd61d6973b946d750b555af8b7555b" "fc48cc3bb3c90f7761adf65858921ba3aedba1b223755b5924398c666e78af8b" "70cfdd2e7beaf492d84dfd5f1955ca358afb0a279df6bd03240c2ce74a578e9e" "9040edb21d65cef8a4a4763944304c1a6655e85aabb6e164db6d5ba4fc494a04" "b77a00d5be78f21e46c80ce450e5821bdc4368abf4ffe2b77c5a66de1b648f10" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
  '(default-text-scale-amount 20)
  '(diff-switches "-u")
  '(dired-auto-revert-buffer t)
@@ -380,7 +420,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode jenkinsfile-mode js2-mode json-mode lsp-mode lsp-pyright lsp-ui markdown-mode nginx-mode nov protobuf-mode puppet-mode rust-mode switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
+   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode jenkinsfile-mode js2-mode json-mode just-mode lsp-mode lsp-pyright lsp-ui markdown-mode nginx-mode nov puppet-mode rust-mode switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 5)

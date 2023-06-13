@@ -252,6 +252,18 @@ If there is no .svn directory, examine if there is CVS and run
 
 			  (global-set-key (kbd "C-c s") #'begin-src)
 
+			  (defun aj-toggle-fold ()
+				"Toggle fold all lines larger than indentation on current line"
+				(interactive)
+				(let ((col 1))
+				  (save-excursion
+					(back-to-indentation)
+					(setq col (+ 1 (current-column)))
+					(set-selective-display
+					 (if selective-display nil (or col 1))))))
+
+			  (global-set-key (kbd "C-x $") 'aj-toggle-fold)
+
 			  ;;
 			  ;; KEY BINDINGS
 			  ;;

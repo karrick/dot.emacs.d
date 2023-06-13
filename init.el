@@ -212,8 +212,10 @@ If there is no .svn directory, examine if there is CVS and run
 			  (defvaralias 'yaml-indent-level 'tab-width)
 
 			  (add-hook 'prog-mode-hook #'(lambda ()
-											;; (setq fill-column 78)
 											(hl-line-mode 1)))
+
+			  (with-eval-after-load 'highlight-indent-guides-mode
+				(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 			  ;; Empirically discovered that lsp-keymap-prefix must be set
 			  ;; before loading lsp-mode.
@@ -404,6 +406,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(fancy-splash-image "")
  '(fill-column 78)
  '(global-flycheck-mode t)
+ '(highlight-indent-guides-method 'character)
  '(inhibit-startup-screen t)
  '(line-number-mode t)
  '(lsp-enable-snippet nil)
@@ -420,7 +423,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode jenkinsfile-mode js2-mode json-mode just-mode lsp-mode lsp-pyright lsp-ui markdown-mode nginx-mode nov puppet-mode rust-mode rustic switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
+   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode highlight-indent-guides jenkinsfile-mode js2-mode json-mode just-mode lsp-mode lsp-pyright lsp-ui markdown-mode nginx-mode nov puppet-mode rust-mode rustic switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 5)

@@ -6,8 +6,10 @@
 
 (ido-mode 1)
 
+(require 'find-file-in-repository)
+
 (defun find-file-dynamic (&optional arg)
-  "C-x C-f invokes #'ido-file-file; with ARG, invokes #'find-file-in-repository."
+  "Invokes #'ido-file-file; with ARG, invokes #'find-file-in-repository."
   (interactive "P")
   (if (equal current-prefix-arg nil)
 	  (ido-find-file)

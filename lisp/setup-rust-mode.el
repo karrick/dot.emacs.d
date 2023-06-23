@@ -7,6 +7,7 @@
 ;; configure emacs and environment for the Rust programming language
 
 (require 'path)
+(require 'rustic-rustfmt)
 
 (path-prepend (expand-file-name "~/.cargo/bin"))
 
@@ -36,7 +37,7 @@
   ;; should no longer be necessary.
   (when buffer-file-name
 	(setq-local buffer-save-without-query t))
-  (add-hook 'before-save-hook 'lst-format-buffer nil t))
+  (add-hook 'before-save-hook #'lst-format-buffer nil t))
 
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 

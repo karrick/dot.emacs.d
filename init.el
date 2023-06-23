@@ -49,6 +49,7 @@
 				(setq ls-lisp-use-insert-directory-program nil))
 
 			  (when (and (eq window-system 'w32) (executable-find "plink"))
+				(require 'tramp)
 				(setq tramp-default-method "plink"))
 
 			  ;; To prioritize access latency over availability, ensure that
@@ -214,8 +215,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  (add-hook 'prog-mode-hook #'(lambda ()
 											(hl-line-mode 1)))
 
-			  (with-eval-after-load 'highlight-indent-guides-mode
-				(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+			  (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
 
 			  ;; Empirically discovered that lsp-keymap-prefix must be set
 			  ;; before loading lsp-mode.

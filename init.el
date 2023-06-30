@@ -217,6 +217,12 @@ If there is no .svn directory, examine if there is CVS and run
 
 			  (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
 
+			  (when t
+				(require 'tree-sitter)
+				(require 'tree-sitter-langs)
+				(global-tree-sitter-mode)
+				(add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
 			  ;; Empirically discovered that lsp-keymap-prefix must be set
 			  ;; before loading lsp-mode.
 			  (setq lsp-keymap-prefix "C-c l")
@@ -435,7 +441,7 @@ If there is no .svn directory, examine if there is CVS and run
 	 ("melpa-stable" . "https://stable.melpa.org/packages/")
 	 ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode highlight-indent-guides jenkinsfile-mode js2-mode json-mode just-mode lsp-mode lsp-pyright lsp-ui markdown-mode nginx-mode nov puppet-mode rust-mode rustic switch-window vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
+   '(buffer-move company deadgrep default-text-scale fic-mode find-file-in-repository flycheck gnu-elpa-keyring-update go-mode highlight-indent-guides jenkinsfile-mode js2-mode json-mode just-mode lsp-mode lsp-pyright lsp-ui markdown-mode nginx-mode nov puppet-mode rust-mode rustic switch-window tree-sitter tree-sitter-langs vc-fossil vterm which-key xterm-color yaml-mode zenburn-theme zig-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 5)
@@ -444,6 +450,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(tab-width 4)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
+ '(tsc-dyn-get-from '(:compilation))
  '(uniquify-buffer-name-style 'post-forward nil (uniquify))
  '(uniquify-ignore-buffers-re "^\\*")
  '(visible-bell t)

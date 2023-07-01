@@ -398,6 +398,15 @@ If there is no .svn directory, examine if there is CVS and run
 				(global-set-key (kbd "C-c C-<") #'mc/mark-all-like-this)
 				(global-set-key (kbd "C-c C->") #'mc/mark-more-like-this-extended))
 
+			  (if (and (fboundp 'native-comp-available-p)
+					   (native-comp-available-p))
+				  (message "Native compilation is available")
+				(message "Native complation is *not* available"))
+
+			  (if (and (functionp 'json-serialize) (json-serialize nil))
+				  (message "Native JSON is available")
+				(message "Native JSON is *not* available"))
+
 			  ;;
 			  ;; LOCALHOST CONFIGURATION
 			  ;;

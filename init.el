@@ -188,6 +188,9 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;; before we reference anything in the lisp directory.
 			  (add-to-list 'load-path (directory-file-name (expand-file-name (locate-user-emacs-file "lisp"))))
 
+			  (require 'unfill-paragraph)
+			  (define-key global-map "\M-Q" 'unfill-paragraph)
+
 			  (require 'async-shell-command-wrapper)
 			  (global-set-key (kbd "M-&") #'ksm/async-shell-command)
 			  (global-set-key (kbd "ESC &") #'ksm/async-shell-command)

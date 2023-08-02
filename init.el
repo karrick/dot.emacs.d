@@ -220,7 +220,7 @@ If there is no .svn directory, examine if there is CVS and run
 
 			  (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
 
-			  (when t
+			  (when nil
 				(require 'tree-sitter)
 				(require 'tree-sitter-langs)
 				(require 'tree-sitter-indent)

@@ -11,7 +11,7 @@
 		   (got (funcall function input))
 		   (want (cdr case)))
 	  (unless (equal got want)
-		(message "test-function: (%s %s) (GOT: %s; WANT: %s)" (symbol-name function) input got want)))))
+		(message "TEST FAIL: (%s %s) (GOT: %s; WANT: %s)" (symbol-name function) input got want)))))
 
 (provide 'test-function)
 

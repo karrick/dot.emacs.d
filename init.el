@@ -10,47 +10,34 @@
 
 ;;; Code:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; When "cert" file in user-emacs-directory, presumably placed there as a
-;; symbolic link to a host-specific yet non-standard system cert file, then
-;; configure gnutls to trust it, before we attempt to contact package-archives
-;; from which packages would be downloaded.
+;;; When "cert" file in user-emacs-directory, presumably placed there as a
+;;; symbolic link to a host-specific yet non-standard system cert file, then
+;;; configure gnutls to trust it, before we attempt to contact package-archives
+;;; from which packages would be downloaded.
 (if (not (gnutls-available-p))
 	(message "GNU TLS is not available.")
   (with-eval-after-load 'gnutls
-	(let ((cert (file-truename (locate-user-emacs-file "cert"))))
+	(let ((cert (expand-file-name "cert" user-emacs-directory)))
 	  (when (file-readable-p cert)
 		(add-to-list 'gnutls-trustfiles cert)))))
 
+;;; Configure Emacs to run following initialization code after it completes
+;;; early initialization.
 (add-hook 'after-init-hook
 		  #'(lambda ()
 			  (package-install-selected-packages)
+
+			  ;; Make Elisp files in ~/.emacs.d/lisp directory available
+			  ;; before we reference anything in the lisp directory.
+			  (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
 			  ;;
 			  ;; PROCESS ENVIRONMENT
 			  ;;
 
-			  (defun env-set-when-null (key default)
-				"Set environment variable KEY to DEFAULT if not already set."
-				(or (getenv key) (setenv key default)))
-
-			  (defun env-set-when-null-verbose (key default)
-				"Set environment variable KEY to DEFAULT if not already set."
-				(let ((value (getenv key)))
-				  (if (or (null value) (string-equal "" value))
-					  (message "Setting %s to %s " key (setenv key default))
-					(message "Observing %s value already set to %s" key value))))
-
-			  ;; (when (fboundp 'server-running-p) (unless (server-running-p) (server-start)))
+			  ;; When running in daemon mode, change process directory to user
+			  ;; home directory.
 			  (if (daemonp) (cd (expand-file-name "~")))
-
-			  (unless (memq system-type '(gnu gnu/linux gnu/kfreebsd))
-				(require 'ls-lisp)
-				(setq ls-lisp-use-insert-directory-program nil))
-
-			  (when (and (eq window-system 'w32) (executable-find "plink"))
-				(require 'tramp)
-				(setq tramp-default-method "plink"))
 
 			  ;; To prioritize access latency over availability, ensure that
 			  ;; highly ephemeral cache data is stored on local machine rather
@@ -70,6 +57,7 @@
 						  (file-name-concat tmpdir logname)))))
 
 			  ;; https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+			  (require 'env-set-when-null)
 			  (env-set-when-null-verbose "XDG_CACHE_HOME" (getenv "TMPDIR"))
 			  (env-set-when-null-verbose "XDG_CONFIG_HOME" (expand-file-name "~/.config"))
 			  (env-set-when-null-verbose "XDG_DATA_HOME" (expand-file-name "~/.local/share"))
@@ -78,25 +66,37 @@
 			  (env-set-when-null-verbose "GOTMPDIR" (file-name-concat (getenv "XDG_CACHE_HOME") "go-tmp"))
 			  ;; (env-set-when-null "GOBIN" (file-name-concat (getenv "XDG_DATA_HOME") os "bin"))
 
+			  ;; After XDG_DATA_HOME is set, can set PATH environment variable
+			  ;; to any of the directories I typically use, provided that they
+			  ;; exist.
+			  (require 'paths)
+
 			  (let* ((state (getenv "XDG_STATE_HOME"))
 					 (history (file-name-concat state "history"))
 					 (emacs (file-name-concat history "emacs")))
 				(when (and state (file-directory-p history))
 				  (setenv "HISTFILE" emacs)))
 
-			  (defun hrg (search-term)
-				"Search command history directory for search term"
-				(interactive "sSearch term: ")
-				(let ((history (file-name-concat (or (getenv "XDG_STATE_HOME") (expand-file-name "~/.local/state")) "history")))
-				  (if (file-directory-p history)
-					  (deadgrep search-term history)
-					(message "Cannot find history directory: %s" history))))
+			  (require 'hrg)
+
+			  ;; On machines that do not have GNU version of `ls(1)` command,
+			  ;; use substitute written in Elisp.
+			  (unless (memq system-type '(gnu gnu/linux gnu/kfreebsd))
+				(require 'ls-lisp)
+				(setq ls-lisp-use-insert-directory-program nil))
+
+			  ;; On Windows prefer using `plink` program for TRAMP
+			  ;; connections.
+			  (when (and (eq window-system 'w32) (executable-find "plink"))
+				(require 'tramp)
+				(setq tramp-default-method "plink"))
 
 			  (setenv "GIT_PAGER" "")                  ; elide git paging capability.
-			  (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat`.
+			  (setenv "PAGER" (executable-find "cat")) ; in lieu of paging files, dump them to a buffer using `cat(1)`.
 
-			  ;; Make certain any sub process knows to use emacsclient as
-			  ;; editor and can route file editing requests to this process.
+			  ;; Make certain any child process knows to use `emacsclient(1)`
+			  ;; as editor and can route file editing requests to this
+			  ;; process.
 			  (let ((cmd (executable-find "emacsclient")))
 				(when cmd
 				  (setenv "EDITOR" cmd)
@@ -168,28 +168,11 @@ If there is no .svn directory, examine if there is CVS and run
 				t)
 
 			  ;;
-			  ;; SPELL CHECK
-			  ;;
-			  ;; http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html
-			  (let ((cmd (executable-find "aspell")))
-				(if (not cmd)
-					(message "Cannot find spelling program: consider installing aspell and en-aspell packages.")
-				  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-				  (setq ispell-program-name cmd
-						;; NOTE: ispell-extra-args contains actual parameters
-						;; that will be passed to aspell.
-						ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))))
-
-			  ;;
 			  ;; Miscellaneous
 			  ;;
 
-			  ;; Make Elisp files in ~/.emacs.d/lisp directory available
-			  ;; before we reference anything in the lisp directory.
-			  (add-to-list 'load-path (directory-file-name (expand-file-name (locate-user-emacs-file "lisp"))))
-
 			  (require 'unfill-paragraph)
-			  (define-key global-map "\M-Q" 'unfill-paragraph)
+			  (define-key global-map (kbd "M-Q") 'unfill-paragraph)
 
 			  (require 'async-shell-command-wrapper)
 			  (global-set-key (kbd "M-&") #'ksm/async-shell-command)
@@ -201,7 +184,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  (require 'copy-and-comment)
 			  (require 'find-file-dynamic)
 			  (require 'make-shebang-executable)
-			  ;; (require 'setup-autocomplete) ;; some libraries not available on FreeBSD.
+			  (require 'setup-aspell)
 			  (require 'setup-gtd)
 			  (require 'sort-commas)
 
@@ -209,17 +192,16 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;; PROGRAMMING
 			  ;;
 
-			  ;; tabs and indenting
+			  ;; Tabs and indentation.
 			  ;; (defvaralias 'c-basic-offset 'tab-width)
 			  (defvaralias 'cperl-indent-level 'tab-width)
 			  (defvaralias 'perl-indent-level 'tab-width)
 			  (defvaralias 'yaml-indent-level 'tab-width)
 
-			  (add-hook 'prog-mode-hook #'(lambda ()
-											(hl-line-mode 1)))
-
+			  (add-hook 'prog-mode-hook #'(lambda () (hl-line-mode 1)))
 			  (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
 
+			  ;; tree-sitter is not yet configured properly.
 			  (when nil
 				(require 'tree-sitter)
 				(require 'tree-sitter-langs)
@@ -236,6 +218,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  ;; Empirically discovered that lsp-keymap-prefix must be set
 			  ;; before loading lsp-mode.
 			  (setq lsp-keymap-prefix "C-c l")
+
 			  (with-eval-after-load 'lsp-mode
 				;; (global-set-key (kbd "C-x 4 M-.") #'xref-find-definitions-other-window)
 				(setq read-process-output-max (* 4 1024 1024) ;; 4 MiB to handle larger payloads from LISP.
@@ -248,25 +231,11 @@ If there is no .svn directory, examine if there is CVS and run
 			  (require 'setup-elisp-mode)
 			  (require 'setup-golang-mode)
 			  (require 'setup-javascript-mode)
+			  (require 'setup-org-mode)
 			  (require 'setup-python-mode)
 			  (require 'setup-ruby-mode)
 			  (require 'setup-rust-mode)
 			  (require 'setup-zig-mode)
-
-			  (defun empty-string-p (string)
-				"Return true if the STRING is empty or nil. Expects string type."
-				(or (null string)
-					(zerop (length (string-trim string)))))
-
-			  (defun begin-src (language)
-				"Insert an org-mode source block using LANGUAGE."
-				(interactive "sLanguage: ")
-				(if (empty-string-p language)
-					(insert (concat "#+BEGIN_SRC\n\n#+END_SRC\n"))
-				  (insert (concat "#+BEGIN_SRC " language "\n\n#+END_SRC\n")))
-				(previous-line 2))
-
-			  (global-set-key (kbd "C-c s") #'begin-src)
 
 			  (defun aj-toggle-fold ()
 				"Toggle fold all lines larger than indentation on current line"
@@ -278,7 +247,7 @@ If there is no .svn directory, examine if there is CVS and run
 					(set-selective-display
 					 (if selective-display nil (or col 1))))))
 
-			  (global-set-key (kbd "C-x $") 'aj-toggle-fold)
+			  (global-set-key (kbd "C-x $") #'aj-toggle-fold)
 
 			  ;;
 			  ;; KEY BINDINGS
@@ -293,6 +262,7 @@ If there is no .svn directory, examine if there is CVS and run
 			  (require 'compile)
 			  (global-set-key (kbd "<f4>")  #'recompile)
 			  (global-set-key (kbd "<f5>")  #'compile)
+
 			  (global-set-key (kbd "<f6>")  #'delete-indentation)
 			  (global-set-key (kbd "<f7>")  #'async-shell-command)
 			  (global-set-key (kbd "<f8>")  #'copy-and-comment)
@@ -306,10 +276,12 @@ If there is no .svn directory, examine if there is CVS and run
 			  (global-set-key (kbd "M-n") #'scroll-up-line)
 
 			  ;; By default bind "C-x C-r" to rgrep, but when ripgrep and
-			  ;; deadgrep are available, rebind to that...
+			  ;; deadgrep are available, rebind to the latter to use the
+			  ;; former...
 			  (let ((cmd (executable-find "rg")))
 				(if (not cmd)
 					(global-set-key (kbd "C-x C-r") #'rgrep)
+				  (require 'deadgrep)
 				  (setq deadgrep-executable cmd)
 				  (global-set-key (kbd "C-x C-r") #'deadgrep)))
 

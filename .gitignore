@@ -1,6 +1,7 @@
 *.elc
 *.html
 *~
+.lsp-session-v1
 .mc-lists.el
 ac-comphist.dat
 auto-save-list

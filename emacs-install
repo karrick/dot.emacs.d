@@ -74,6 +74,7 @@ esac
 # gnutls: GNU Transport Layer Security Library
 case $os in
     darwin)  packages="$packages gnutls gnutls-devel" ;;
+	el?)     packages="$packages gnutls gnutls-devel" ;;
     freebsd) packages="$packages gnutls" ;;
     openbsd) packages="$packages gnutls" ;;
     *)       echo >&2 "WARNING: no gnutls packages defined: $os" ;;
@@ -102,7 +103,7 @@ if [ -n "$kit" ] ; then
     # If using graphics, first specify libraries which are not related to
     # which graphics framework is to be used.
     case $os in
-        el?)     packages="$packages giflib-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel openjpeg2-devel" ;;
+        el?)     packages="$packages giflib giflib-devel harfbuzz harfbuzz-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel openjpeg2-devel" ;;
         openbsd) config="$config --with-gif=ifavailable --with-jpeg=ifavailable --with-png=ifavailable --with-tiff=ifavailable" ;;
         *)       echo >&2 "WARNING: no graphics packages defined for: $os" ;;
     esac
@@ -165,7 +166,7 @@ if [ -n "$deps" -a -n "$packages" ] ; then
             sudo yum install $packages
             ;;
         el8)
-            sudo dnf builddep emacs
+            : sudo dnf builddep emacs
             sudo dnf install $packages
             ;;
         freebsd)

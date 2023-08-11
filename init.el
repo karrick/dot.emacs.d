@@ -87,8 +87,9 @@
 
 			  ;; On Windows prefer using `plink` program for TRAMP
 			  ;; connections.
-			  (when (and (eq window-system 'w32) (executable-find "plink"))
-				(require 'tramp)
+			  ;; On Windows prefer using `plink` program for TRAMP
+			  ;; connections.
+			  (when (and (eq window-system 'windows-nt) (executable-find "plink"))
 				(setq tramp-default-method "plink"))
 
 			  (setenv "GIT_PAGER" "")                  ; elide git paging capability.

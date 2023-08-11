@@ -4,8 +4,7 @@
 
 ;;; Code:
 
-(ido-mode 1)
-
+(require 'ido)
 (require 'find-file-in-repository)
 
 (defun find-file-dynamic (&optional arg)

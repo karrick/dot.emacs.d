@@ -105,7 +105,9 @@
 
 			  ;; (desktop-save-mode 0)
 			  ;; (fido-mode 1)
-			  (ido-mode 1)
+			  ;; (ido-mode 1)
+			  ;; (vertico-mode)
+
 			  (fset 'yes-or-no-p 'y-or-n-p)
 			  (prefer-coding-system 'utf-8)
 			  (put 'narrow-to-region 'disabled nil)

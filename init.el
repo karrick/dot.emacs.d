@@ -426,6 +426,7 @@ If there is no .svn directory, examine if there is CVS and run
  '(native-comp-async-report-warnings-errors 'silent)
  '(ns-function-modifier 'hyper)
  '(ns-use-srgb-colorspace t)
+ '(org-startup-folded 'show2levels)
  '(package-archive-priorities '(("melpa-stable" . 2) ("melpa" . 1) ("gnu" . 0)))
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")

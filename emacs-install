@@ -74,7 +74,7 @@ esac
 # gnutls: GNU Transport Layer Security Library
 case $os in
     darwin)  packages="$packages gnutls gnutls-devel" ;;
-	el?)     packages="$packages gnutls gnutls-devel" ;;
+    el?)     packages="$packages gnutls gnutls-devel" ;;
     freebsd) packages="$packages gnutls" ;;
     openbsd) packages="$packages gnutls" ;;
     *)       echo >&2 "WARNING: no gnutls packages defined: $os" ;;

@@ -10,12 +10,12 @@
 (require 'empty-string)
 
 (let ((cmd (executable-find "aspell")))
-  (if (null cmd)
-	  (message "Cannot find spelling program: consider installing 'aspell' and 'en-aspell' packages.")
+  (if (empty-string-p cmd)
+	  (message "Cannot find spelling program: consider installing `aspell' and `en-aspell' packages.")
 	(add-hook 'prog-mode-hook #'flyspell-prog-mode)
 	(setq ispell-program-name cmd
-		  ;; NOTE: ispell-extra-args contains actual parameters
-		  ;; that will be passed to aspell.
+		  ;; NOTE: ispell-extra-args contains actual parameters that will be
+		  ;; passed to aspell.
 		  ispell-extra-args '("--sug-mode=ultra" "--lang=en_US"))))
 
 (provide 'setup-aspell)

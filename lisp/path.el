@@ -4,30 +4,34 @@
 
 ;;; Code:
 
+(require 'ksm-list)
+
 (defun path-prepend (elem)
-  "Prepend ELEM to the 'exec-path' and PATH environment variable."
+  "Prepend ELEM to variable `exec-path' and PATH environment variable."
   (interactive "DPrepend what directory to PATH: ")
   (let ((path (expand-file-name elem)))
 	(when (string-match "/\\'" path)
 	  (setq path (concat (replace-match "" nil nil path))))
-	(when (file-accessible-directory-p path)
-	  (add-to-list 'exec-path path)
+	(when (and (not (member path exec-path))
+			   (file-accessible-directory-p path))
+	  (ksm/list-prepend-modify path exec-path)
 	  (setenv "PATH" (concat path ":" (getenv "PATH")))
 	  (message "Prepending %s to PATH" path))))
 
 (defun path-append (elem)
-  "Append ELEM to the 'exec-path' and PATH environment variable."
+  "Append ELEM to variable `exec-path' and PATH environment variable."
   (interactive "DAppend what directory to PATH: ")
   (let ((path (expand-file-name elem)))
 	(when (string-match "/\\'" path)
 	  (setq path (concat (replace-match "" nil nil path))))
-	(when (file-accessible-directory-p path)
-	  (add-to-list 'exec-path path)
+	(when (and (not (member path exec-path))
+			   (file-accessible-directory-p path))
+	  (ksm/list-append-modify path exec-path)
 	  (setenv "PATH" (concat (getenv "PATH") ":" path))
 	  (message "Appending %s to PATH" path))))
 
 (defun path-concat (a b)
-  "Concatenates two pathname components, A and B, for the OS."
+  "Return OS pathname by concatenation of A and B."
 
   ;; remove slash from end of a
   (when (string-match "/\\'" a)

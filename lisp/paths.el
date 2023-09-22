@@ -21,24 +21,27 @@
 ;;	   "foo"))
 
 (defun system-name ()
-  "Returns a string representing the system-type."
+  "Return a string representing the `system-type'."
   (cond
-   ((memq system-type '(darwin ms-dos windows-nt cygwin haiku)) (symbol-name system-type))
-   ((eq system-type 'gnu/kfreebsd) "freebsd")
-   ((eq system-type 'gnu/linux) (or
-								 ;; Some programs must be compiled for each
-								 ;; major EL release version.
-								 (and
-								  (file-readable-p "/etc/os-release")
-								  (with-temp-buffer
-									(insert-file-contents "/etc/os-release")
-									(goto-char (point-min))
-									(when
-										(re-search-forward "^VERSION_ID[ \t]\\([0-9]+\\)" nil 'NOERROR)
-									  (concat "el" (match-string 1)))))
-								 (when (file-readable-p "/etc/debian-release")
-								   "debian")
-								 "linux"))
+   ((memq system-type '(darwin ms-dos windows-nt cygwin haiku))
+	(symbol-name system-type))
+   ((eq system-type 'gnu/kfreebsd)
+	"freebsd")
+   ((eq system-type 'gnu/linux)
+	(or
+	 ;; Some programs must be compiled for each
+	 ;; major EL release version.
+	 (and
+	  (file-readable-p "/etc/os-release")
+	  (with-temp-buffer
+		(insert-file-contents "/etc/os-release")
+		(goto-char (point-min))
+		(when
+			(re-search-forward "^PLATFORM_ID=\"platform:\\(.*\\)\"" nil 'NOERROR)
+		  (match-string 1))))
+	 (when (file-readable-p "/etc/debian-release")
+	   "debian")
+	 "linux"))
    (t "unknown")))
 
 (let* ((xdg-data-home (getenv "XDG_DATA_HOME"))
@@ -58,8 +61,7 @@
   (dolist (path candidates)
 	(when (not (empty-string-p path))
 	  (setq path (expand-file-name path))
-	  (when (file-accessible-directory-p path)
-		(path-prepend path)))))
+	  (path-prepend path))))
 
 (provide 'paths)
 

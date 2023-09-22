@@ -49,7 +49,7 @@ fi
 
 config="--prefix=$HOME/.local/share/${os}"
 
-if [ -z "$tiny" ] ; then
+if [ -n "$tiny" ] ; then
     # Disables most library support, but still builds with X, which will be
     # disabled below.
     config="$config --without-all"

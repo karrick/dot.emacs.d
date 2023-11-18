@@ -2,20 +2,20 @@
 
 set -e
 
+basename=$(basename "$0")
 defaultRelease=28.2
-downloads=~/Downloads
+
+[ -n "$XDG_DOWNLOAD_DIR" ] || XDG_DOWNLOAD_DIR="$HOME/Downloads"
+[ -d "$XDG_DOWNLOAD_DIR" ] || mkdir -p "$XDG_DOWNLOAD_DIR"
 
 usage() {
-    local code=0
-    basename=$(basename $0)
-    [ $# -eq 0 ] || echo >&2 "$basename: $@" && code=2
+	code=0
+    [ $# -eq 0 ] || echo >&2 "$basename: $*" && code=2
     echo "USAGE: $basename [--deps] [--gpg-if-available] [--help] [--kit athena|gtk|lucid] [--noop] [--release X.Y] [--tiny]"
     exit $code
 }
 
-validate() {
-    [ $# -ge 2 ] || usage "missing option argument: $1"
-}
+validate() { [ $# -ge 2 ] || usage "missing option argument: '$1'" ; }
 
 while [ $# -ne 0 ] ; do
     case $1 in
@@ -30,7 +30,7 @@ while [ $# -ne 0 ] ; do
     esac
 done
 
-[ -z "$kit" -o -z "$tiny" ] || usage "cannot set both --ket KIT and --tiny"
+[ -z "$kit" ] || [ -z "$tiny" ] || usage "cannot set both --ket KIT and --tiny"
 
 # The OS affects installation location and libraries that need to be
 # installed.
@@ -47,9 +47,10 @@ if [ "$os" = "linux" ] ; then
     fi
 fi
 
-config="--prefix=$HOME/.local/share/${os}"
+[ -n "$XDG_DATA_HOME" ] || XDG_DATA_HOME="$HOME/.local/share" # Application Data: /usr/share
+config="--prefix=$XDG_DATA_HOME/${os}"
 
-if [ -n "$tiny" ] ; then
+if [ -z "$tiny" ] ; then
     # Disables most library support, but still builds with X, which will be
     # disabled below.
     config="$config --without-all"
@@ -138,7 +139,7 @@ else
     esac
 fi
 
-packages=$(echo $packages | tr ' ' '\n' | sort | tr '\n' ' ')
+packages=$(echo "$packages" | tr ' ' '\n' | sort | tr '\n' ' ')
 
 if [ -n "$noop" ] ; then
     echo "CONFIGURE: $config"
@@ -148,7 +149,7 @@ fi
 
 # If dependency installation is requested, need to consider which graphical
 # kit to configure and which OS running on.
-if [ -n "$deps" -a -n "$packages" ] ; then
+if [ -n "$deps" ] && [ -n "$packages" ] ; then
     # Install build and runtime dependencies.
     echo "PACKAGES:  $packages"
     echo "Please type your password to install packages:"
@@ -186,50 +187,50 @@ fi
 
 if [ -z "$release" ] ; then
     printf "Which release? [%s] " "$defaultRelease"
-    read release
+    read -r release
     [ -n "$release" ] || release=$defaultRelease
 fi
 
 bundle=emacs-${release}.tar.xz
-bundle_local=$downloads/$bundle
+bundle_local=$XDG_DOWNLOAD_DIR/$bundle
 if [ ! -f "$bundle_local" ] ; then
     echo "Downloading ${bundle}..."
-    curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+    curl -L --create-dirs --output "$bundle_local" "http://ftp.gnu.org/gnu/emacs/$bundle"
 fi
 
-if $(which gpg >/dev/null 2>&1) ; then
+if which gpg >/dev/null 2>&1 ; then
     keyring=gnu-keyring.gpg
-    keyring_local=$downloads/$keyring
+    keyring_local=$XDG_DOWNLOAD_DIR/$keyring
     if [ ! -f "$keyring_local" ] ; then
         echo "Downloading ${keyring}..."
-        curl -L --create-dirs --output $keyring_local https://ftp.gnu.org/gnu/$keyring
-        gpg --import $keyring_local
+        curl -L --create-dirs --output "$keyring_local" "https://ftp.gnu.org/gnu/$keyring"
+        gpg --import "$keyring_local"
     fi
 
     sig=${bundle}.sig
-    sig_local=$downloads/$sig
+    sig_local=$XDG_DOWNLOAD_DIR/$sig
     if [ ! -f "$sig_local" ] ; then
         echo "Downloading ${sig}..."
-        curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+        curl -L --create-dirs --output "$sig_local" "http://ftp.gnu.org/gnu/emacs/$sig"
     fi
 
-    while ! gpg --verify --keyring $keyring_local $sig_local $bundle_local ; do
+    while ! gpg --verify --keyring "$keyring_local" "$sig_local" "$bundle_local" ; do
         echo "WARNING: bundle file doesn't match its signature." >&2
         echo "bundle:    $bundle_local" >&2
         echo "signature: $sig_local" >&2
         printf "Remove bundle and signature, and retry? [Y/n] "
-        read yn
+        read -r yn
         case $yn in
             N|n)
                 echo "Exiting because bundle does not match signature."
                 exit 1
                 ;;
             *)
-                rm -fv $sig_local $bundle_local
+                rm -fv "$sig_local" "$bundle_local"
                 echo "Re-downloading ${bundle}..."
-                curl -L --create-dirs --output $bundle_local http://ftp.gnu.org/gnu/emacs/$bundle
+                curl -L --create-dirs --output "$bundle_local" "http://ftp.gnu.org/gnu/emacs/$bundle"
                 echo "Re-downloading ${sig}..."
-                curl -L --create-dirs --output $sig_local http://ftp.gnu.org/gnu/emacs/$sig
+                curl -L --create-dirs --output "$sig_local" "http://ftp.gnu.org/gnu/emacs/$sig"
                 ;;
         esac
     done
@@ -239,7 +240,7 @@ else
     
     if [ -z "$gpg_if_available" ] ; then
         printf "Proceed anyway? [y/N] "
-        read yn
+        read -r yn
         case $yn in
             Y|y) echo "Skipping bundle signature check..." ;;
             *)   echo "Exiting because cannot verify bundle integrity." ; exit 1 ;;
@@ -249,15 +250,15 @@ fi
 
 ################
 
-build_dir=$downloads/emacs-${release}
-rm -rf $build_dir
-xz --decompress --stdout $bundle_local | tar -x -C $downloads -f -
+build_dir="$XDG_DOWNLOAD_DIR/emacs-${release}"
+rm -rf "$build_dir"
+xz --decompress --stdout "$bundle_local" | tar -x -C "$XDG_DOWNLOAD_DIR" -f -
 
-cd $build_dir
+cd "$build_dir"
 
 echo >&2 "################ Configuring..."
 echo >&2 "./configure $config"
-./configure $config
+./configure "$config"
 code=$?
 if [ "$code" -ne 0 ] ; then
     echo >&2 "ERROR: cannot configure: $code"

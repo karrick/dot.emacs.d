@@ -61,6 +61,10 @@ else
     config="$config --without-dbus --without-gconf --without-gsettings --without-sound"
 fi
 
+config="$config --with-native-compilation"
+config="$config --with-tree-sitter"
+#config="$config --with-gnutls=ifavailable" # FIXME
+
 # Specify base packages needed to build or run Emacs on each supported
 # operating system.
 case $os in
@@ -74,7 +78,7 @@ esac
 
 # gnutls: GNU Transport Layer Security Library
 case $os in
-    darwin)  packages="$packages gnutls gnutls-devel" ;;
+    darwin)  packages="$packages gnutls-devel" ;;
     el?)     packages="$packages gnutls gnutls-devel" ;;
     freebsd) packages="$packages gnutls" ;;
     openbsd) packages="$packages gnutls" ;;
@@ -104,6 +108,7 @@ if [ -n "$kit" ] ; then
     # If using graphics, first specify libraries which are not related to
     # which graphics framework is to be used.
     case $os in
+	darwin)  packages="$packages librsvg" ;;
         el?)     packages="$packages giflib giflib-devel harfbuzz harfbuzz-devel libjpeg libjpeg-devel libpng-devel libtiff-devel libX11-devel libXpm-devel openjpeg2-devel" ;;
         openbsd) config="$config --with-gif=ifavailable --with-jpeg=ifavailable --with-png=ifavailable --with-tiff=ifavailable" ;;
         *)       echo >&2 "WARNING: no graphics packages defined for: $os" ;;
@@ -280,3 +285,10 @@ if [ "$code" -ne 0 ] ; then
     echo >&2 "ERROR: cannot install: $code"
     exit $code
 fi
+
+if [ "$os" == "darwin" ] ; then
+    echo >&2 "################ Moving to /Applications..."
+    sudo mv nextstep/Emacs.app /Applications
+fi
+
+echo >&2 "################ Installation successful."
